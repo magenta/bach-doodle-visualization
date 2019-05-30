@@ -1,0 +1,212 @@
+<html>
+  <head>
+    <title>Dataset</title>
+    <meta charset="utf-8">
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.3.2/d3-annotation.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@magenta/music@1.8.0"></script>
+    <script src="common.js"></script>
+    <link href="style.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Google+Sans:400,500" rel="stylesheet">
+    <style>
+      h2 {
+        display: inline-block;
+        margin: 0;
+        min-width: 250px;
+        text-align: center;
+      }
+      .horizontal {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+      }
+      button.toggle, button.play {
+        border-top: 2px solid black;
+        border-left: 2px solid black;
+        border-right: 2px solid black;
+      }
+      button.toggle {
+        min-width: 210px;
+      }
+      button.toggle:hover {
+        opacity: 1 !important;
+      }
+      button.toggle:not(.active) {
+        opacity: 0.5;
+      }
+      button.toggle.active {
+        font-weight: bold;
+      }
+      table {
+        font-size: inherit;
+        font-family: inherit;
+        width: 100%;
+        margin-bottom: 24px;
+      }
+      table td {
+        min-width: 160px;
+      }
+      table td:nth-of-type(2) {
+        font-weight: bold
+      }
+    </style>
+  </head>
+  <body>
+    <section>
+      <h1>What does the <br><span class="accent yellow">dataset</span> look like?</h1>
+      <p>
+        Of the more than 50 million requests to the doodle itself, the user contributed dataset contains 
+        over 21.6 million miniature compositions totaling 78.8 years spent composing.
+        The compositions are split across 8.5 million sessions -- each session represents 
+        an anonymous user's interaction with the web app and may contain multiple data points. 
+        Below you can explore <b>100</b> different sessions from the dataset, and each of their harmonizations
+      </p>
+    </section>
+    
+    <section>
+      <button class="accent purple" onclick="prevSession()">previous</button>
+      <h2>Session: <b id="activeSession"></b>/100</h2>
+      <button class="accent purple" onclick="nextSession()">next</button>
+      <br>
+      <button class="accent pink" onclick="prevHarmonization()">previous</button>
+      <h2>Harmonization: <b id="activeHarmonization"></b>/<b id="harms"></b></h2>
+      <button class="accent pink" onclick="nextHarmonization()">next</button>
+      <br><br>
+      <div class="horizontal">
+        <div>
+          <button class="toggle active" onclick="viewInput()" id="btnViewInput">input sequence</button>
+          <button class="toggle" onclick="viewOutput()" id="btnViewOutput">output harmonization</button>
+        </div>
+        <button class="play" onclick="playOrPause()" id="btnPlay">play</button>
+      </div>
+      
+      <div class="box">
+        <svg id="visualizer"></svg>
+      </div>
+      
+      <h3>Metadata</h3>
+      <table class="box">
+        <tbody>
+          <tr>
+            <td>Backend</td>
+            <td id="backend"></td>
+          </tr>
+          <tr>
+            <td>Loops Listened</td>
+            <td id="loops"></td>
+          </tr>
+          <tr>
+            <td>Session ID</td>
+            <td id="sid"></td>
+          </tr>
+          <tr>
+            <td>Country code</td>
+            <td id="country"></td>
+          </tr>
+          <tr>
+            <td>Composition time</td>
+            <td id="comp"></td>
+          </tr>
+          <tr>
+            <td>Feedback</td>
+            <td id="feedback"></td>
+          </tr>
+          <tr>
+            <td>Key Signature</td>
+            <td id="keysig"></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </body>
+  <script>
+    let allData;
+    let sessionIndex = 0;
+    let harmIndex = 0;
+    let minPitch, maxPitch;
+    
+    d3.json(DATAPOINTS_URL).then((data) => {
+      allData = data;
+      updateView();
+    });
+    
+    function updateView() {
+      let data = allData[sessionIndex];
+      
+      activeSession.textContent = sessionIndex + 1;
+      activeHarmonization.textContent = harmIndex + 1;
+      
+      harms.textContent = data.length;
+      backend.textContent = data[harmIndex]['backend'];
+      loops.textContent = data[harmIndex]['loops_listened'];
+      sid.textContent = data[harmIndex]['session_id'];
+      country.textContent = data[harmIndex]['country'];
+      comp.textContent = data[harmIndex]['composition_time'];
+      feedback.textContent = data[harmIndex]['feedback'];
+      keysig.textContent = data[harmIndex]['key_sig'];
+      
+      // Ensure the two visualizers are the same height by making them 
+      // have the same note ranges.
+      const outputSequence = data[harmIndex]['output_sequence'];
+      const pitches = outputSequence.notes.map(n => n.pitch);
+      minPitch = Math.min(...pitches) - 2;
+      maxPitch = Math.max(...pitches) + 2;
+      
+      if (btnViewInput.classList.contains('active')) {
+        viewInput();
+      } else {
+        viewOutput();
+      }
+    }
+    
+    function nextSession() {
+      sessionIndex = Math.min(sessionIndex + 1, allData.length - 1);
+      harmIndex = 0;
+      updateView();
+    }
+    function prevSession() {
+      sessionIndex = Math.max(sessionIndex - 1, 0);
+      harmIndex = 0;
+      updateView();
+    }
+    function nextHarmonization() {
+      harmIndex = Math.min(harmIndex + 1, allData[sessionIndex].length - 1);
+      updateView();
+    }
+    function prevHarmonization() {
+      harmIndex = Math.max(harmIndex - 1, 0);
+      updateView();
+    }
+    
+    function viewInput() {
+      const ns = allData[sessionIndex][harmIndex]['input_sequence'];
+      player.loadSamples(ns);
+      visualizeNoteSequence(ns, 'visualizer', minPitch, maxPitch);
+      btnViewInput.classList.add('active');
+      btnViewOutput.classList.remove('active');
+    }
+    
+    function viewOutput() {
+      const ns = allData[sessionIndex][harmIndex]['output_sequence'];
+      player.loadSamples(ns);
+      visualizeNoteSequence(ns, 'visualizer', minPitch, maxPitch);
+      btnViewInput.classList.remove('active');
+      btnViewOutput.classList.add('active');
+    }
+    
+    function playOrPause() {
+      if (player.isPlaying()) {
+        player.stop();
+        btnPlay.textContent = 'play';
+      } else {
+        const key = btnViewInput.classList.contains('active') ? 'input_sequence' : 'output_sequence';
+        const ns = allData[sessionIndex][harmIndex][key];
+        console.log(ns)
+        ns.totalQuantizedSteps = parseInt(ns.totalQuantizedSteps);
+        ns.tempos[0].time = 0;
+        player.start(ns).then(() => btnPlay.textContent = 'play');
+        btnPlay.textContent = 'stop';
+      }
+    }
+  </script>
+</html>

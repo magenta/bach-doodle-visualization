@@ -1,0 +1,97 @@
+<html>
+  <head>
+    <title>Around the world</title>
+    <meta charset="utf-8">
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@magenta/music@1.8.0"></script>
+    <script src="common.js"></script>
+    <link href="style.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Google+Sans:400,500&display=swap" rel="stylesheet">
+    <style>
+      #container svg {
+        border: 2px solid black;
+        border-radius: 50%;
+      }
+      circle {
+        fill: none;
+        stroke: black;
+        stroke-width: 2;
+      }
+    </style>
+  </head>
+  <body>
+    <section>
+      <h1>Melodies around the <span class="accent yellow">world</span></h1>
+      <p>
+        Blurb. Something about the size of the balls.
+        <span class="accent purple outline">Click</span> on a circle to explore that country.
+      </p>
+      <p><b class="accent pink">Still to do: </b>These will be images and be fast and hovering will show the country name once we decide these circles look good.
+      Don't worry about it for now.</p>
+    </section>
+    
+    <div class="center">
+      <svg width="960" height="960">
+        <g class="base" transform="translate(480,480)"></g>
+      </svg>
+    </div>
+  </body>
+  <script>
+    const countrySizes = [["us",6581192],["br",1541549],["mx",1057061],["it",893475],["es",838700],["tr",834650],["ru",772695],["uk",673990],["co",564413],["ua",538132],["de",524415],["in",514552],["tw",467485],["ca",446992],["ar",414802],["fr",407252],["pl",283701],["nl",277014],["jp",274463],["vn",270068],["pe",223066],["cl",219882],["ro",187220],["ve",165243],["pt",156389],["hk",133441],["cz",118685],["kr",117294],["ec",115863],["hu",111459],["th",110246],["gr",109671],["se",91388],["ch",86990],["dk",84954],["fi",73833],["by",71752],["il",71359],["gt",67469],["rs",67358],["sk",63443],["at",61128],["hr",57219],["eg",53589],["ie",52418],["cr",51580],["sg",49332],["uy",45725],["sa",45028],["do",42835],["bo",41072],["lt",36976],["si",35197],["sv",34254],["bg",33808],["ae",33594],["pa",29171],["py",27509],["hn",26464],["md",25587],["dz",24657],["bd",23013],["am",20805],["ee",19959],["ba",18385],["pr",16605],["ma",16451],["ni",13542],["tn",12575],["au",11741],["iq",9865],["jo",8993],["lb",8251],["other",8000],["qa",7079],["om",6917],["kw",5585],["ps",5370],["is",4728],["bh",3051],["ph",2462]]
+          
+    const sizeScale = d3.scaleSqrt()
+    .domain([
+      countrySizes[countrySizes.length - 1][1], 
+      countrySizes[0][1]])
+    .range([14, 160]);
+    
+    const CIRCLE_MARGIN = 4;
+    console.log('starting to download....')
+    
+    d3.json(TOP_PER_COUNTRY_URL).then(showData);
+    
+    function showData(data) {
+      console.log('done downloading, starting to render....')
+      
+      const svg = d3.select('svg');
+      
+      // Make a circle of the right size, and pack it.
+      const circles = d3.packSiblings(
+        d3.range(countrySizes.length)
+        .map((d,i) => {
+          const country = countrySizes[i][0];
+          return {
+            r: sizeScale(countrySizes[i][1]), 
+            country: country,
+            data: data[country]
+          }
+        })
+        .filter((d) => {
+          return d.data.children.length > 0
+        }));
+      
+      // Add the country to the circle.
+      svg
+      .select('g')
+      .selectAll('circle')
+      .data(circles)
+      .enter().append('circle')
+        .attr('cx', (d) => d.x)
+        .attr('cy', (d) => d.y)
+        .attr('r', (d) => d.r - CIRCLE_MARGIN)  // add a margin outside  
+        .attr('id', (d) => d.country)
+        .each((d) => {
+          setTimeout(() => {
+            console.log('rendering', d.country);
+            let radiusWithInnerPadding = d.r - CIRCLE_MARGIN;
+            drawSunburst(d.data, 
+                         radiusWithInnerPadding, 
+                         d.country, d.x, d.y);
+          });
+        });
+    }
+    
+  </script>
+</html>
+
+
