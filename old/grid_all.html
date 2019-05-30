@@ -1,0 +1,161 @@
+<html>
+  <head>
+    <title>all-grid</title>
+    <meta charset="utf-8">
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@magenta/music@1.8.0"></script>
+    <script src="common.js"></script>
+    <link href="style.css" rel="stylesheet">
+    <style>
+      #container svg {
+        border: 2px solid black;
+        margin: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    very very slow to load, hover to inspect, click to expand as sunburst, shift+click to expand as grid.<br>
+    the size scale is the number of total sequences for that country.
+    <div id="legend"></div>
+    <div id="container"></div>
+  </body>
+  <script>
+    const countrySizes = [["je", 66], ["ke", 91], ["ng", 92], ["jm", 102], ["tt", 123], ["kg", 124], ["mk", 139], ["np", 140], ["uz", 146], ["az", 154], ["mm", 179], ["lu", 223], ["ge", 237], ["lk", 238], ["mt", 266], ["pk", 276], ["as", 344], ["cy", 396], ["lv", 590], ["kz", 616], ["za", 1244], ["ir", 1550], ["ly", 1690], ["my", 1872], ["no", 2133], ["ph", 2462], ["id", 2919], ["nz", 2981], ["bh", 3051], ["be", 3269], ["is", 4728], ["ps", 5370], ["kw", 5585], ["om", 6917], ["qa", 7079], ["other", 8000], ["lb", 8251], ["jo", 8993], ["iq", 9865], ["au", 11741], ["tn", 12575], ["ni", 13542], ["ma", 16451], ["pr", 16605], ["ba", 18385], ["ee", 19959], ["am", 20805], ["bd", 23013], ["dz", 24657], ["md", 25587], ["hn", 26464], ["py", 27509], ["pa", 29171], ["ae", 33594], ["bg", 33808], ["sv", 34254], ["si", 35197], ["lt", 36976], ["bo", 41072], ["do", 42835], ["sa", 45028], ["uy", 45725], ["sg", 49332], ["cr", 51580], ["ie", 52418], ["eg", 53589], ["hr", 57219], ["at", 61128], ["sk", 63443], ["rs", 67358], ["gt", 67469], ["il", 71359], ["by", 71752], ["fi", 73833], ["dk", 84954], ["ch", 86990], ["se", 91388], ["gr", 109671], ["th", 110246], ["hu", 111459], ["ec", 115863], ["kr", 117294], ["cz", 118685], ["hk", 133441], ["pt", 156389], ["ve", 165243], ["ro", 187220], ["cl", 219882], ["pe", 223066], ["vn", 270068], ["jp", 274463], ["nl", 277014], ["pl", 283701], ["fr", 407252], ["ar", 414802], ["ca", 446992], ["tw", 467485], ["in", 514552], ["de", 524415], ["ua", 538132], ["co", 564413], ["uk", 673990], ["ru", 772695], ["tr", 834650], ["es", 838700], ["it", 893475], ["mx", 1057061], ["br", 1541549], ["us", 6581192]];
+    const minSize = 66;
+    const maxSize = 6581192;
+    const sizeScale = d3.scaleLog().domain([minSize, maxSize]).range([10, 200]);
+    
+    d3.json('/data/top_per_country.json').then(showData);
+    let FIXED_LENGTH = 14;
+    let allData;
+    
+    function showData(json) {
+      allData = json;
+      for (let i = 0; i < countrySizes.length; i++) {
+        const country = countrySizes[i][0];
+        const size = sizeScale(countrySizes[i][1]);
+        displayGrid(json[country], country, size, size);
+      }
+    }
+    
+    function displayGrid(tree, country, width, height) {
+      const data = [];
+      flatten(tree, data, '');
+      console.log(country, data.length);
+      if (data.length === 0) {
+        return;
+      }
+      
+      FIXED_LENGTH = data.length === 1 ? data[0].str.trim().split(' ').length : 14;
+      
+      data.sort((a,b) => b.value - a.value)
+
+      data.forEach(d => {
+        d.deltas = d.str.trim().split(' ')
+        d.fixedChunk = d.deltas.slice(0, FIXED_LENGTH)
+      });
+
+      // This contains a sequence of 16 notes, and an array of all the sequences that
+      // have the key as a prefix, 
+      const by16 = d3.nest()
+        .key(d => d.fixedChunk.join(' '))
+        .entries(data.filter(d => d.fixedChunk.length == FIXED_LENGTH))
+
+      // Now also add any subsequences that fit in these fixed chunks.
+      let count = 0;
+      data.forEach(d => {
+        // Could this be a substring?
+        if (d.deltas.length < FIXED_LENGTH) {
+          for (let i = 0; i < by16.length; i++) {
+            if (by16[i].key.indexOf(d.str) === 0) {
+              count++;
+              by16[i].values.push(d);
+              break
+            }
+          }
+        }
+      });
+      
+      // Sum up the children's values into the parent, and sort.
+      by16.forEach((d) => {
+        let value = 0;
+        let longestDeltas = [];
+        let longestTiming = [];
+        d.values.forEach((c) => {
+          value += c.value;
+          // Also find out the longest sequence, so that we can hear it.
+          if (c.deltas.length > longestDeltas.length) {
+            longestDeltas = c.deltas; 
+            longestTiming = c.timing;
+          }
+        });
+        d.value = value;
+        d.timing = longestTiming;
+        d.deltas = longestDeltas.map(d => parseInt(d));
+        d.displayDeltas = d.deltas.slice(0, FIXED_LENGTH);
+      });
+      by16.sort((a,b) => b.value - a.value);
+
+      // Calculate the y0 and y1 for the bars.
+      let prevY = 0;
+      by16.forEach((d) => {
+        d.y0 = prevY;
+        d.y1 = prevY + d.value;
+        prevY = d.y1;
+      });
+
+      const svg = d3.select('#container').append('svg')
+          .attr('id', country)
+          .style('width', width)
+          .style('height', height)
+          .attr('title', country)
+          .on('click', () => {
+            if (d3.event.shiftKey) {
+              window.open('grid_country.html?country=' + country, '_blank');
+            } else {
+              window.open('sunburst_country.html?country=' + country, '_blank');
+            }
+          });
+
+      const xScale = d3.scaleLinear().domain([0, FIXED_LENGTH]).range([0, width]);
+      const yScale = d3.scaleLinear().domain([0, prevY]).range([0, height]);
+      
+      const row = svg
+        .selectAll('g')
+        .data(by16)
+        .enter()
+        .append('g')
+        .attr('transform', (d) => `translate(0,${yScale(d.y0)})`)
+        .attr('height', (d) => Math.max(1, yScale(d.y1) - yScale(d.y0)))
+
+      row.selectAll('rect')
+        .data((d) => d.displayDeltas)
+        .enter().append('rect')
+        .attr('x', (d, i) => xScale(i))
+        .attr('width', (d, i) => xScale(i+1) - xScale(i))
+        .attr('height', (d, i, nodes) => d3.select(nodes[0].parentNode).attr('height'))
+        .style('fill', (d) => color(parseInt(d)))
+        .style('fill-opacity', 1)
+        .style('stroke', 'white')
+        .style('stroke-width', 1)
+
+      
+      const el = document.getElementById(country);
+      const box = el.getBBox();
+      el.setAttribute('viewBox', `${box.x} ${box.y} ${box.width} ${box.height}`);
+    }
+    
+    function flatten(node, acc, prevStr) {
+      const str = prevStr + (node.name == 'root' ? '' : node.name + ' ')
+      if (node.value) {
+        acc.push({str, value: node.value, timing: node.timing})
+      }
+      if (node.children) {
+        node.children.forEach(d => flatten(d, acc, str))
+      }
+    }
+    
+  </script>
+</html>
+
+

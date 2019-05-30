@@ -1,0 +1,103 @@
+<html>
+  <head>
+    <title></title>
+    <meta charset="utf-8">
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.3.2/d3-annotation.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@magenta/music@1.8.0"></script>
+    <script src="common.js"></script>
+    <link href="style.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Google+Sans:400,500&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <section>
+      <h1>What did the doodlers <span id="textCountry"></span>compose?</h1>
+      <p>
+        <span class="accent purple outline">Hover</span> over any of the cells to see the melody up to that point.
+        <span class="accent pink outline">Move</span> any of the labels out of the way.
+        <span class="accent orange outline">Click</span> on a cell to hear what the melody sounds like.
+        <span class="accent yellow outline">Create a harmonization</span> to see what the model might have created for
+        that melody.
+      </p>
+    </section>
+    
+    <div class="center">
+      <svg id="svg"></svg>
+    </div>
+    
+    <div class="tooltip" id="tooltip" hidden>
+      <p>Heard <b id="valueText"></b> times across <b>xxx</b> sessions.</p>
+      <svg id="visualizer"></svg>
+      <p hidden>
+        <button class="accent pink" id="btnHarmonize">Harmonize! (warning: slow)</button>
+      </p>
+    </div>
+  </body>
+  <script>
+    const availableCountries = ['other', 'qa', 'fi', 'fr', 'ni', 'nl', 'in', 'il', 'ie', 'is', 'iq', 'it', 'ar', 'au', 'at', 'ae', 'am', 'lb', 'tw', 'tr', 'lt', 'th', 'tn', 'sv', 'si', 'sk', 'kr', 'kw', 'sa', 'se', 'sg', 'ch', 'cl', 'co', 'ca', 'cz', 'ec', 'cr', 'ma', 've', 'vn', 'br', 'by', 'bg', 'bd', 'ba', 'bo', 'bh', 'md', 'uy', 'us', 'uk', 'ua', 'mx', 'pa', 'pe', 'eg', 'ee', 'pl', 'pr', 'ps', 'pt', 'py', 'es', 'hk', 'hn', 'hr', 'hu', 'do', 'dk', 'de', 'dz', 'ph', 'ro', 'om', 'gt', 'ru', 'rs', 'gr', 'jo', 'jp']
+    
+    // Is this the overall view or a per-country view?
+    const search = window.location.search.split('=');
+    const country = search.length > 1 ? search[1].toLowerCase() : '';
+    const isCountryView = country !== '' && availableCountries.indexOf(country) !== -1;
+    
+    // Update the UI to match what we're looking at.
+    textCountry.innerHTML = isCountryView ? `in <span class="accent yellow">${isoCountries[country]}</span> `: '';
+    document.title = isCountryView ? isoCountries[country]: 'Overall' + ' repeated melodies';
+    
+    const size = Math.min(window.innerWidth, window.innerHeight) + 200;
+    
+    const specialMelodiesForOverall = [
+      {id: 5117, name: 'Ode to Joy'},
+      {id: 4941, name: 'Megalovania'},
+      {id: 5049, name: 'Happy Birthday'},
+      {id: 5033, name: 'Take on Me (A-ha)'},
+      {id: 5024, name: 'All Star (Smash Mouth)'},
+      {id: 4809, name: 'Star Wars Theme'},
+      {id: 4955, name: 'Tetris Theme'},
+      {id: 4762, name: 'Baby Shark'},
+      {id: 4797, name: 'When the Saints Go Marching In'},
+      {id: 4866, name: 'Super Mario Theme'}
+    ];
+    
+    d3.json(isCountryView ? TOP_PER_COUNTRY_URL : TOP_OVERALL_URL).then((data) => {
+      loadAllSamples();
+      drawSunburst(isCountryView ? data[country] : data, size);
+      const height = parseInt(d3.select('#svg').style('height'));
+      
+      if (!isCountryView) {
+        const annotations = [];
+        for (let i = 0; i < specialMelodiesForOverall.length; i++) {
+          const obj = {};
+          obj.note = {title: specialMelodiesForOverall[i].name, wrap: 300, bgPadding: 20};
+          obj.connector = {end: 'dot', endScale: 4};
+          
+          const el = document.getElementById('p' + specialMelodiesForOverall[i].id);
+          const bbox = el.getBBox();
+          obj.x = bbox.x + bbox.width/2;
+          obj.y = bbox.y + bbox.height/2;
+          obj.dx = (obj.x < size/2) ? -50: 20;
+          obj.dy = (obj.x < size/2) ? 50 : -50
+          annotations.push(obj);
+        }
+
+        const makeAnnotations = d3.annotation()
+          .type(d3.annotationCallout)
+          .notePadding(15)
+          .editMode(true)
+          .annotations(annotations)
+
+        d3.select('#svg')
+          .append('g')
+          .attr('class', 'annotation')
+          .call(makeAnnotations)
+      }
+
+      // If there's a hash, we should try to select that melody.
+      const pathIndex = window.location.hash.slice(1);
+      if (pathIndex !== '') {
+        handleForceSelect(pathIndex);
+      }
+    });
+  </script>
+</html>
