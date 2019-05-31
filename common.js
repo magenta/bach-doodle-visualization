@@ -30,9 +30,20 @@ let activeElementIndex = 10;
 document.addEventListener('keydown', handleKeyDown);
 
 // Map pitch -> color.
-const colorScale= d3.scaleOrdinal(d3.quantize(d3.interpolatePlasma, 13))
-const color = d => colorScale((d - 36) % 12)
-const opacityScale =  d3.scaleSqrt().domain([1,20]).range(["0.1","1"]);
+// const colorScale= d3.scaleOrdinal(d3.quantize(d3.interpolatePlasma, 13))
+// const color = d => colorScale((d - 36) % 12)
+// Map delta -> color
+//const colorScale= d3.scaleOrdinal(d3.quantize(d3.interpolatePlasma, 24))
+const warms = d3.scaleOrdinal(d3.quantize(d3.interpolateRdPu, 12+10));
+const colds = d3.scaleOrdinal(d3.quantize(d3.interpolateYlGnBu, 12+4));
+const color = d => (d < 0) ? colds(Math.abs(d)%12+3) : warms(d%12+10);
+
+for(let i = 0; i < 16; i++) {
+  // TODO: figure out why i need this or else the colours are borked.
+  console.log(warms(i),colds(i))
+}
+//const opacityScale =  d3.scaleSqrt().domain([1,20]).range(["0.1","1"]);
+const opacityScale =  d3.scaleSqrt().domain([1,20]).range(["1","1"]);
 
 function handleClick(d) {
   const ns = getNoteSequenceFromData(d);
@@ -176,7 +187,8 @@ function fill(d) {
   for (let delta of deltas) {
     previousPitch += delta;
   }
-  return color(previousPitch);
+  //return color(previousPitch);
+  return color(parseInt(d.data.name));
 }
 
 function visualizeNoteSequence(ns, el, minPitch, maxPitch) {
@@ -185,9 +197,12 @@ function visualizeNoteSequence(ns, el, minPitch, maxPitch) {
  
   // Colour each note according to its pitch.
   const rects = viz.querySelectorAll('rect');
+  let previousPitch = ns.notes[0].pitch
   ns.notes.forEach((n,i) => {
     const text = pitchToNote(n.pitch);
-    rects[i].style.fill = color(n.pitch);
+    //rects[i].style.fill = color(n.pitch);
+    rects[i].style.fill = color(n.pitch - previousPitch);
+    previousPitch = n.pitch;
     d3.select(viz).append('text')
       .text(text)
       .attr('x', parseInt(rects[i].getAttribute('x')) + 4)
@@ -258,7 +273,7 @@ function getNoteSequenceFromDeltasAndTiming(deltas, timing) {
     });
     previousPitch = pitch;
   }
-  //ns.totalQuantizedSteps = ns.notes[ns.notes.].length;
+  ns.totalQuantizedSteps = ns.notes[ns.notes.length-1].quantizedEndStep;
   return ns;
 }
 

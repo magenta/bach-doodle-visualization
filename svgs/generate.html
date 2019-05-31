@@ -10,17 +10,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js" defer></script>
   </head>
   <body>
-    <svg width="960" height="960" xmlns="http://www.w3.org/2000/svg" id="svg">
+    <button class="accent blue" onclick="generate()">
+      start generation! (this will save 80 images to your disk).
+    </button>
+    <p>next steps: convert these svgs to a smaller jpg and upload them back here.</p>
+    <svg width="960" height="960" xmlns="http://www.w3.org/2000/svg" id="svg" style="background:white">
       <g class="base" transform="translate(480,480)"></g>
     </svg>
   </body>
   <script>
     const radius = 160;
     const CIRCLE_MARGIN = 4;
+    let data;
+    d3.json(TOP_PER_COUNTRY_URL).then((json) => data = json);
     
-    d3.json(TOP_PER_COUNTRY_URL).then(showData);
-    
-    function showData(data) {
+    function generate() {
       function drawAndSave() {
         const country = countries[index];
         console.log('generating', index, country);
@@ -41,7 +45,7 @@
       let index = 0;
       
       console.log(countries.length, countries);
-      //drawAndSave();
+      drawAndSave();
     }
   </script>
 </html>
