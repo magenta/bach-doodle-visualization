@@ -8,15 +8,23 @@ body {
   padding: 0;
   margin: 0;
   margin-bottom: 200px;
+  
+  --pink: rgb(219, 55, 149); //#B52E8C;
+  --purple: #5D00A5;
+  --green: rgb(83, 187, 193);
+  --blue: rgb(35, 78, 160);
+  --yellow: #FDB430;
+  --orange: #DE5F65;
+  
+  --shadow: 8px 8px rgba(0, 0, 0, 0.1);
 }
-em {font-weight: 900}
 
 a:link, a:visited {
   display: inline-block;
   text-decoration: none;
   position: relative; 
   top:0;
-  box-shadow: 4px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow);
   margin-right: 8px;
 }
 
@@ -42,40 +50,56 @@ section {
   color: white;
 }
 .accent.purple {
-  background: #5D00A5;
+  background: var(--purple);
 }
 .accent.yellow {
-  background: #FDB430;
+  background: var(--yellow);
 }
 .accent.orange {
-  background: #DE5F65;
+  background: var(--orange);
 }
 .accent.pink {
-  background: #B52E8C;
+  background: var(--pink);
+}
+.accent.blue {
+  background: var(--blue);
+}
+.accent.green {
+  background: var(--green);
 }
 .accent.purple.outline {
   background: white;
-  color: #5D00A5;
-  border:2px solid #5D00A5;
+  color: var(--purple);
+  border:2px solid var(--purple);
 }
 .accent.yellow.outline {
   background: white;
-  color: #FDB430;
-  border: 2px solid #FDB430;
+  color: var(--yellow);
+  border: 2px solid var(--yellow);
 }
 .accent.orange.outline {
   background: white;
-  color: #DE5F65;
-  border: 2px solid #DE5F65;
+  color: var(--orange);
+  border: 2px solid var(--orange);
 }
 .accent.pink.outline {
   background: white;
-  color: #B52E8C;
-  border: 2px solid #B52E8C;
+  color: var(--pink);
+  border: 2px solid var(--pink);
+}
+.accent.blue.outline {
+  background: white;
+  color: var(--blue);
+  border: 2px solid var(--blue);
+}
+.accent.green.outline {
+  background: white;
+  color: var(--green);
+  border: 2px solid var(--green);
 }
 
 h1 {
-  font-size: 60px;
+  font-size: 3rem;
   text-align: center;
 }
 h2 {
@@ -85,20 +109,38 @@ p {
   max-width: 800px;
 }
 
-#legend {
-  margin: 4px 0;
-  margin-bottom: 8px;
+header {
+  height: 60px;
+  background-color: var(--blue);
+  box-shadow: var(--shadow);
+  padding: 0 24px;
+}
+
+header .menu-btn {
+  display: none;
+}
+
+header a:link, header a:visited {
+  color: white;
+  box-shadow: none;
+  margin-right: 24px;
+}
+
+header a:hover {
+  color: var(--green);
+  top: 0;
+}
+
+header svg {
+  fill: currentColor;
+  vertical-align: middle;
+}
+
+.horizontal {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-}
-
-.legend {
-  display: inline-block;
-  color: white;
-  padding: 4px;
-  flex: 1 1 0;
-  text-align: center;
+  align-items: center;
 }
 
 rect, path { cursor: pointer; }
@@ -110,9 +152,9 @@ rect, path { cursor: pointer; }
 }
 
 .tooltip, .box {
-  background-color: #fff;
-  border: 2px solid #000;
-  box-shadow: 0px 3px rgba(0, 0, 0, 0.2);
+  background-color: white;
+  border: 2px solid black;
+  box-shadow: var(--shadow);
   padding: 8px;
 }
 
@@ -179,4 +221,14 @@ button {
   padding: 8px 16px;
   cursor: pointer;
   
+}
+
+
+@media screen and (max-width: 700px) {
+  header .menu {
+    display: none;
+  }
+  header .menu-btn {
+    display: block;
+  }
 }
