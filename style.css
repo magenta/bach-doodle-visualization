@@ -35,7 +35,6 @@ a:hover, button.accent:hover {
 
 section {
   padding: 24px;
-  margin-bottom: 64px;
   margin: 0 auto;
   max-width: 900px;
 }
@@ -48,6 +47,10 @@ section {
   margin: 4px 0;
   border-radius: 3px;
   color: white;
+}
+a.accent {
+  padding: 8px 16px;
+  margin: 8px 0;
 }
 .accent.purple {
   background: var(--purple);
@@ -178,14 +181,10 @@ header svg {
   align-items: center;
   width: 100%;
 }
-
-rect, path { cursor: pointer; }
-.leaf {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  fill-opacity: 0;
+.horizontal.left {
+  justify-content: flex-start;
 }
+rect, path { cursor: pointer; }
 
 .tooltip, .box {
   background-color: white;
@@ -268,5 +267,11 @@ button {
   h1 {
     font-size: 1.5em;
     text-align: left;
+  }
+  section {
+    padding: 14px 24px;
+  }
+  h2 {
+    padding-top: 0;
   }
 }

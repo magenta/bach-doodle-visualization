@@ -9,13 +9,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.3.2/d3-annotation.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@magenta/music@1.8.0"></script>
     <script src="common.js"></script>
+    <script src="viz.js"></script>
     <link href="style.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Google+Sans:400,500&display=swap" rel="stylesheet">
   </head>
   <body>
     <header class="horizontal">
       <div>
-        <a href="/index.html">Bach Doodle Dataset</a>  
+        <a href="/index.html">Bach Doodle Dataset</a>
       </div>
       <div class="menu">
         <a href="https://magenta.tensorflow.org/datasets">
@@ -29,13 +30,13 @@
         <a href="/index.html">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
           Share
-        </a> 
+        </a>
       </div>
       <div class="menu-btn">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
       </div>
     </header>
-    
+
     <section>
       <h1>What did the doodlers <span id="textCountry"></span>compose?</h1>
       <p>
@@ -47,11 +48,11 @@
       </p>
       <div id="legend"></div>
     </section>
-    
+
     <div class="center">
       <svg id="svg"></svg>
     </div>
-    
+
     <div class="tooltip" id="tooltip" hidden>
       <p>Heard <b id="valueText"></b> times across <b>xxx</b> sessions.</p>
       <svg id="visualizer"></svg>
@@ -73,21 +74,21 @@
       s.textContent = i;
       legend.append(s);
     }
-    
-    
+
+
     const availableCountries = ['other', 'qa', 'fi', 'fr', 'ni', 'nl', 'in', 'il', 'ie', 'is', 'iq', 'it', 'ar', 'au', 'at', 'ae', 'am', 'lb', 'tw', 'tr', 'lt', 'th', 'tn', 'sv', 'si', 'sk', 'kr', 'kw', 'sa', 'se', 'sg', 'ch', 'cl', 'co', 'ca', 'cz', 'ec', 'cr', 'ma', 've', 'vn', 'br', 'by', 'bg', 'bd', 'ba', 'bo', 'bh', 'md', 'uy', 'us', 'uk', 'ua', 'mx', 'pa', 'pe', 'eg', 'ee', 'pl', 'pr', 'ps', 'pt', 'py', 'es', 'hk', 'hn', 'hr', 'hu', 'do', 'dk', 'de', 'dz', 'ph', 'ro', 'om', 'gt', 'ru', 'rs', 'gr', 'jo', 'jp']
-    
+
     // Is this the overall view or a per-country view?
     const search = window.location.search.split('=');
     const country = search.length > 1 ? search[1].toLowerCase() : '';
     const isCountryView = country !== '' && availableCountries.indexOf(country) !== -1;
-    
+
     // Update the UI to match what we're looking at.
     textCountry.innerHTML = isCountryView ? `in <span class="accent yellow">${isoCountries[country]}</span> `: '';
     document.title = isCountryView ? isoCountries[country]: 'Overall' + ' repeated melodies';
-    
+
     const size = Math.min(window.innerWidth, window.innerHeight) + 200;
-    
+
     const specialMelodiesForOverall = [
       {id: 5117, name: 'Ode to Joy'},
       {id: 4941, name: 'Megalovania'},
@@ -100,19 +101,19 @@
       {id: 4797, name: 'When the Saints Go Marching In'},
       {id: 4866, name: 'Super Mario Theme'}
     ];
-    
+
     d3.json(isCountryView ? TOP_PER_COUNTRY_URL : TOP_OVERALL_URL).then((data) => {
       loadAllSamples();
       drawSunburst(isCountryView ? data[country] : data, size);
       const height = parseInt(d3.select('#svg').style('height'));
-      
+
       if (!isCountryView) {
         const annotations = [];
         for (let i = 0; i < specialMelodiesForOverall.length; i++) {
           const obj = {};
           obj.note = {title: specialMelodiesForOverall[i].name, wrap: 300, bgPadding: 20};
           obj.connector = {end: 'dot', endScale: 4};
-          
+
           const el = document.getElementById('p' + specialMelodiesForOverall[i].id);
           const bbox = el.getBBox();
           obj.x = bbox.x + bbox.width/2;

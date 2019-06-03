@@ -1,7 +1,3 @@
-// Stop syntax errors in this file.
-const d3 = window.d3;
-const mm = window.mm;
-
 // Where to load the data from.
 const TOP_OVERALL_URL = 'https://cdn.glitch.com/b078d442-623b-41f0-a809-48f5f1ec1cbf%2Ftop_overall.json?1559164437281';
 const TOP_PER_COUNTRY_URL = 'https://cdn.glitch.com/b078d442-623b-41f0-a809-48f5f1ec1cbf%2Ftop_per_country.json?1559164216772';
@@ -22,174 +18,14 @@ player.callbackObject = {
     }
   }
 }
-let didClick = false;
 
-// Experiments
-let leaves;
-let activeElementIndex = 10;
-document.addEventListener('keydown', handleKeyDown);
-
-// Map pitch -> color.
-// const colorScale= d3.scaleOrdinal(d3.quantize(d3.interpolatePlasma, 13))
-// const color = d => colorScale((d - 36) % 12)
-// Map delta -> color
-//const colorScale= d3.scaleOrdinal(d3.quantize(d3.interpolatePlasma, 24))
-const warms = d3.scaleOrdinal(d3.quantize(d3.interpolateRdPu, 12+10));
-const colds = d3.scaleOrdinal(d3.quantize(d3.interpolateYlGnBu, 12+4));
-const color = d => (d < 0) ? colds(Math.abs(d)%12+3) : warms(d%12+10);
-
-for(let i = 0; i < 16; i++) {
-  // TODO: figure out why i need this or else the colours are borked.
-  console.log(warms(i),colds(i))
-}
-//const opacityScale =  d3.scaleSqrt().domain([1,20]).range(["0.1","1"]);
-const opacityScale =  d3.scaleSqrt().domain([1,20]).range(["1","1"]);
-
-function handleClick(d) {
-  const ns = getNoteSequenceFromData(d);
-
-  const y = window.scrollY;
-  window.location.hash = d.elementIndex; // not the empty string so that it doesn't cause a page refresh
-  window.scrollY = y;
-
-  // Hear it.
-  mm.Player.tone.Transport.stop();
-  player.stop();
-  player.start(ns);
-  didClick = true;
-}
-
-function getMostLikelyTiming(d) {
-  const possibleTimings = d.descendants().map(d => d.data.timing ? [d.data.value, d.data.timing]: [0,[]]);
-  possibleTimings.sort((a,b) => b[0] - a[0]);
-  return possibleTimings[0][1];
-}
-
-function handleMouseOver(d) {
-  handleMouseOverForEl(d, d3.select(this));
-}
-
-function handleMouseOut(d) {
-  handleMouseOutForEl(d3.select(this));
-}
-
-function handleMouseOverForEl(d, el) {
-  const y = window.scrollY;
-  window.location.hash = 'all'; // not the empty string so that it doesn't cause a page refresh
-  window.scrollY = y;
-
-  // Did we force select an element? deselect that first.
-
-  // Fade all the segments.
-  const ancestors = d.ancestors().reverse();
-  const svg = d3.select('#svg');
-
-  zoomPie(el);
-
-  // Fade everything else.
-  svg.selectAll('path').style('fill-opacity', 0.1);
-  svg.selectAll('.annotation').style('fill-opacity', 0.1);
-  svg.selectAll('.annotation').style('stroke-opacity', 0.1);
-
-  // Highlight these ancestors.
-  svg.selectAll('path')
-    .filter((node) => ancestors.indexOf(node) >= 0)
-    .style('fill-opacity', 1);
-
-  showTooltip(d, el);
-}
-
-function handleMouseOutForEl(el) {
-  player.stop();
-  hideTooltip();
-
-  const svg = d3.select('#svg');
-
-  unzoomPie(el);
-  svg.selectAll('path').style('fill-opacity', (d) => opacityScale(d.depth));
-  svg.selectAll('.annotation').style('fill-opacity', 1);
-  svg.selectAll('.annotation').style('stroke-opacity', 1);
-}
-
-
-function handleForceSelect(i, data) {
-  const el = d3.select(`#p${i}`);
-  const d = data || el.data()[0];
-
-  if (!d) {
-    return;
-  }
-  handleMouseOverForEl(d, el)
-  handleClick.bind(el)(d);
-}
-
-function handleKeyDown(e) {
-  function mouseOutIndex(i) {
-    handleMouseOutForEl(d3.select(`#p${leaves[i].elementIndex}`));
-  }
-  function selectIndex(i) {
-    console.log(leaves[i]);
-    if (leaves[i].depth > 14) {
-      handleForceSelect(leaves[i].elementIndex, leaves[i]);
-      return true;
-    } else {
-      return false;
-      console.log('skipping, too short')
-    }
-  }
-  function prev() {
-    activeElementIndex--;
-    if (activeElementIndex < 0) {
-      activeElementIndex = leaves.length - 1;
-    }
-  }
-  function next() {
-    activeElementIndex++;
-    if (activeElementIndex >= leaves.length) {
-      activeElementIndex = 0
-    }
-  }
-
-  if (e.keyCode == '38' || e.keyCode == '37') {  //up, left
-    // Cancel current.
-    mouseOutIndex(activeElementIndex);
-
-    prev();
-    while (!selectIndex(activeElementIndex)) {
-      prev();
-    }
-    e.preventDefault();
-  } else if (e.keyCode == '40' || e.keyCode == '39') {  //down
-    // Cancel current.
-    mouseOutIndex(activeElementIndex);
-
-    next();
-    while (!selectIndex(activeElementIndex)) {
-      next();
-    }
-  } else if (e.keyCode == '27') { // esc.
-    // Cancel current.
-    mouseOutIndex(activeElementIndex);
-
-    const y = window.scrollY;
-    window.location.hash = 'all'; // not the empty string so that it doesn't cause a page refresh
-    window.scrollY = y;
-
-    activeElementIndex = 10;
-  }
-}
-
-function fill(d) {
-  if (!d.depth) return '#ccc';
-  const deltas = d.ancestors().map(d => parseInt(d.data.name) || 0).reverse();
-
-  let previousPitch = 60;
-  for (let delta of deltas) {
-    previousPitch += delta;
-  }
-  //return color(previousPitch);
-  return color(parseInt(d.data.name));
-}
+// Map delta interval -> color. This is how I generated it, but I'm saving it
+// as an array so that I don't have to load d3 to have colours.
+// const warms = d3.scaleOrdinal(d3.quantize(d3.interpolateRdPu, 12+10));
+// const colds = d3.scaleOrdinal(d3.quantize(d3.interpolateYlGnBu, 12+4));
+const warms = ["rgb(255, 247, 243)","rgb(254, 238, 235)","rgb(254, 229, 226)","rgb(253, 220, 216)","rgb(252, 210, 206)","rgb(252, 198, 197)","rgb(251, 185, 190)","rgb(251, 171, 184)","rgb(250, 154, 179)","rgb(248, 135, 172)","rgb(246, 115, 166)","rgb(240, 94, 160)","rgb(231, 74, 155)","rgb(219, 55, 149)","rgb(204, 35, 142)","rgb(187, 19, 134)","rgb(168, 7, 128)","rgb(149, 2, 123)","rgb(130, 1, 119)","rgb(111, 1, 115)","rgb(92, 0, 111)","rgb(73, 0, 106)"];
+const colds = ["rgb(255, 255, 217)","rgb(245, 251, 197)","rgb(232, 246, 183)","rgb(213, 238, 179)","rgb(186, 228, 181)","rgb(151, 215, 185)","rgb(115, 201, 189)","rgb(83, 187, 193)","rgb(57, 171, 194)","rgb(40, 151, 191)","rgb(33, 127, 183)","rgb(33, 102, 172)","rgb(35, 78, 160)","rgb(32, 57, 144)","rgb(23, 42, 119)","rgb(8, 29, 88)"];
+const color = d => (d < 0) ? colds[Math.abs(d)%12+3] : warms[d%12+10];
 
 function visualizeNoteSequence(ns, el, minPitch, maxPitch) {
   const viz = document.getElementById(el);
@@ -200,63 +36,21 @@ function visualizeNoteSequence(ns, el, minPitch, maxPitch) {
   let previousPitch = ns.notes[0].pitch
   ns.notes.forEach((n,i) => {
     const text = pitchToNote(n.pitch);
-    //rects[i].style.fill = color(n.pitch);
     rects[i].style.fill = color(n.pitch - previousPitch);
     previousPitch = n.pitch;
-    d3.select(viz).append('text')
-      .text(text)
-      .attr('x', parseInt(rects[i].getAttribute('x')) + 4)
-      .attr('y', parseInt(rects[i].getAttribute('y')) + 12)
-      .attr('fill', 'white');
+
+    const textEl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    textEl.setAttribute('x', parseInt(rects[i].getAttribute('x')) + 4);
+    textEl.setAttribute('y', parseInt(rects[i].getAttribute('y')) + 12);
+    textEl.setAttribute('fill', 'white');
+    textEl.textContent = text;
+    viz.appendChild(textEl);
   });
-}
-
-
-// el is a d3 element
-function showTooltip(d, el) {
-  visualizeNoteSequence(getNoteSequenceFromData(d), 'visualizer');
-  // Display the value.
-  document.getElementById('valueText').textContent = d.value;
-
-
-  const tooltip = document.getElementById('tooltip');
-  tooltip.removeAttribute('hidden');
-  //tooltip.style.borderColor = el.attr('fill')
-
-  // Position and show the tooltip.
-  const rekt = el.node().getBoundingClientRect();
-  const tooltipRekt = tooltip.getBoundingClientRect();
-
-  // Center them above the path.
-  let newY = rekt.y - tooltipRekt.height - 10;
-  let newX = rekt.x - rekt.width/2 - tooltipRekt.width/2;
-  d3.select(tooltip)
-    .style('top', newY + document.body.scrollTop)
-    .style('left', newX + document.body.scrollLeft);
-}
-
-function hideTooltip() {
-  if (didClick) {
-    return;
-  }
-  document.getElementById('tooltip').setAttribute('hidden', true);
 }
 
 function pitchToNote(p) {
   const n = mm.NoteSequence.KeySignature.Key[(p-36)%12];
   return n.replace('_SHARP', '#');
-}
-
-function getNoteSequenceFromData(d) {
-  let deltas, timing;
-  if (d.deltas) {
-    deltas = d.deltas;
-    timing = d.timing;
-  } else {
-    deltas = d.ancestors().map(d => parseInt(d.data.name) || 0).reverse();
-    timing = getMostLikelyTiming(d);
-  }
-  return getNoteSequenceFromDeltasAndTiming(deltas, timing);
 }
 
 function getNoteSequenceFromDeltasAndTiming(deltas, timing) {
@@ -287,129 +81,4 @@ function loadAllSamples() {
     });
   }
   player.loadSamples(samples);
-}
-
-function zoomPie(el) {
-  const radius = (window.innerWidth - 100) / 2;
-  const arc = d3.arc()
-    .startAngle(d => d.x0 - 10/360)
-    .endAngle(d => d.x1 + 10/360)
-    .padAngle(d => Math.min((d.x1 - d.x0), 0.005))
-    .padRadius(radius / 2)
-    .innerRadius(d => d.y0 - 10)
-    .outerRadius(d => d.y1 + 10)
-  el
-  .attr('d_', el.attr('d'))
-  .attr('d', arc)
-  .attr('fill-opacity', 1)
-  .classed('zoom', true);
-}
-
-function unzoomPie() {
-  d3.selectAll('.zoom').each(function (d,i) { // don't use fat arrow to keep the weird this.
-    const el = d3.select(this);
-    el.attr('d', el.attr('d_'))
-      .attr('fill-opacity', (d) => opacityScale(d.depth))
-      .classed('zoom', false);
-  });
-}
-
-function drawSunburst(data, radius) {
-  // https://observablehq.com/@d3/sunburst with tons of changes
-  const viewRadius = radius;
-  const partition = data => d3.partition().size([2 * Math.PI, viewRadius])
-                    (d3.hierarchy(data)
-                      .sum(d => d.value)
-                      .sort((a, b) => b.value - a.value))
-  const root = partition(data);
-
-  // Add an ID to every element so that we can find it later.
-  let i = 0;
-  root.each((d) => d.elementIndex = i++);
-
-  const degree = 2 * Math.PI / 360 / 5;
-  let arc, svg;
-
-  svg = d3.select('#svg')
-    .style('width', radius) // to fit right side labels a bit better
-    .style('height', radius)
-    .append('g');
-
-  arc = d3.arc()
-    .startAngle(d => d.x0 - degree)
-    .endAngle(d => d.x1 + degree)
-    .padAngle(d => Math.min((d.x1 - d.x0) / 2, 0.005))
-    .padRadius(0)
-    .innerRadius(d => d.y0)
-    .outerRadius(d => d.y1 - 3)
-
-
-  const paths = svg.selectAll('path')
-      .data(root.descendants().filter(d => d.depth))
-      .enter()
-      .append('path')
-      .attr('fill', fill)
-      .attr('fill-opacity', (d) => opacityScale(d.depth))
-      .style('cursor', 'pointer')
-      .attr('id', (d) => `p${d.elementIndex}`)
-      .attr('d', arc)
-
-    paths
-      .on('click', handleClick)
-      .on('mouseover', handleMouseOver)
-      .on('mouseout', handleMouseOut)
-  svg.node();
-
-  const el = document.getElementById('svg');
-  const box = el.getBBox();
-  el.setAttribute('viewBox', `${box.x} ${box.y} ${box.width} ${box.height}`);
-
-  leaves = root.leaves();
-}
-
-function drawPackedSunburst(data, radius, x, y) {
-  // https://observablehq.com/@d3/sunburst with tons of changes
-  // In all-country view stretch the data out so the per country circles look fuller.
-  const viewRadius = radius * 4;
-  const partition = data => d3.partition().size([2 * Math.PI, viewRadius])
-                    (d3.hierarchy(data)
-                      .sum(d => d.value)
-                      .sort((a, b) => b.value - a.value))
-  const root = partition(data);
-
-  // Add an ID to every element so that we can find it later.
-  let i = 0;
-  root.each((d) => d.elementIndex = i++);
-
-  const degree = 2 * Math.PI / 360 / 5;
-  let arc, svg;
-
-  svg = d3.select('.base')
-    .append('g')
-    .attr('transform', `translate(${x},${y})`)
-
-  arc = d3.arc()
-    .startAngle(d => d.x0)
-    .endAngle(d => d.x1)
-    .padAngle(d => Math.min((d.x1 - d.x0) / 2, 0.005))
-    .padRadius(0)
-    .innerRadius(d => Math.min(d.y0, radius))
-    .outerRadius(d => Math.min(d.y1, radius))
-
-  const paths = svg.selectAll('path')
-      .data(root.descendants().filter(d => d.depth))
-      .enter()
-      .append('path')
-      .attr('fill', fill)
-      .style('cursor', 'pointer')
-      .attr('id', (d) => `p${d.elementIndex}`)
-      .attr('d', arc)
-
-  svg.node();
-
-  const el = document.getElementById('svg');
-  const box = el.getBBox();
-  el.setAttribute('viewBox', `${box.x} ${box.y} ${radius * 2} ${radius * 2}`);
-
-  leaves = root.leaves();
 }
