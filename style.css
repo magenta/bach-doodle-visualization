@@ -8,21 +8,21 @@ body {
   padding: 0;
   margin: 0;
   margin-bottom: 200px;
-  
+
   --pink: rgb(219, 55, 149); //#B52E8C;
   --purple: #5D00A5;
   --green: rgb(83, 187, 193);
   --blue: rgb(35, 78, 160);
   --yellow: #FDB430;
   --orange: #DE5F65;
-  
+
   --shadow: 8px 8px rgba(0, 0, 0, 0.1);
 }
 
 a:link, a:visited {
   display: inline-block;
   text-decoration: none;
-  position: relative; 
+  position: relative;
   top:0;
   box-shadow: var(--shadow);
   margin-right: 8px;
@@ -112,12 +112,47 @@ p {
 header {
   height: 60px;
   background-color: var(--blue);
+  color: white;
   box-shadow: var(--shadow);
-  padding: 0 24px;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header a, header button {
+  padding: 0 14px;
+}
+body.drawer-opened header {
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  height: auto;
+}
+
+body.drawer-opened .menu {
+  display: flex !important;
+  flex-direction: column;
+  width: 100%;
+}
+
+body.drawer-opened .menu a {
+  margin-right: 0;
+  padding: 14px;
+  border-top: 1px solid rgba(255,255,255,0.3);
+  width: 100%;
+}
+
+body.drawer-opened .menu svg {
+  margin-right: 14px;
 }
 
 header .menu-btn {
   display: none;
+  background: transparent;
+  cursor: pointer;
+  min-height: 60px;
 }
 
 header a:link, header a:visited {
@@ -141,6 +176,7 @@ header svg {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
 }
 
 rect, path { cursor: pointer; }
@@ -183,7 +219,7 @@ rect, path { cursor: pointer; }
 }
 
 .annotation-callout {
-  pointer: move;
+  cursor: move;
   user-select: none;
 }
 .annotation .handle {
@@ -219,7 +255,7 @@ button {
   color: inherit;
   box-shadow: none;
   padding: 8px 16px;
-  cursor: pointer; 
+  cursor: pointer;
 }
 
 @media screen and (max-width: 700px) {
@@ -228,5 +264,9 @@ button {
   }
   header .menu-btn {
     display: block;
+  }
+  h1 {
+    font-size: 1.5em;
+    text-align: left;
   }
 }
