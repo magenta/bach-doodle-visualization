@@ -7,11 +7,11 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="description" content="Exploring the Bach Doodle dataset">
-    <script src="https://d3js.org/d3.v5.min.js"></script>
-    <script src="common.js"></script>
     <link href="style.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Google+Sans:400,500&display=swap" rel="stylesheet">
-    <style>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+   <script src="common.js"></script>
+  <style>
       a.blob {
         display: block !important;
         position: absolute;
@@ -111,9 +111,9 @@
       <svg id="svg" viewBox="-450 -450 900 900">
         <g class="base" transform="translate(0,0)"></g>
       </svg>
-      <div id="blobs"></div>
     </div>
   </body>
+
   <script>
     const countrySizes = [["us",6581192],["br",1541549],["mx",1057061],["it",893475],["es",838700],["tr",834650],["ru",772695],["uk",673990],["co",564413],["ua",538132],["de",524415],["in",514552],["tw",467485],["ca",446992],["ar",414802],["fr",407252],["pl",283701],["nl",277014],["jp",274463],["vn",270068],["pe",223066],["cl",219882],["ro",187220],["ve",165243],["pt",156389],["hk",133441],["cz",118685],["kr",117294],["ec",115863],["hu",111459],["th",110246],["gr",109671],["se",91388],["ch",86990],["dk",84954],["fi",73833],["by",71752],["il",71359],["gt",67469],["rs",67358],["sk",63443],["at",61128],["hr",57219],["eg",53589],["ie",52418],["cr",51580],["sg",49332],["uy",45725],["sa",45028],["do",42835],["bo",41072],["lt",36976],["si",35197],["sv",34254],["bg",33808],["ae",33594],["pa",29171],["py",27509],["hn",26464],["md",25587],["dz",24657],["bd",23013],["am",20805],["ee",19959],["ba",18385],["pr",16605],["ma",16451],["ni",13542],["tn",12575],["au",11741],["iq",9865],["jo",8993],["lb",8251],["other",8000],["qa",7079],["om",6917],["kw",5585],["ps",5370],["is",4728],["bh",3051],["ph",2462]]
 
@@ -144,7 +144,7 @@
 
       const containerRekt = container.getBoundingClientRect();
       const els = document.querySelectorAll('circle');
-      const links = document.querySelectorAll('#blobs a');
+      const links = document.querySelectorAll('#container a');
 
       for (let i = 0; i < els.length; i++) {
         // If we're resizing we've already created a bunch of images.
@@ -164,14 +164,15 @@
 
           a.appendChild(img);
           a.appendChild(overlay);
-          blobs.appendChild(a);
-        } else {
-          a = links[i];
-        }
+          container.appendChild(a);
+       } else {
+         a = links[i];
+       }
+
         const rekt = els[i].getBoundingClientRect();
-        a.style.left = rekt.left - containerRekt.left;
-        a.style.top = rekt.top - containerRekt.top;
-        a.style.width = a.style.height = rekt.width;
+        a.style.left = rekt.left - containerRekt.left + 'px';
+        a.style.top = rekt.top - containerRekt.top + 'px';
+        a.style.width = a.style.height = rekt.width + 'px';
       }
     }
 
