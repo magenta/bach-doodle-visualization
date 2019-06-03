@@ -107,7 +107,7 @@
       drawSunburst(isCountryView ? data[country] : data, size);
 
       if (!isCountryView) {
-        d3.json(LABELS_URL).then(showLabels);
+        d3.json(LABELS_URL).then(drawLabels);
       }
 
       // If there's a hash, we should try to select that melody.
