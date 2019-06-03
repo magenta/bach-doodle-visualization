@@ -219,10 +219,8 @@ button {
   color: inherit;
   box-shadow: none;
   padding: 8px 16px;
-  cursor: pointer;
-  
+  cursor: pointer; 
 }
-
 
 @media screen and (max-width: 700px) {
   header .menu {
