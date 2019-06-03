@@ -94,11 +94,16 @@
     // Is this the overall view or a per-country view?
     const search = window.location.search.split('=');
     const country = search.length > 1 ? search[1].toLowerCase() : '';
-    const isCountryView = country !== '' && availableCountries.indexOf(country) !== -1;
+    const countryIndex = availableCountries.indexOf(country);
+    const isCountryView = country !== '' && countryIndex !== -1;
 
     // Update the UI to match what we're looking at.
-    textCountry.innerHTML = isCountryView ? `in <span class="accent yellow">${availableCountriesNames[country]}</span> `: '';
-    document.title = isCountryView ? availableCountriesNames[country]: 'Overall' + ' repeated melodies';
+    textCountry.innerHTML = isCountryView ?
+        `in <span class="accent yellow">${availableCountriesNames[countryIndex]}</span> `:
+        '';
+    document.title = (isCountryView ?
+        availableCountriesNames[countryIndex]:
+        'Overall') + ' repeated melodies';
 
     const size = Math.min(window.innerWidth, window.innerHeight);
 
