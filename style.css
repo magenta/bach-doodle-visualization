@@ -9,13 +9,14 @@ body {
   margin: 0;
   margin-bottom: 200px;
 
-  --pink: rgb(219, 55, 149); //#B52E8C;
+  --pink: rgb(219, 55, 149);
   --purple: #5D00A5;
   --green: rgb(83, 187, 193);
   --blue: rgb(35, 78, 160);
   --yellow: #FDB430;
   --orange: #DE5F65;
-
+  --primary: var(--blue);
+  --secondary: var(--blue);
   --shadow: 8px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -52,6 +53,10 @@ a.accent {
   padding: 8px 16px;
   margin: 8px 0;
 }
+.accent.primary {background: var(--primary)}
+.accent.secondary {background: var(--secondary)}
+.accent.outline.secondary {color: var(--secondary);border: 2px solid var(--secondary);background:white; }
+
 .accent.purple {
   background: var(--purple);
 }

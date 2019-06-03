@@ -1,4 +1,4 @@
-<html>
+<html lang="en">
   <head>
     <title></title>
     <meta charset="utf-8">
@@ -16,7 +16,7 @@
   <body>
     <header>
       <div class="horizontal">
-        <button class="menu-btn" onclick="document.body.classList.toggle('drawer-opened')">
+        <button class="menu-btn" alt="nav drawer button" onclick="document.body.classList.toggle('drawer-opened')">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
         </button>
         <a href="/index.html">Bach Doodle Dataset</a>
@@ -72,7 +72,7 @@
       <p>Heard <b id="valueText"></b> times across <b>xxx</b> sessions.</p>
       <svg id="visualizer"></svg>
       <p hidden>
-        <button class="accent pink" id="btnHarmonize">Harmonize! (warning: slow)</button>
+        <button class="accent secondary" id="btnHarmonize">Harmonize! (warning: slow)</button>
       </p>
     </div>
   </body>
@@ -99,7 +99,7 @@
 
     // Update the UI to match what we're looking at.
     textCountry.innerHTML = isCountryView ?
-        `in <span class="accent yellow">${availableCountriesNames[countryIndex]}</span> `:
+        `in <span class="accent primary">${availableCountriesNames[countryIndex]}</span> `:
         '';
     document.title = (isCountryView ?
         availableCountriesNames[countryIndex]:

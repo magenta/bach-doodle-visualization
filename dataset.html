@@ -1,4 +1,4 @@
-<html>
+<html lang="en">
   <head>
     <title>Dataset</title>
     <meta charset="utf-8">
@@ -58,7 +58,7 @@
   <body>
     <header>
       <div class="horizontal">
-        <button class="menu-btn" onclick="document.body.classList.toggle('drawer-opened')">
+        <button class="menu-btn" alt="nav drawer button" onclick="document.body.classList.toggle('drawer-opened')">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
         </button>
         <a href="/index.html">Bach Doodle Dataset</a>
@@ -95,7 +95,7 @@
     </header>
 
     <section>
-      <h1>What does the <br><span class="accent blue">dataset</span> look like?</h1>
+      <h1>What does the <br><span class="accent primary">dataset</span> look like?</h1>
       <p>
         Of the more than 50 million requests to the doodle itself, the user contributed dataset contains
         over 21.6 million miniature compositions totaling 78.8 years spent composing.
@@ -107,14 +107,14 @@
 
     <section>
       <div class="horizontal left">
-        <button class="accent pink" onclick="prevSession()">&lt;</button>
+        <button class="accent secondary" onclick="prevSession()">&lt;</button>
         <h2>Session: <b id="activeSession"></b>/100</h2>
-        <button class="accent pink" onclick="nextSession()">&gt;</button>
+        <button class="accent secondary" onclick="nextSession()">&gt;</button>
       </div>
       <div class="horizontal left">
-        <button class="accent pink" onclick="prevHarmonization()">&lt;</button>
+        <button class="accent secondary" onclick="prevHarmonization()">&lt;</button>
         <h2>Harmonization: <b id="activeHarmonization"></b>/<b id="harms"></b></h2>
-        <button class="accent pink" onclick="nextHarmonization()">&gt;</button>
+        <button class="accent secondary" onclick="nextHarmonization()">&gt;</button>
       </div>
       <br><br>
       <div class="horizontal">
