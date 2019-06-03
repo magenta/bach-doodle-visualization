@@ -7,10 +7,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="description" content="Exploring the Bach Doodle dataset">
-    <script src="https://cdn.jsdelivr.net/npm/@magenta/music@1.8.0"></script>
-    <script src="common.js"></script>
     <link href="style.css" rel="stylesheet">
-
     <link href="https://fonts.googleapis.com/css?family=Google+Sans:400,500" rel="stylesheet">
     <style>
       h2 {
@@ -108,14 +105,14 @@
 
     <section>
       <div class="horizontal left">
-        <button class="accent secondary" onclick="prevSession()">&lt;</button>
+        <button class="accent secondary" onclick="prevSession()" aria-label="view previous session">&lt;</button>
         <h2>Session: <b id="activeSession"></b>/100</h2>
-        <button class="accent secondary" onclick="nextSession()">&gt;</button>
+        <button class="accent secondary" onclick="nextSession()" aria-label="view next session">&gt;</button>
       </div>
       <div class="horizontal left">
-        <button class="accent secondary" onclick="prevHarmonization()">&lt;</button>
+        <button class="accent secondary" onclick="prevHarmonization()" aria-label="view previous harmonization">&lt;</button>
         <h2>Harmonization: <b id="activeHarmonization"></b>/<b id="harms"></b></h2>
-        <button class="accent secondary" onclick="nextHarmonization()">&gt;</button>
+        <button class="accent secondary" onclick="nextHarmonization()" aria-label="view next harmonization">&gt;</button>
       </div>
       <br><br>
       <div class="horizontal">
@@ -165,6 +162,8 @@
       </table>
     </section>
   </body>
+  <script src="https://cdn.jsdelivr.net/npm/@magenta/music@1.8.0"></script>
+  <script src="common.js"></script>
   <script>
     let allData;
     let sessionIndex = 0;
