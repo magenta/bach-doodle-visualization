@@ -77,6 +77,7 @@
     </div>
   </body>
   <script>
+    // TODO: for testing, remove this.
     for(let i = -11; i < 0; i++) {
       const s = document.createElement('span');
       s.style.background = color(i);
@@ -90,64 +91,23 @@
       legend.append(s);
     }
 
-
-    const availableCountries = ['other', 'qa', 'fi', 'fr', 'ni', 'nl', 'in', 'il', 'ie', 'is', 'iq', 'it', 'ar', 'au', 'at', 'ae', 'am', 'lb', 'tw', 'tr', 'lt', 'th', 'tn', 'sv', 'si', 'sk', 'kr', 'kw', 'sa', 'se', 'sg', 'ch', 'cl', 'co', 'ca', 'cz', 'ec', 'cr', 'ma', 've', 'vn', 'br', 'by', 'bg', 'bd', 'ba', 'bo', 'bh', 'md', 'uy', 'us', 'uk', 'ua', 'mx', 'pa', 'pe', 'eg', 'ee', 'pl', 'pr', 'ps', 'pt', 'py', 'es', 'hk', 'hn', 'hr', 'hu', 'do', 'dk', 'de', 'dz', 'ph', 'ro', 'om', 'gt', 'ru', 'rs', 'gr', 'jo', 'jp']
-
     // Is this the overall view or a per-country view?
     const search = window.location.search.split('=');
     const country = search.length > 1 ? search[1].toLowerCase() : '';
     const isCountryView = country !== '' && availableCountries.indexOf(country) !== -1;
 
     // Update the UI to match what we're looking at.
-    textCountry.innerHTML = isCountryView ? `in <span class="accent yellow">${isoCountries[country]}</span> `: '';
-    document.title = isCountryView ? isoCountries[country]: 'Overall' + ' repeated melodies';
+    textCountry.innerHTML = isCountryView ? `in <span class="accent yellow">${availableCountriesNames[country]}</span> `: '';
+    document.title = isCountryView ? availableCountriesNames[country]: 'Overall' + ' repeated melodies';
 
-    const size = Math.min(window.innerWidth, window.innerHeight) + 200;
-
-    const specialMelodiesForOverall = [
-      {id: 5117, name: 'Ode to Joy'},
-      {id: 4941, name: 'Megalovania'},
-      {id: 5049, name: 'Happy Birthday'},
-      {id: 5033, name: 'Take on Me (A-ha)'},
-      {id: 5024, name: 'All Star (Smash Mouth)'},
-      {id: 4809, name: 'Star Wars Theme'},
-      {id: 4955, name: 'Tetris Theme'},
-      {id: 4762, name: 'Baby Shark'},
-      {id: 4797, name: 'When the Saints Go Marching In'},
-      {id: 4866, name: 'Super Mario Theme'}
-    ];
+    const size = Math.min(window.innerWidth, window.innerHeight);
 
     d3.json(isCountryView ? TOP_PER_COUNTRY_URL : TOP_OVERALL_URL).then((data) => {
       loadAllSamples();
       drawSunburst(isCountryView ? data[country] : data, size);
-      const height = parseInt(d3.select('#svg').style('height'));
 
       if (!isCountryView) {
-        const annotations = [];
-        for (let i = 0; i < specialMelodiesForOverall.length; i++) {
-          const obj = {};
-          obj.note = {title: specialMelodiesForOverall[i].name, wrap: 300, bgPadding: 20};
-          obj.connector = {end: 'dot', endScale: 4};
-
-          const el = document.getElementById('p' + specialMelodiesForOverall[i].id);
-          const bbox = el.getBBox();
-          obj.x = bbox.x + bbox.width/2;
-          obj.y = bbox.y + bbox.height/2;
-          obj.dx = (obj.x < size/2) ? -50: 20;
-          obj.dy = (obj.x < size/2) ? 50 : -50
-          annotations.push(obj);
-        }
-
-        const makeAnnotations = d3.annotation()
-          .type(d3.annotationCallout)
-          .notePadding(15)
-          .editMode(true)
-          .annotations(annotations)
-
-        d3.select('#svg')
-          .append('g')
-          .attr('class', 'annotation')
-          .call(makeAnnotations)
+        d3.json(LABELS_URL).then(showLabels);
       }
 
       // If there's a hash, we should try to select that melody.

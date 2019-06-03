@@ -77,6 +77,34 @@ function drawSunburst(data, radius) {
   el.setAttribute('viewBox', `${box.x} ${box.y} ${box.width} ${box.height}`);
 }
 
+function drawLabels(labels) {
+  const annotations = [];
+  for (let i = 0; i < labels.length; i++) {
+    const obj = {};
+    obj.note = {title: labels[i].name, wrap: 300, bgPadding: 20};
+    obj.connector = {end: 'dot', endScale: 4};
+
+    const el = document.getElementById('p' + labels[i].id);
+    const bbox = el.getBBox();
+    obj.x = bbox.x + bbox.width/2;
+    obj.y = bbox.y + bbox.height/2;
+    obj.dx = (obj.x < size/2) ? -50: 20;
+    obj.dy = (obj.x < size/2) ? 50 : -50
+    annotations.push(obj);
+  }
+
+  const makeAnnotations = d3.annotation()
+    .type(d3.annotationCallout)
+    .notePadding(15)
+    .editMode(true)
+    .annotations(annotations);
+
+  d3.select('#svg')
+    .append('g')
+    .attr('class', 'annotation')
+    .call(makeAnnotations);
+}
+
 function zoomPie(el) {
   const radius = (window.innerWidth - 100) / 2;
   const arc = d3.arc()
