@@ -140,6 +140,10 @@ body.drawer-opened .menu {
   width: 100%;
 }
 
+body.drawer-opened .hide-from-toolbar {
+  display: block;
+}
+
 body.drawer-opened .menu a {
   margin-right: 0;
   padding: 14px;
@@ -152,7 +156,6 @@ body.drawer-opened .menu svg {
 }
 
 header .menu-btn {
-  display: none;
   background: transparent;
   cursor: pointer;
   min-height: 60px;
@@ -169,6 +172,10 @@ header a:hover {
   top: 0;
 }
 
+header .hide-from-toolbar {
+  display: none;
+}
+
 header svg {
   fill: currentColor;
   vertical-align: middle;
@@ -179,7 +186,6 @@ header svg {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
 }
 .horizontal.left {
   justify-content: flex-start;
@@ -261,7 +267,7 @@ button {
   header .menu {
     display: none;
   }
-  header .menu-btn {
+  header .hide-from-toolbar {
     display: block;
   }
   h1 {
