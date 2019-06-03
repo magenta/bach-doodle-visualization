@@ -6,7 +6,6 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <script src="https://d3js.org/d3.v5.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@magenta/music@1.8.0"></script>
     <script src="common.js"></script>
     <link href="style.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Google+Sans:400,500&display=swap" rel="stylesheet">
@@ -49,20 +48,25 @@
       .blob:hover .overlay {
         display: block;
       }
+
       #container {
         position: relative;
-        width: 960px;
+        max-width: 960px;
+        width: 100%;
         margin: 0 auto;
-        margin-top: -100px;
+        margin-top: -50px;
       }
-
     </style>
   </head>
   <body>
-    <header class="horizontal">
-      <div>
+    <header>
+      <div class="horizontal" style="flex:1">
         <a href="/index.html">Bach Doodle Dataset</a>
+        <button class="menu-btn" onclick="document.body.classList.toggle('drawer-opened')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+        </button>
       </div>
+
       <div class="menu">
         <a href="https://magenta.tensorflow.org/datasets">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
@@ -77,9 +81,6 @@
           Share
         </a>
       </div>
-      <div class="menu-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-      </div>
     </header>
 
     <section>
@@ -91,31 +92,78 @@
     </section>
 
     <div class="center" id="container">
-      <svg width="960" height="960" id="svg">
-        <g class="base" transform="translate(480,480)">
-        <circle cx="-84.38416272294697" cy="-1.4007084860124719" fill="white" r="156"></circle><circle cx="158.79083362658585" cy="-1.4007084860124719" fill="white" r="79.17499634953283"></circle><circle cx="97.97928180356921" cy="140.04301767398695" fill="white" r="66.78724741545113"></circle><circle cx="96.45942217190107" cy="-136.90325474157714" fill="white" r="61.97641965338234"></circle><circle cx="-9.410944323502877" cy="-212.76604142065466" fill="white" r="60.268338032239626"></circle><circle cx="-16.104599011213644" cy="212.08600750143543" fill="white" r="60.139859738891374"></circle><circle cx="224.4355913298116" cy="-131.03677906715714" fill="white" r="58.13413966618621"></circle><circle cx="226.45415078995873" cy="123.37316254963102" fill="white" r="54.76458017079705"></circle><circle cx="-128.39310820143933" cy="-211.56220577633692" fill="white" r="50.719915763396244"></circle><circle cx="-133.80466670745216" cy="206.49879443848172" fill="white" r="49.692745619345374"></circle><circle cx="99.7622613541612" cy="-255.98053639041262" fill="white" r="49.1466585117657"></circle><circle cx="88.99124433764524" cy="263.2524406068986" fill="white" r="48.749575908406236"></circle><circle cx="-221.3549744559751" cy="-161.63686904213782" fill="white" r="46.79997726891009"></circle><circle cx="-223.94610286672548" cy="155.4083793248732" fill="white" r="45.92052104731845"></circle><circle cx="199.9656349382205" cy="-238.92812988382062" fill="white" r="44.49733120377339"></circle><circle cx="284.71921991574476" cy="-38.680331080718275" fill="white" r="44.15561217032183"></circle><circle cx="296.3551117083934" cy="50.75295116445598" fill="white" r="38.03144871401584"></circle><circle cx="182.83356462830906" cy="213.8349843938603" fill="white" r="37.664980957702255"></circle><circle cx="-77.83130151133635" cy="-293.4548050776654" fill="white" r="37.52401451844169"></circle><circle cx="-268.56648708133946" cy="-82.58168285732424" fill="white" r="37.279604545357955"></circle><circle cx="-266.42131698972577" cy="77.82409352213166" fill="white" r="34.52983349304622"></circle><circle cx="-87.22141986814911" cy="285.8639836001317" fill="white" r="34.33351224630903"></circle><circle cx="173.47981890188467" cy="291.1674702721787" fill="white" r="32.231141739354506"></circle><circle cx="-279.00576103730106" cy="-7.311216227460899" fill="white" r="30.711326409625002"></circle><circle cx="-328.6007403512089" cy="40.34685961206704" fill="white" r="30.070605562900624"></circle><circle cx="27.70403933741848" cy="-301.9388503418403" fill="white" r="28.320024947183256"></circle><circle cx="14.726829130436245" cy="302.21168350503376" fill="white" r="27.11356243773863"></circle><circle cx="-208.3713130749919" cy="-242.39586645136265" fill="white" r="26.99605640876415"></circle><circle cx="-213.2465809181227" cy="235.49175009281367" fill="white" r="26.87444193605109"></circle><circle cx="-22.554237915890923" cy="-339.6201475982204" fill="white" r="26.495375993941018"></circle><circle cx="-38.01886448556496" cy="333.8429674088069" fill="white" r="26.389659562691307"></circle><circle cx="254.5942709362173" cy="207.9168959197867" fill="white" r="26.339343502685722"></circle><circle cx="312.8065620877473" cy="-110.18147318752136" fill="white" r="24.66438596079246"></circle><circle cx="-299.5952533572603" cy="135.7663456381893" fill="white" r="24.23703429628483"></circle><circle cx="-298.4425125939861" cy="-145.1277663520174" fill="white" r="24.03554142547185"></circle><circle cx="-146.20784313000988" cy="-291.2035556153241" fill="white" r="22.889577463502114"></circle><circle cx="-152.2106421439927" cy="284.72097544426936" fill="white" r="22.665760670111883"></circle><circle cx="-326.1317562686409" cy="-46.56750350969522" fill="white" r="22.62312979347165"></circle><circle cx="311.1992347367332" cy="117.34464543757048" fill="white" r="22.1946587130127"></circle><circle cx="267.90173926869596" cy="-207.91642067983665" fill="white" r="22.18225355239479"></circle><circle cx="77.5668347015167" cy="-331.6782938339546" fill="white" r="21.737987942878675"></circle><circle cx="162.83973303013832" cy="-302.9020183421693" fill="white" r="21.468816438034892"></circle><circle cx="-197.73167660739657" cy="-297.37433897797735" fill="white" r="21.002464156714268"></circle><circle cx="-203.15901599350624" cy="289.99545557224593" fill="white" r="20.554908385750856"></circle><circle cx="343.4691121217667" cy="3.9087368262243816" fill="white" r="20.407315963825106"></circle><circle cx="59.738281906395855" cy="334.5336173383422" fill="white" r="20.300680205531457"></circle><circle cx="-260.65179594557446" cy="-225.29479972290883" fill="white" r="20.010264795551173"></circle><circle cx="-264.3260015117806" cy="216.76354150998137" fill="white" r="19.530089170336332"></circle><circle cx="-358.7679225685103" cy="-8.610799026037798" fill="white" r="19.435143908409344"></circle><circle cx="-333.6675996398048" cy="97.32413580784015" fill="white" r="19.131519098162826"></circle><circle cx="292.83825455667176" cy="170.90497722740898" fill="white" r="18.88174638142666"></circle><circle cx="-298.51372568754647" cy="186.27168618800553" fill="white" r="18.279884910583547"></circle><circle cx="-330.6257615329192" cy="-94.99066550042961" fill="white" r="18.00812250889318"></circle><circle cx="303.347639946369" cy="-159.81383929196284" fill="white" r="17.861280518750096"></circle><circle cx="-294.8472910322143" cy="-194.82455917577502" fill="white" r="17.791126484852164"></circle><circle cx="-347.28784282736825" cy="-135.4602507489924" fill="white" r="17.757300866798243"></circle><circle cx="231.2450824593646" cy="253.67570310432168" fill="white" r="17.032370868931675"></circle><circle cx="334.5361020552638" cy="158.0730577698562" fill="white" r="16.745866926900902"></circle><circle cx="-129.9648919946564" cy="326.3805404809523" fill="white" r="16.561273523793535"></circle><circle cx="229.9783287426027" cy="295.0922301426789" fill="white" r="16.403523919257804"></circle><circle cx="-125.01997220067206" cy="-333.2943594201372" fill="white" r="16.233258183915662"></circle><circle cx="128.23023856472378" cy="324.4225476474306" fill="white" r="15.924220354778281"></circle><circle cx="343.14173125483353" cy="-72.78172952863034" fill="white" r="15.491229642649891"></circle><circle cx="312.6950209755516" cy="-199.91950371501778" fill="white" r="15.319271334271722"></circle><circle cx="121.74418114724547" cy="-324.6856918151583" fill="white" r="14.989346227393774"></circle><circle cx="-86.18389577879637" cy="342.786765657688" fill="white" r="14.598724433871084"></circle><circle cx="7.682931497024812" cy="351.38729029472694" fill="white" r="14.563965650970623"></circle><circle cx="24.20114536071354" cy="-352.0103598317608" fill="white" r="13.873862417826011"></circle><circle cx="152.39825832986273" cy="-344.7151125628999" fill="white" r="13.628274440911767"></circle><circle cx="343.0357629293291" cy="87.5504497097766" fill="white" r="13.408765767457215"></circle><circle cx="99.04000268391204" cy="346.846072721754" fill="white" r="12.884533326054779"></circle><circle cx="-68.32308015735047" cy="-350.82005679888215" fill="white" r="12.623886375356332"></circle><circle cx="54.91580946198734" cy="-367.2010108948626" fill="white" r="12.391958316179359"></circle><circle cx="37.910914593162595" cy="368.7810612978581" fill="white" r="12.311157743359583"></circle><circle cx="348.827949090627" cy="-36.144919299048155" fill="white" r="12.003233434325939"></circle><circle cx="263.4840315396513" cy="-249.8134516696536" fill="white" r="11.947039669079297"></circle><circle cx="353.2563028875157" cy="42.55344223429122" fill="white" r="11.457485041089395"></circle><circle cx="-255.35390241653823" cy="254.61808260598323" fill="white" r="11.373186318544361"></circle><circle cx="203.41683162293154" cy="-302.44264844868576" fill="white" r="11.11088231526169"></circle><circle cx="-249.2793377835815" cy="-261.90539981228835" fill="white" r="10.325995370912016"></circle><circle cx="371.79788118432293" cy="-55.447153266277226" fill="white" r="10"></circle></g>
+      <!-- I designed the circles sizes for a 900x900 svg centered on the page. -->
+      <svg id="svg" viewBox="-450 -450 900 900">
+        <g class="base" transform="translate(0,0)"></g>
       </svg>
+      <div id="blobs"></div>
     </div>
-
   </body>
   <script>
     const countrySizes = [["us",6581192],["br",1541549],["mx",1057061],["it",893475],["es",838700],["tr",834650],["ru",772695],["uk",673990],["co",564413],["ua",538132],["de",524415],["in",514552],["tw",467485],["ca",446992],["ar",414802],["fr",407252],["pl",283701],["nl",277014],["jp",274463],["vn",270068],["pe",223066],["cl",219882],["ro",187220],["ve",165243],["pt",156389],["hk",133441],["cz",118685],["kr",117294],["ec",115863],["hu",111459],["th",110246],["gr",109671],["se",91388],["ch",86990],["dk",84954],["fi",73833],["by",71752],["il",71359],["gt",67469],["rs",67358],["sk",63443],["at",61128],["hr",57219],["eg",53589],["ie",52418],["cr",51580],["sg",49332],["uy",45725],["sa",45028],["do",42835],["bo",41072],["lt",36976],["si",35197],["sv",34254],["bg",33808],["ae",33594],["pa",29171],["py",27509],["hn",26464],["md",25587],["dz",24657],["bd",23013],["am",20805],["ee",19959],["ba",18385],["pr",16605],["ma",16451],["ni",13542],["tn",12575],["au",11741],["iq",9865],["jo",8993],["lb",8251],["other",8000],["qa",7079],["om",6917],["kw",5585],["ps",5370],["is",4728],["bh",3051],["ph",2462]]
 
-    const sizeScale = d3.scaleSqrt()
-    .domain([
-      countrySizes[countrySizes.length - 1][1],
-      countrySizes[0][1]])
-    .range([14, 160]);
-
-    const CIRCLE_MARGIN = 4;
-
     showData();
+    window.addEventListener('resize', showData)
 
     function showData() {
-      const svg = d3.select('svg');
+      document.querySelector('.base').innerHTML = '';
+      const svg = d3.select('#svg');
+      const circles = generateCircles();
+
+      // Add the country image to the circle.
+      svg
+        .select('g')
+        .selectAll('circle')
+        .data(circles)
+        .enter()
+        .append('circle')
+          .attr('cx', (d) => d.x)
+          .attr('cy', (d) => d.y)
+          .attr('fill', 'transparent')
+          .attr('r', (d) => d.r - 4)  // add a 4px margin outside
+
+      const containerRekt = container.getBoundingClientRect();
+      const els = document.querySelectorAll('circle');
+      const links = document.querySelectorAll('#blobs a');
+
+      for (let i = 0; i < els.length; i++) {
+        // If we're resizing we've already created a bunch of images.
+        let a;
+        if (links.length === 0) {
+          a = document.createElement('a');
+          const img = document.createElement('img');
+          const overlay = document.createElement('div');
+
+          a.classList.add('blob');
+          overlay.classList.add('overlay');
+
+          img.src = `./blobs/${countrySizes[i][0]}.jpg`;
+          a.href = `./overall.html?country=${countrySizes[i][0]}`;
+          a.target = '_blank';
+          overlay.textContent = countrySizes[i][0].toUpperCase();
+
+          a.appendChild(img);
+          a.appendChild(overlay);
+          blobs.appendChild(a);
+        } else {
+          a = links[i];
+        }
+        const rekt = els[i].getBoundingClientRect();
+        a.style.left = rekt.left - containerRekt.left;
+        a.style.top = rekt.top - containerRekt.top;
+        a.style.width = a.style.height = rekt.width;
+      }
+    }
+
+    function generateCircles() {
+      const sizeScale = d3.scaleSqrt()
+        .domain([
+          countrySizes[countrySizes.length - 1][1],
+          countrySizes[0][1]])
+        .range([14, 160]);  // Made up.
 
       // Make a circle of the right size, and pack it.
-      const circles = d3.packSiblings(
+      return d3.packSiblings(
         d3.range(countrySizes.length)
         .map((d,i) => {
           const country = countrySizes[i][0];
@@ -125,41 +173,6 @@
           }
         })
       );
-
-      // Add the country to the circle.
-      svg
-      .select('g')
-      .selectAll('circle')
-      .data(circles)
-      .enter().append('circle')
-        .attr('cx', (d) => d.x)
-        .attr('cy', (d) => d.y)
-        .attr('fill', 'white')
-        .attr('r', (d) => d.r - CIRCLE_MARGIN)  // add a margin outside
-
-      const els = document.querySelectorAll('circle');
-      for (let i = 0; i < els.length; i++) {
-        const a = document.createElement('a');
-        const img = document.createElement('img');
-        const overlay = document.createElement('div');
-
-        a.classList.add('blob');
-        overlay.classList.add('overlay');
-
-        img.src = `./blobs/${countrySizes[i][0]}.jpg`;
-        a.href = `./overall.html?country=${countrySizes[i][0]}`;
-        a.target = '_blank';
-        overlay.textContent = countrySizes[i][0].toUpperCase();
-
-        a.appendChild(img);
-        a.appendChild(overlay);
-        container.appendChild(a);
-
-        const bbox = els[i].getBBox();
-        a.style.left = bbox.x + 480;
-        a.style.top = bbox.y + 480;
-        a.style.width = a.style.height = bbox.width;
-      }
     }
 
   </script>
