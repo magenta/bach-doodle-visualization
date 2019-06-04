@@ -177,8 +177,8 @@ function showTooltip(d, el) {
   let newY = rekt.y - tooltipRekt.height - 10;
   let newX = rekt.x - rekt.width/2 - tooltipRekt.width/2;
   d3.select(tooltip)
-    .style('top', newY + document.body.scrollTop)
-    .style('left', newX + document.body.scrollLeft);
+    .style('top', newY + document.scrollingElement.scrollTop + 'px')
+    .style('left', newX + document.scrollingElement.scrollLeft + 'px');
 }
 
 function hideTooltip() {
@@ -194,9 +194,7 @@ function hideTooltip() {
 function handleClick(d) {
   const ns = getNoteSequenceFromData(d);
 
-  const y = window.scrollY;
   window.location.hash = d.elementIndex; // not the empty string so that it doesn't cause a page refresh
-  window.scrollY = y;
 
   // Hear it.
   mm.Player.tone.Transport.stop();
@@ -214,9 +212,7 @@ function handleMouseOut(d) {
 }
 
 function handleMouseOverForEl(d, el) {
-  const y = window.scrollY;
   window.location.hash = 'all'; // not the empty string so that it doesn't cause a page refresh
-  window.scrollY = y;
 
   // Did we force select an element? deselect that first.
 
@@ -236,7 +232,10 @@ function handleMouseOverForEl(d, el) {
     .filter((node) => ancestors.indexOf(node) >= 0)
     .style('fill-opacity', 1);
 
-  showTooltip(d, el);
+  requestAnimationFrame(() => {
+    showTooltip(d, el);
+  });
+
 }
 
 function handleMouseOutForEl(el) {
