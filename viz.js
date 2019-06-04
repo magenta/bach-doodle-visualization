@@ -167,10 +167,12 @@ function showTooltip(d, el) {
   // Display the value.
   document.getElementById('valueText').textContent = d.value;
 
+  let totalSessions = 0;
+  d.descendants().forEach(x => totalSessions += (x.data.sessions || 0));
+  document.getElementById('sessionsText').textContent = totalSessions;
 
   const tooltip = document.getElementById('tooltip');
   tooltip.removeAttribute('hidden');
-  //tooltip.style.borderColor = el.attr('fill')
 
   // Position and show the tooltip.
   const rekt = el.node().getBoundingClientRect();

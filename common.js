@@ -1,6 +1,6 @@
 // Where to load the data from.
 const LABELS_URL = './melodyLabels.json';
-const TOP_OVERALL_URL = 'https://cdn.glitch.com/b078d442-623b-41f0-a809-48f5f1ec1cbf%2Ftop_overall.json?1559164437281';
+const TOP_OVERALL_URL = 'data/top_overall.json';
 const TOP_PER_COUNTRY_URL = 'https://cdn.glitch.com/b078d442-623b-41f0-a809-48f5f1ec1cbf%2Ftop_per_country.json?1559164216772';
 const DATAPOINTS_URL = 'https://cdn.glitch.com/b078d442-623b-41f0-a809-48f5f1ec1cbf%2Fdataset_samples.json?1559248203882';
 
