@@ -255,6 +255,9 @@ rect, path { cursor: pointer; }
   pointer-events: none !important;
   cursor: pointer;
 }
+.annotation .connector-end {
+  pointer-events: none;
+}
 
 button {
   position: relative;

@@ -85,6 +85,9 @@ function drawLabels(labels) {
     obj.connector = {end: 'dot', endScale: 4};
 
     const el = document.getElementById('p' + labels[i].id);
+    if (!el) {
+      debugger
+    }
     const bbox = el.getBBox();
     obj.x = bbox.x + bbox.width/2;
     obj.y = bbox.y + bbox.height/2;
