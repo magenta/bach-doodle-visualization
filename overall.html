@@ -7,11 +7,9 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="description" content="Exploring the Bach Doodle dataset">
-    <script src="https://d3js.org/d3.v5.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.3.2/d3-annotation.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@magenta/music@1.8.0"></script>
-    <script src="common.js"></script>
-    <script src="viz.js"></script>
+    <!-- for the data assets-->
+    <link rel="preconnect" href="https://https://cdn.glitch.com">
+    <link rel="preconnect" href="https://storage.googleapis.com">
     <link href="style.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Google+Sans:400,500&display=swap" rel="stylesheet">
   </head>
@@ -59,11 +57,10 @@
       <p>
         <span class="accent purple outline">Hover</span> over any of the cells to see the melody up to that point.
         <span class="accent blue outline">Move</span> any of the labels out of the way.
-        <span class="accent pink outline">Click</span> on a cell to hear what the melody sounds like.
-        <span class="accent green outline">Create a harmonization</span> to see what the model might have created for
+        <span class="accent blue outline">Click</span> on a cell to hear what the melody sounds like.
+        <span class="accent blue outline">Create a harmonization</span> to see what the model might have created for
         that melody.
       </p>
-      <div id="legend"></div>
     </section>
 
     <div class="center">
@@ -78,21 +75,12 @@
       </p>
     </div>
   </body>
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.3.2/d3-annotation.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@magenta/music@1.8.0"></script>
+  <script src="common.js"></script>
+  <script src="viz.js"></script>
   <script>
-    // TODO: for testing, remove this.
-    for(let i = -11; i < 0; i++) {
-      const s = document.createElement('span');
-      s.style.background = color(i);
-      s.textContent = i;
-      legend.append(s);
-    }
-    for(let i = 0; i < 12; i++) {
-      const s = document.createElement('span');
-      s.style.background = color(i);
-      s.textContent = i;
-      legend.append(s);
-    }
-
     // Is this the overall view or a per-country view?
     const search = window.location.search.split('=');
     const country = search.length > 1 ? search[1].toLowerCase() : '';
