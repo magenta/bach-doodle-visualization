@@ -35,9 +35,9 @@ if (window.mm) {
   }
 }
 
-function visualizeNoteSequence(ns, el, minPitch, maxPitch) {
+function visualizeNoteSequence(ns, el) {
   const viz = document.getElementById(el);
-  sequenceVisualizer = new mm.PianoRollSVGVisualizer(ns, viz, {noteHeight:16, pixelsPerTimeStep:60, minPitch:minPitch, maxPitch:maxPitch});
+  sequenceVisualizer = new mm.PianoRollSVGVisualizer(ns, viz, {noteHeight:14, pixelsPerTimeStep:40});
 
   // Colour each note according to its pitch.
   const rects = viz.querySelectorAll('rect');

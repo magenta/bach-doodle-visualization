@@ -77,7 +77,7 @@ function drawSunburst(data, radius) {
   el.setAttribute('viewBox', `${box.x} ${box.y} ${box.width} ${box.height}`);
 }
 
-function drawLabels(labels) {
+function drawLabels(labels, size) {
   const annotations = [];
   for (let i = 0; i < labels.length; i++) {
     const obj = {};

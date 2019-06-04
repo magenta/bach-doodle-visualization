@@ -86,6 +86,7 @@
     const country = search.length > 1 ? search[1].toLowerCase() : '';
     const countryIndex = availableCountries.indexOf(country);
     const isCountryView = country !== '' && countryIndex !== -1;
+    let allData, allLabels;
 
     // Update the UI to match what we're looking at.
     textCountry.innerHTML = isCountryView ?
@@ -95,15 +96,13 @@
         availableCountriesNames[countryIndex]:
         'Overall') + ' repeated melodies';
 
-    const size = Math.min(window.innerWidth, window.innerHeight);
+    window.addEventListener('resize', showData)
 
     d3.json(isCountryView ? TOP_PER_COUNTRY_URL : TOP_OVERALL_URL).then((data) => {
-      loadAllSamples();
-      drawSunburst(isCountryView ? data[country] : data, size);
+      allData = data;
 
-      if (!isCountryView) {
-        d3.json(LABELS_URL).then(drawLabels);
-      }
+      loadAllSamples();
+      showData();
 
       // If there's a hash, we should try to select that melody.
       const pathIndex = window.location.hash.slice(1);
@@ -111,5 +110,23 @@
         handleForceSelect(pathIndex);
       }
     });
+
+    function showData() {
+      document.querySelector('#svg').innerHTML = '';
+
+      const size = Math.min(window.innerWidth, window.innerHeight);
+      drawSunburst(isCountryView ? allData[country] : allData, size);
+
+      if (!isCountryView) {
+        if (!allLabels) {
+          d3.json(LABELS_URL).then((labels) => {
+            allLabels = labels;
+            drawLabels(labels, size);
+          });
+        } else {
+          drawLabels(allLabels, size);
+        }
+      }
+    }
   </script>
 </html>
