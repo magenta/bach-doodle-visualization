@@ -114,9 +114,14 @@
   <script src="https://d3js.org/d3.v5.min.js"></script>
   <script src="common.js"></script>
   <script>
+    let trivia;
     const countriesBySize = Object.keys(totalPerCountry);
-    showData();
     window.addEventListener('resize', showData);
+
+    d3.json(TRIVIA_PER_COUNTRY_URL).then((json) => {
+      trivia = json;
+      showData();
+    });
 
     function showData() {
       document.querySelector('.base').innerHTML = '';
@@ -163,8 +168,16 @@
           a.href = `./overall.html?country=${country}`;
           a.setAttribute('aria-label', `click to explore ${availableCountriesNames[country]}`);
           a.target = '_blank';
+
+          const t = trivia[country];
+
           a.title = d3.format(".2s")(totalPerCountry[country]) +
-              ' sequences were entered in total in '  + availableCountriesNames[country];
+              ' sequences were entered in total in '  + availableCountriesNames[country] + '.' +
+              `${(t.major/2000 * 100).toFixed(1)}% were in a major scale, ` +
+              `${(t.minor/2000 * 100).toFixed(1)}% in a minor, ` +
+              `${(t.neither/2000 * 100).toFixed(1)}% were neither.`
+          ;
+
           overlay.textContent = country.toUpperCase();
 
           a.appendChild(img);
