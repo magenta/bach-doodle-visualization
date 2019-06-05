@@ -57,9 +57,10 @@
       <p>
         <span class="accent purple outline">Hover</span> over any of the cells to see the melody up to that point.
         <span class="accent blue outline">Move</span> any of the labels out of the way.
-        <span class="accent blue outline">Click</span> on a cell to hear what the melody sounds like.
-        <span class="accent blue outline">Create a harmonization</span> to see what the model might have created for
-        that melody.
+        <span class="accent blue outline">Click</span> on a cell to see more details about the melody, listen to it, or harmonize it.
+      </p>
+      <p id="trivia" hidden>
+        There were <b id="triviaTotal"></b> total sequences entered in <b id="triviaCountry"></b>.
       </p>
     </section>
 
@@ -90,10 +91,10 @@
 
     // Update the UI to match what we're looking at.
     textCountry.innerHTML = isCountryView ?
-        `in <span class="accent primary">${availableCountriesNames[countryIndex]}</span> `:
+        `in <span class="accent primary">${availableCountriesNames[country]}</span> `:
         '';
     document.title = (isCountryView ?
-        availableCountriesNames[countryIndex]:
+        availableCountriesNames[country]:
         'Overall') + ' repeated melodies';
 
     window.addEventListener('resize', showData)
@@ -118,6 +119,7 @@
       drawSunburst(isCountryView ? allData[country] : allData, size);
 
       if (!isCountryView) {
+        trivia.hidden = true;
         if (!allLabels) {
           d3.json(LABELS_URL).then((labels) => {
             allLabels = labels;
@@ -126,6 +128,10 @@
         } else {
           drawLabels(allLabels, size);
         }
+      } else {
+        trivia.hidden = false;
+        triviaTotal.textContent = d3.format(".2s")(totalPerCountry[country]);
+        triviaCountry.textContent =  availableCountriesNames[country];
       }
     }
   </script>

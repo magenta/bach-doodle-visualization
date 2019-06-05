@@ -114,6 +114,7 @@
   <script src="https://d3js.org/d3.v5.min.js"></script>
   <script src="common.js"></script>
   <script>
+    const countriesBySize = Object.keys(totalPerCountry);
     showData();
     window.addEventListener('resize', showData);
 
@@ -142,6 +143,7 @@
       const containerRekt = container.getBoundingClientRect();
       const els = document.querySelectorAll('circle');
       const links = document.querySelectorAll('#container a');
+      const overlays = document.querySelectorAll('#container a .overlay');
 
       for (let i = 0; i < els.length; i++) {
         // If we're resizing we've already created a bunch of images.
@@ -154,21 +156,23 @@
           a.classList.add('blob');
           overlay.classList.add('overlay');
 
-          img.src = `./blobs/${totalPerCountry[i][0]}.jpg`;
-          img.alt = `image preview of the visualization for ${totalPerCountry[i][0]}`;
-          a.href = `./overall.html?country=${totalPerCountry[i][0]}`;
-          a.setAttribute('aria-label', `click to explore ${totalPerCountry[i][0]}`);
+          const country = countriesBySize[i];
+
+          img.src = `./blobs/${country}.jpg`;
+          img.alt = `image preview of the visualization for ${country}`;
+          a.href = `./overall.html?country=${country}`;
+          a.setAttribute('aria-label', `click to explore ${availableCountriesNames[country]}`);
           a.target = '_blank';
-          const nameIndex = availableCountries.indexOf(totalPerCountry[i][0]);
-          a.title = d3.format(".2s")(totalPerCountry[i][1]) +
-          ' sequences were entered in total in '  + availableCountriesNames[nameIndex];
-          overlay.textContent = totalPerCountry[i][0].toUpperCase();
+          a.title = d3.format(".2s")(totalPerCountry[country]) +
+              ' sequences were entered in total in '  + availableCountriesNames[country];
+          overlay.textContent = country.toUpperCase();
 
           a.appendChild(img);
           a.appendChild(overlay);
           container.appendChild(a);
        } else {
          a = links[i];
+         overlay = overlays[i];
        }
 
         const rekt = els[i].getBoundingClientRect();
@@ -176,25 +180,23 @@
         a.style.top = rekt.top - containerRekt.top + 'px';
         a.style.width = a.style.height = rekt.width + 'px';
         const fontSize = Math.max(16, rekt.width - 40);
-        overlay.style.fontSize = fontSize + 'px';
+        overlay.style.fontSize = Math.min(200, fontSize) + 'px';
         overlay.style.lineHeight = 0;
       }
     }
 
     function generateCircles() {
       const sizeScale = d3.scaleSqrt()
-        .domain([
-          totalPerCountry[totalPerCountry.length - 1][1],
-          totalPerCountry[0][1]])
+        .domain([totalPerCountry['ph'], totalPerCountry['us']])
         .range([14, 160]);  // Made up.
 
       // Make a circle of the right size, and pack it.
       return d3.packSiblings(
-        d3.range(totalPerCountry.length)
+        d3.range(countriesBySize.length)
         .map((d,i) => {
-          const country = totalPerCountry[i][0];
+          const country =  countriesBySize[i];
           return {
-            r: sizeScale(totalPerCountry[i][1]),
+            r: sizeScale(totalPerCountry[country]),
             country: country
           }
         })
