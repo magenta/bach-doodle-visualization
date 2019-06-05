@@ -63,7 +63,7 @@
         There were <b id="triviaTotal"></b> total sequences entered in <b id="triviaCountry"></b>.
         Out of the 2000 most repeated sequences, <b id="triviaMajor"></b> were composed in a
         major key,  <b id="triviaMinor"></b> in a minor key, and  <b id="triviaNeither"></b>
-        in neither a major nor minor key.
+        in neither a major nor minor key (<b id="triviaPercent"></b>%).
       </p>
     </section>
 
@@ -141,6 +141,7 @@
           triviaMajor.textContent = t.major;
           triviaMinor.textContent = t.minor;
           triviaNeither.textContent = t.neither;
+          triviaPercent.textContent = (t.neither/2000 * 100).toFixed(1);
         });
       }
     }
