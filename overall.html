@@ -140,7 +140,6 @@
 
     function showData() {
       document.querySelector('#svg').innerHTML = '';
-
       const size = Math.min(window.innerWidth, window.innerHeight);
       drawSunburst(isCountryView ? allData[country] : allData, size);
 
@@ -149,10 +148,10 @@
         if (!allLabels) {
           d3.json(LABELS_URL).then((labels) => {
             allLabels = labels;
-            drawLabels(labels, size);
+            drawLabels(labels);
           });
         } else {
-          drawLabels(allLabels, size);
+          drawLabels(allLabels);
         }
       } else {
         trivia.hidden = false;

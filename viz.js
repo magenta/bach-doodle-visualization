@@ -75,8 +75,10 @@ function drawSunburst(data, radius) {
   el.setAttribute('viewBox', `${box.x} ${box.y} ${box.width} ${box.height}`);
 }
 
-function drawLabels(labels, size) {
-  const annotations = [];
+let annotations, makeAnnotations;
+function drawLabels(labels) {
+  annotations = [];
+
   for (let i = 0; i < labels.length; i++) {
     const obj = {};
     obj.note = {title: labels[i].name, wrap: 300, bgPadding: 20};
@@ -89,12 +91,13 @@ function drawLabels(labels, size) {
     const bbox = el.getBBox();
     obj.x = bbox.x + bbox.width/2;
     obj.y = bbox.y + bbox.height/2;
-    obj.dx = (obj.x < size/2) ? -50: 20;
-    obj.dy = (obj.x < size/2) ? 50 : -50
+
+    obj.dx = (obj.x < 0) ? -50: 20;
+    obj.dy = (obj.y > 0) ? 50 : -50
     annotations.push(obj);
   }
 
-  const makeAnnotations = d3.annotation()
+  makeAnnotations = d3.annotation()
     .type(d3.annotationCallout)
     .notePadding(15)
     .editMode(true)
