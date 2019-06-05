@@ -20,7 +20,11 @@ const availableCountriesNames = {"other":"other","qa":"Qatar","fi":"Finland","fr
 
 let player;
 let sequenceVisualizer;
+let coconet;
 
+/****************
+ * Setup
+ ****************/
 // Not all files that import this also import magenta (i.e. world.html) need this.
 if (window.mm) {
   player = new mm.SoundFontPlayer('https://storage.googleapis.com/magentadata/js/soundfonts/salamander');
@@ -36,8 +40,14 @@ if (window.mm) {
       }
     }
   }
+
+  coconet = new mm.Coconet(`https://storage.googleapis.com/magentadata/js/checkpoints/coconet/bach`);
+  coconet.initialize();
 }
 
+/****************
+ * Visualize NoteSequences
+ ****************/
 function visualizeNoteSequence(ns, el) {
   const viz = document.getElementById(el);
   sequenceVisualizer = new mm.PianoRollSVGVisualizer(ns, viz, {noteHeight:14, pixelsPerTimeStep:40});
@@ -73,6 +83,7 @@ function getNoteSequenceFromDeltasAndTiming(deltas, timing) {
 
     ns.notes.push({pitch: pitch,
       velocity: 80,
+      instrument: 0,
       quantizedStartStep: timing.length > 0 ? timing[i][1] : 0,
       quantizedEndStep: timing.length > 0 ? timing[i][2] : 0
     });
@@ -80,6 +91,19 @@ function getNoteSequenceFromDeltasAndTiming(deltas, timing) {
   }
   ns.totalQuantizedSteps = ns.notes[ns.notes.length-1].quantizedEndStep;
   return ns;
+}
+/****************
+ * Playing NoteSequences
+ ****************/
+function playMelody() {
+  // Hear it.
+  mm.Player.tone.Transport.stop();
+  player.stop();
+  player.start(sequenceVisualizer.noteSequence);
+}
+
+function stopMelody() {
+  player.stop();
 }
 
 function loadAllSamples() {
@@ -92,4 +116,24 @@ function loadAllSamples() {
     });
   }
   player.loadSamples(samples);
+}
+
+/****************
+ * Coconet
+ ****************/
+async function harmonize(event) {
+  const statusEl = document.querySelector('.tooltip .status');
+  statusEl.hidden = false;
+  event.target.disabled = true;
+  await mm.tf.nextFrame();
+
+  const original = sequenceVisualizer.noteSequence;
+  coconet.infill(original).then((output) => {
+    const fixedOutput =
+      mm.sequences.replaceInstruments(
+        mm.sequences.mergeConsecutiveNotes(output), original);
+    visualizeNoteSequence(fixedOutput, 'visualizer');
+    statusEl.hidden = true;
+
+  });
 }

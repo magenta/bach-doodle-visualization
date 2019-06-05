@@ -1,4 +1,4 @@
-let didClick = false;
+let tooltipIsExpanded = false;
 
 /*********************
  * D3 -> Note Sequence
@@ -24,8 +24,6 @@ function getNoteSequenceFromData(d) {
 /*********************
  * D3 viz drawing
  *********************/
-const opacityScale =  d3.scaleSqrt().domain([1,20]).range(["1","1"]);
-
 function drawSunburst(data, radius) {
   // https://observablehq.com/@d3/sunburst with tons of changes
   const viewRadius = radius;
@@ -61,7 +59,7 @@ function drawSunburst(data, radius) {
       .enter()
       .append('path')
       .attr('fill', fill)
-      .attr('fill-opacity', (d) => opacityScale(d.depth))
+      .attr('fill-opacity', 1)
       .style('cursor', 'pointer')
       .attr('id', (d) => `p${d.elementIndex}`)
       .attr('d', arc)
@@ -128,7 +126,7 @@ function unzoomPie() {
   d3.selectAll('.zoom').each(function (d,i) { // don't use fat arrow to keep the weird this.
     const el = d3.select(this);
     el.attr('d', el.attr('d_'))
-      .attr('fill-opacity', (d) => opacityScale(d.depth))
+      .attr('fill-opacity', 1)
       .classed('zoom', false);
   });
 }
@@ -163,7 +161,6 @@ function visualizeNoteSequence(ns, el, minPitch, maxPitch) {
  *********************/
 // el is a d3 element
 function showTooltip(d, el) {
-  visualizeNoteSequence(getNoteSequenceFromData(d), 'visualizer');
   // Display the value.
   document.getElementById('valueText').textContent = d.value;
 
@@ -187,39 +184,55 @@ function showTooltip(d, el) {
 }
 
 function hideTooltip() {
-  if (didClick) {
+  if (tooltipIsExpanded) {
     return;
   }
   document.getElementById('tooltip').setAttribute('hidden', true);
 }
 
+function closeTooltip() {
+  document.getElementById('tooltip').classList.remove('expanded');
+  tooltipIsExpanded = false;
+  hideTooltip();
+}
 /*********************
  * Mouse events
  *********************/
 function handleClick(d) {
+  // If the tooltip is already expanded, close it (imagine someone clicked outside it).
+  // otherwise, do the open dance.
+  if (tooltipIsExpanded) {
+    closeTooltip();
+    window.location.hash = 'all'; // not the empty string so that it doesn't cause a page refresh
+    return;
+  }
+  tooltipIsExpanded = true;
+  restoreOpacities();
+  // Expand the tooltip.
+  document.getElementById('tooltip').classList.add('expanded');
   const ns = getNoteSequenceFromData(d);
+  player.loadSamples(ns);
+  visualizeNoteSequence(ns, 'visualizer');
 
   window.location.hash = d.elementIndex; // not the empty string so that it doesn't cause a page refresh
-
-  // Hear it.
-  mm.Player.tone.Transport.stop();
-  player.stop();
-  player.start(ns);
-  didClick = true;
 }
 
 function handleMouseOver(d) {
+  if (tooltipIsExpanded) {
+    return;
+  }
   handleMouseOverForEl(d, d3.select(this));
 }
 
 function handleMouseOut(d) {
+  if (tooltipIsExpanded) {
+    return;
+  }
   handleMouseOutForEl(d3.select(this));
 }
 
 function handleMouseOverForEl(d, el) {
   window.location.hash = 'all'; // not the empty string so that it doesn't cause a page refresh
-
-  // Did we force select an element? deselect that first.
 
   // Fade all the segments.
   const ancestors = d.ancestors().reverse();
@@ -228,9 +241,9 @@ function handleMouseOverForEl(d, el) {
   zoomPie(el);
 
   // Fade everything else.
-  svg.selectAll('path').style('fill-opacity', 0.1);
-  svg.selectAll('.annotation').style('fill-opacity', 0.1);
-  svg.selectAll('.annotation').style('stroke-opacity', 0.1);
+  svg.selectAll('path').style('fill-opacity', 0.3);
+  svg.selectAll('.annotation').style('fill-opacity', 0.3);
+  svg.selectAll('.annotation').style('stroke-opacity', 0.3);
 
   // Highlight these ancestors.
   svg.selectAll('path')
@@ -244,13 +257,14 @@ function handleMouseOverForEl(d, el) {
 }
 
 function handleMouseOutForEl(el) {
-  player.stop();
   hideTooltip();
-
-  const svg = d3.select('#svg');
-
   unzoomPie(el);
-  svg.selectAll('path').style('fill-opacity', (d) => opacityScale(d.depth));
+  restoreOpacities();
+}
+
+function restoreOpacities() {
+  const svg = d3.select('#svg');
+  svg.selectAll('path').style('fill-opacity', 1);
   svg.selectAll('.annotation').style('fill-opacity', 1);
   svg.selectAll('.annotation').style('stroke-opacity', 1);
 }
@@ -262,6 +276,6 @@ function handleForceSelect(i, data) {
   if (!d) {
     return;
   }
-  handleMouseOverForEl(d, el)
-  handleClick.bind(el)(d);
+  showTooltip(d, el);
+  handleClick(d, el);
 }

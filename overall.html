@@ -61,22 +61,45 @@
         in neither a major nor minor key).
       </p>
       <p>
-        <span class="accent purple outline">Hover</span> over any of the cells to see the melody up to that point.
-        <span class="accent blue outline">Move</span> any of the labels out of the way.
-        <span class="accent blue outline">Click</span> on a cell to see more details about the melody, listen to it, or harmonize it.
+        <span class="accent blue outline">Move</span> any of the labels out of the way.<span class="accent purple outline">Hover</span> over any of the cells to see a quick preview
+        of the melody. <span class="accent blue outline">Click</span> on a cell to see
+        more details about the melody, and listen to it.
       </p>
     </section>
 
     <div class="center">
       <svg id="svg"></svg>
     </div>
-
+    <style>
+      .tooltip .actions,
+      .tooltip .viz,
+      .tooltip.expanded .hint {
+        display: none;
+      }
+      .tooltip.expanded .viz,
+      .tooltip .hint {
+        display: block;
+      }
+      .tooltip.expanded .actions {
+        display: flex;
+      }
+    </style>
     <div class="tooltip" id="tooltip" hidden>
-      <p>Heard <b id="valueText"></b> times across <b id="sessionsText"></b> sessions.</p>
-      <svg id="visualizer"></svg>
-      <p hidden>
-        <button class="accent secondary" id="btnHarmonize">Harmonize! (warning: slow)</button>
-      </p>
+      <div>
+        Heard <b id="valueText"></b> times across <b id="sessionsText"></b> sessions.
+      </div>
+      <div class="viz">
+        <svg id="visualizer"></svg>
+      </div>
+      <div class="small status" hidden>Harmonizing...please wait.</div>
+      <div class="actions horizontal">
+        <div>
+            <button class="accent yellow" onclick="playMelody()" id="">play</button>
+            <button class="accent yellow" onclick="harmonize(event)">harmonize</button>
+        </div>
+        <button class="accent yellow" onclick="closeTooltip()">close</button>
+      </div>
+      <div class="small hint">Click to expand and listen.</div>
     </div>
   </body>
   <script src="https://d3js.org/d3.v5.min.js"></script>
