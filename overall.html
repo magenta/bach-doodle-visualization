@@ -61,6 +61,9 @@
       </p>
       <p id="trivia" hidden>
         There were <b id="triviaTotal"></b> total sequences entered in <b id="triviaCountry"></b>.
+        Out of the 2000 most repeated sequences, <b id="triviaMajor"></b> were composed in a
+        major key,  <b id="triviaMinor"></b> in a minor key, and  <b id="triviaNeither"></b>
+        in neither a major nor minor key.
       </p>
     </section>
 
@@ -132,6 +135,13 @@
         trivia.hidden = false;
         triviaTotal.textContent = d3.format(".2s")(totalPerCountry[country]);
         triviaCountry.textContent =  availableCountriesNames[country];
+
+        d3.json(TRIVIA_PER_COUNTRY_URL).then((trivia) => {
+          const t = trivia[country];
+          triviaMajor.textContent = t.major;
+          triviaMinor.textContent = t.minor;
+          triviaNeither.textContent = t.neither;
+        });
       }
     }
   </script>
