@@ -219,6 +219,19 @@ rect, path { cursor: pointer; }
   font-size: 20px;
 }
 
+.tooltip .actions,
+.tooltip .viz,
+.tooltip.expanded .hint {
+  display: none;
+}
+.tooltip.expanded .viz,
+.tooltip .hint {
+  display: block;
+}
+.tooltip.expanded .actions {
+  display: flex;
+}
+
 #visualizer text {
   font-weight: bold;
   font-size: 9px;
@@ -297,7 +310,7 @@ button {
   }
 }
 
-#trivia {
+.trivia {
   padding-bottom: 24px;
   margin-bottom: 24px;
   border-bottom: 8px solid rgba(0, 0, 0, 0.1);

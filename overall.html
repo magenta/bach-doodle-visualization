@@ -54,11 +54,21 @@
 
     <section>
       <h1>What did the doodlers <span id="textCountry"></span>compose?</h1>
-      <p id="trivia" hidden>
+
+      <p id="overallTrivia" class="trivia" hidden>
+        There were over <b>24 million</b> total sequences entered in the dataset,
+        and we heard a lot of popular favourites! The doodle's presets
+        ("Twinkle Twinkle Little Star", "Mary Had a Little Lamb" and
+        Bach's "Tocatta and Fugue in D minor") were by far the most repeated
+        sequences, but we found some surprising runner ups. Explore them below!
+      </p>
+
+      <p id="countryTrivia" class="trivia" hidden>
         There were <b id="triviaTotal"></b> total sequences entered in <b id="triviaCountry"></b>.
         Out of the 2000 most repeated sequences, <b id="triviaMajor"></b> were composed in a
         major key,  <b id="triviaMinor"></b> in a minor key, and  <b id="triviaNeither"></b>
-        in neither a major nor minor key).
+        in neither a major nor minor key). <b id="triviaUnseen"></b> of these top sequences
+        were not seen in any other country's top sequences!
       </p>
       <p>
         <span class="accent blue outline">Move</span> any of the labels out of the way.<span class="accent purple outline">Hover</span> over any of the cells to see a quick preview
@@ -70,20 +80,6 @@
     <div class="center">
       <svg id="svg"></svg>
     </div>
-    <style>
-      .tooltip .actions,
-      .tooltip .viz,
-      .tooltip.expanded .hint {
-        display: none;
-      }
-      .tooltip.expanded .viz,
-      .tooltip .hint {
-        display: block;
-      }
-      .tooltip.expanded .actions {
-        display: flex;
-      }
-    </style>
     <div class="tooltip" id="tooltip" hidden>
       <div>
         Heard <b id="valueText"></b> times across <b id="sessionsText"></b> sessions.
@@ -144,7 +140,8 @@
       drawSunburst(isCountryView ? allData[country] : allData, size);
 
       if (!isCountryView) {
-        trivia.hidden = true;
+        countryTrivia.hidden = true;
+        overallTrivia.hidden = false;
         if (!allLabels) {
           d3.json(LABELS_URL).then((labels) => {
             allLabels = labels;
@@ -154,7 +151,8 @@
           drawLabels(allLabels);
         }
       } else {
-        trivia.hidden = false;
+        countryTrivia.hidden = false;
+        overallTrivia.hidden = true;
         triviaTotal.textContent = d3.format(".2s")(totalPerCountry[country]);
         triviaCountry.textContent =  availableCountriesNames[country];
 
@@ -163,6 +161,7 @@
           triviaMajor.textContent = (t.major/2000 * 100).toFixed(1) + '%';
           triviaMinor.textContent = (t.minor/2000 * 100).toFixed(1)  + '%';
           triviaNeither.textContent = (t.neither/2000 * 100).toFixed(1) + '%';
+          triviaUnseen.textContent = t.unseen;
         });
       }
     }
