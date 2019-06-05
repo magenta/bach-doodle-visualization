@@ -58,7 +58,7 @@
         There were <b id="triviaTotal"></b> total sequences entered in <b id="triviaCountry"></b>.
         Out of the 2000 most repeated sequences, <b id="triviaMajor"></b> were composed in a
         major key,  <b id="triviaMinor"></b> in a minor key, and  <b id="triviaNeither"></b>
-        in neither a major nor minor key (<b id="triviaPercent"></b>%).
+        in neither a major nor minor key).
       </p>
       <p>
         <span class="accent purple outline">Hover</span> over any of the cells to see the melody up to that point.
@@ -138,10 +138,9 @@
 
         d3.json(TRIVIA_PER_COUNTRY_URL).then((trivia) => {
           const t = trivia[country];
-          triviaMajor.textContent = t.major;
-          triviaMinor.textContent = t.minor;
-          triviaNeither.textContent = t.neither;
-          triviaPercent.textContent = (t.neither/2000 * 100).toFixed(1);
+          triviaMajor.textContent = (t.major/2000 * 100).toFixed(1) + '%';
+          triviaMinor.textContent = (t.minor/2000 * 100).toFixed(1)  + '%';
+          triviaNeither.textContent = (t.neither/2000 * 100).toFixed(1) + '%';
         });
       }
     }
