@@ -53,7 +53,7 @@ a.accent {
   margin-right: 16px;
 }
 .accent.primary {background: var(--primary)}
-.accent.secondary {background: var(--secondary); color: white}
+.accent.secondary {background: var(--secondary); color: black}
 .accent.outline.secondary {
   color: black;
   border-bottom: 4px dashed var(--secondary);
@@ -194,10 +194,12 @@ rect, path { cursor: pointer; }
 
 .tooltip .actions,
 .tooltip .viz,
+.tooltip #melodyTweet,
 .tooltip.expanded .hint {
   display: none;
 }
 .tooltip.expanded .viz,
+.tooltip.expanded #melodyTweet,
 .tooltip .hint {
   display: block;
 }
@@ -205,6 +207,14 @@ rect, path { cursor: pointer; }
   display: flex;
 }
 
+.tooltip a:link, .tooltip a:visited {
+  box-shadow: none;
+  color: black;
+  text-decoration: underline;
+  padding: 0;
+  margin: 0;
+  font-weight: bold;
+}
 
 #visualizer text {
   font-weight: bold;
@@ -226,7 +236,7 @@ rect, path { cursor: pointer; }
   fill: white;
 }
 .annotation text {
- font-weight: bold;
+ font-weight: 400;
  font-size: 150%;
  fill: black;
  cursor: move;

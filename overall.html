@@ -98,7 +98,9 @@
         </div>
         <button class="accent secondary" onclick="closeTooltip()">close</button>
       </div>
+      <br>
       <div class="small hint">Click to expand and listen.</div>
+      <div id="melodyTweet"></div>
     </div>
   </body>
   <script src="https://d3js.org/d3.v5.min.js"></script>
@@ -146,6 +148,9 @@
       drawSunburst(allData, size);
 
       if (!isCountryView) {
+        melodyTweet.innerHTML = `Do you think you know what this melody is? \
+        <a id="melodyTweetLink" target="_blank">Tweet at us</a> and we'll \
+        try to label it!`;
         countryTrivia.hidden = true;
         overallTrivia.hidden = false;
         unseenHelp.hidden = true;
@@ -158,6 +163,9 @@
           drawLabels(allLabels);
         }
       } else {
+        melodyTweet.innerHTML = `<a id="melodyTweetLink" target="_blank">Share</a> \
+        this melody.`;
+
         countryTrivia.hidden = false;
         overallTrivia.hidden = true;
         unseenHelp.hidden = false;
