@@ -176,7 +176,12 @@ function showTooltip(d, el) {
   const tooltip = document.getElementById('tooltip');
   tooltip.removeAttribute('hidden');
 
-  // Position and show the tooltip.
+  // Position and show the tooltip. If it's already expanded, then someone
+  // else has already done this calculation (i.e from forceSelect()) before
+  // this function got called (because it's async) so we don't it anymore.
+  if (tooltipIsExpanded) {
+    return;
+  }
   const rekt = el.node().getBoundingClientRect();
   const tooltipRekt = tooltip.getBoundingClientRect();
 
@@ -223,14 +228,20 @@ function handleClick(d) {
   player.loadSamples(ns);
   visualizeNoteSequence(ns, 'visualizer');
 
-  // Position it in the center of the svg.
-  const parentRekt = svg.getBoundingClientRect();
-  const tooltipRekt = tooltip.getBoundingClientRect();
-  const y = parentRekt.top + (parentRekt.height - tooltipRekt.height) / 2;
-  const x = parentRekt.left + (parentRekt.width - tooltipRekt.width) / 2;
-  d3.select(tooltip)
-    .style('top', y + document.scrollingElement.scrollTop + 'px')
-    .style('left', x + document.scrollingElement.scrollLeft + 'px');
+  // Position it in the center of the svg if it's a big enough screen.
+  if (window.innerWidth > 500) {
+    const parentRekt = svg.getBoundingClientRect();
+    const tooltipRekt = tooltip.getBoundingClientRect();
+    const y = parentRekt.top + (parentRekt.height - tooltipRekt.height) / 2;
+    const x = parentRekt.left + (parentRekt.width - tooltipRekt.width) / 2;
+    d3.select(tooltip)
+      .style('top', y + document.scrollingElement.scrollTop + 'px')
+      .style('left', x + document.scrollingElement.scrollLeft + 'px');
+  } else {
+    d3.select(tooltip)
+      .style('top', document.scrollingElement.scrollTop + 50 + 'px')
+      .style('left', '10px');
+  }
   tooltip.scrollIntoView();
 
   // So that we can hardlink.

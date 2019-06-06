@@ -164,13 +164,14 @@ rect, path { cursor: pointer; }
   padding: 16px;
 }
 
-.tooltip.expanded {
-  border: 4px solid black;
-}
-
 .tooltip {
   position: absolute;
   font-size: 16px;
+  max-width: 95%;
+}
+
+.tooltip.expanded {
+  border: 4px solid black;
 }
 
 .tooltip > svg {
@@ -203,6 +204,10 @@ rect, path { cursor: pointer; }
 .tooltip .hint {
   display: block;
 }
+.tooltip .viz {
+  overflow: auto;
+}
+
 .tooltip.expanded .actions {
   display: flex;
 }
