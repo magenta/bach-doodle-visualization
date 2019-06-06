@@ -10,11 +10,8 @@
     <link href="style.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:400,700&display=swap" rel="stylesheet">
     <style>
-      h2 {
-        display: inline-block;
-        margin: 0 14px;
-        text-align: center;
-        padding-top: 0;
+      .horizontal h3 {
+        padding: 0 14px;
       }
       button.toggle, button.play {
         border-top: 2px solid black;
@@ -40,12 +37,12 @@
         width: 100%;
         margin-bottom: 24px;
       }
-      table td {
-        min-width: 160px;
-        word-break: break-all;
+      table td:first-of-type {
+        width: 170px;
       }
-      table td:nth-of-type(2) {
-        font-weight: bold
+      table td:last-of-type {
+        font-weight: bold;
+        word-break: break-all;
       }
       .box {
         overflow: auto;
@@ -119,27 +116,14 @@
     <section>
       <div class="horizontal left">
         <button class="accent secondary circle" onclick="prevSession()" aria-label="view previous session">&lt;</button>
-        <h2>Session: <b id="activeSession"></b>/100</h2>
+        <h3>Session: <b id="activeSession"></b>/100</h3>
         <button class="accent secondary circle" onclick="nextSession()" aria-label="view next session">&gt;</button>
       </div>
       <div class="horizontal left">
         <button class="accent secondary circle" onclick="prevHarmonization()" aria-label="view previous harmonization">&lt;</button>
-        <h2>Harmonization: <b id="activeHarmonization"></b>/<b id="harms"></b></h2>
+        <h3>Harmonization: <b id="activeHarmonization"></b>/<b id="harms"></b></h3>
         <button class="accent secondary circle" onclick="nextHarmonization()" aria-label="view next harmonization">&gt;</button>
       </div>
-      <br><br>
-      <div class="horizontal">
-        <div>
-          <button class="toggle active" onclick="viewInput()" id="btnViewInput">input</button>
-          <button class="toggle" onclick="viewOutput()" id="btnViewOutput">output</button>
-        </div>
-        <button class="play" onclick="playOrPause()" id="btnPlay">play</button>
-      </div>
-
-      <div class="box">
-        <svg id="visualizer"></svg>
-      </div>
-
       <h3>Metadata</h3>
       <table class="box">
         <tbody>
@@ -173,6 +157,18 @@
           </tr>
         </tbody>
       </table>
+
+      <div class="horizontal">
+        <div>
+          <button class="toggle active" onclick="viewInput()" id="btnViewInput">input</button>
+          <button class="toggle" onclick="viewOutput()" id="btnViewOutput">output</button>
+        </div>
+        <button class="play" onclick="playOrPause()" id="btnPlay">play</button>
+      </div>
+
+      <div class="box">
+        <svg id="visualizer"></svg>
+      </div>
     </section>
   </body>
   <script src="https://cdn.jsdelivr.net/npm/@magenta/music@1.8.0"></script>
@@ -194,12 +190,14 @@
       activeHarmonization.textContent = harmIndex + 1;
 
       harms.textContent = data.length;
-      backend.textContent = data[harmIndex]['backend'];
+      const b = data[harmIndex]['backend']
+      backend.textContent = b + ` (${b == 'r'?'TPU': 'tf.js'})`;
       loops.textContent = data[harmIndex]['loops_listened'];
       sid.textContent = data[harmIndex]['session_id'];
       country.textContent = data[harmIndex]['country'];
-      comp.textContent = data[harmIndex]['composition_time'];
-      feedback.textContent = data[harmIndex]['feedback'];
+      comp.textContent = data[harmIndex]['composition_time'] + ' (ms)';
+      const f = data[harmIndex]['feedback'];
+      feedback.textContent = f + ` (${f===0?'poor':(f==1?'neutral':(f==2?'good':'no rating'))})`;
       keysig.textContent = data[harmIndex]['key_sig'];
 
       // TODO: check if we need this hack after fixing the dataset.json to jsonl
