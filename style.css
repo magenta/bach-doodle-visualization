@@ -13,7 +13,7 @@ body {
   --pink: #DB3695;
   --blue: #234EA0;
   --primary: var(--blue);
-  --secondary: var(--pink);
+  --secondary: #FFD138;
   --shadow: 8px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -162,6 +162,11 @@ rect, path { cursor: pointer; }
 
 .tooltip b {
   font-size: 20px;
+}
+
+.tooltip button {
+  font-size: 16px;
+  padding: 8px 16px;
 }
 
 .tooltip .actions,
