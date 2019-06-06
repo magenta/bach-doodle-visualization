@@ -1,0 +1,42 @@
+<html>
+  <head>
+    <title>split per country jsons</title>
+    <meta charset="utf-8">
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <link href="../style.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Google+Sans:400,500&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js" defer></script>
+  </head>
+  <body>
+    <button class="accent primary" onclick="split()">
+      split the file! (this will save 80 json files to your disk).
+    </button>
+    <p>next steps: upload those in the data/country folder</p>
+  </body>
+  <script>
+    let data;
+    d3.json('../data/top_per_country.json').then((json) => data = json);
+
+    function split() {
+      function splitAndSave() {
+        const country = countries[index];
+
+        console.log('generating', index, country);
+        const str = JSON.stringify(data[country]);
+        saveAs(new File([str], country + '.json'));
+
+        if (index < countries.length - 1) {
+          index++;
+          setTimeout(() => splitAndSave(), 1000)
+        }
+      }
+
+      const countries = Object.keys(data);
+      let index = 0;
+      console.log(countries.length, countries);
+      splitAndSave();
+    }
+  </script>
+</html>
+
+

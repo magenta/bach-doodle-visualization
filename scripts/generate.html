@@ -10,10 +10,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js" defer></script>
   </head>
   <body>
-    <button class="accent blue" onclick="generate()">
+    <button class="accent primary" onclick="generate()">
       start generation! (this will save 80 images to your disk).
     </button>
-    <p>next steps: convert these svgs to a smaller jpg and upload them back here.</p>
+    <p>next steps: convert these svgs to a smaller jpg and upload them in the blobs/ folder.</p>
     <svg width="960" height="960" xmlns="http://www.w3.org/2000/svg" id="svg" style="background:white">
       <g class="base" transform="translate(480,480)"></g>
     </svg>
@@ -22,28 +22,28 @@
     const radius = 160;
     const CIRCLE_MARGIN = 4;
     let data;
-    d3.json(TOP_PER_COUNTRY_URL).then((json) => data = json);
-    
+    d3.json('../data/top_per_country.json').then((json) => data = json);
+
     function generate() {
       function drawAndSave() {
         const country = countries[index];
         console.log('generating', index, country);
-        
-        el.querySelector('g').innerHTML = ''; 
+
+        el.querySelector('g').innerHTML = '';
         drawPackedSunburst(allData[country], radius, 0, 0);
         saveAs(new File([el.outerHTML], country + '.svg'));
-        
+
         if (index < countries.length - 1) {
           index++;
           setTimeout(() => drawAndSave(), 1000)
-        } 
+        }
       }
-      
+
       const allData = data;
       const countries = Object.keys(data);
       const el = document.getElementById('svg');
       let index = 0;
-      
+
       console.log(countries.length, countries);
       drawAndSave();
     }
