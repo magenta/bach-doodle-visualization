@@ -159,6 +159,7 @@ rect, path { cursor: pointer; }
 
 .tooltip {
   position: absolute;
+  font-size: 16px;
 }
 
 .tooltip > svg {

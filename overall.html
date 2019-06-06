@@ -85,8 +85,9 @@
     </div>
     <div class="tooltip" id="tooltip" hidden>
       <div>
-        Composed <b id="valueText"></b> times across <b id="sessionsText"></b> sessions.
-        <p id="unseenSession" hidden>⭐️ This melody isn't a top 2000 composition in any other country!</p>
+        Composed in <b id="sessionsText"></b> sessions and harmonized a total of <b id="valueText"></b> times.
+        <p id="unseenSession" hidden>⭐️ This melody is quite unique! <br>
+          It isn't among the top 2000 most used melodies in any other country.</p>
       </div>
       <div class="viz">
         <svg id="visualizer"></svg>
@@ -119,9 +120,7 @@
     textCountry.innerHTML = isCountryView ?
         `in <span class="accent primary">${availableCountriesNames[country]}</span> `:
         '';
-    document.title = (isCountryView ?
-        availableCountriesNames[country]:
-        'Overall') + ' repeated melodies';
+    document.title = (isCountryView ? country.toUpperCase() : 'Overall') + ' repeated melodies';
 
     window.addEventListener('resize', showData)
 
