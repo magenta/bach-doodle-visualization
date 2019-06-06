@@ -257,6 +257,10 @@ rect, path { cursor: pointer; }
 .annotation .connector-end {
   pointer-events: none;
 }
+.annotation-note-bg {
+  fill: white;
+  fill-opacity: 0.8;
+}
 
 button {
   position: relative;

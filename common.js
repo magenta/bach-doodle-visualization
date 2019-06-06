@@ -129,7 +129,7 @@ function loadAllSamples() {
  * Coconet
  ****************/
 async function harmonize(event) {
-  stopMelody()
+  stopMelody();
 
   const statusEl = document.querySelector('.tooltip .status');
   statusEl.hidden = false;
@@ -138,6 +138,7 @@ async function harmonize(event) {
 
   const original = sequenceVisualizer.noteSequence;
   coconet.infill(original).then((output) => {
+    stopMelody();
     const fixedOutput =
       mm.sequences.replaceInstruments(
         mm.sequences.mergeConsecutiveNotes(output), original);

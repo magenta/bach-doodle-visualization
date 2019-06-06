@@ -80,7 +80,7 @@ function drawLabels(labels) {
 
   for (let i = 0; i < labels.length; i++) {
     const obj = {};
-    obj.note = {title: labels[i].name, wrap: 300, bgPadding: 20};
+    obj.note = {title: labels[i].name, wrap: 200};
     obj.connector = {end: 'dot', endScale: 4};
 
     const el = document.getElementById('p' + labels[i].id);
@@ -217,6 +217,8 @@ function handleClick(d) {
 
   // Expand the tooltip.
   document.getElementById('tooltip').classList.add('expanded');
+  btnHarmonize.disabled = false;
+
   const ns = getNoteSequenceFromData(d);
   player.loadSamples(ns);
   visualizeNoteSequence(ns, 'visualizer');
