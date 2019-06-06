@@ -38,6 +38,7 @@ if (window.mm) {
       for (let i = 0; i < els.length; i++) {
         els[i].removeAttribute('class');
       }
+      btnPlay.textContent = 'play';
     }
   }
 
@@ -96,14 +97,20 @@ function getNoteSequenceFromDeltasAndTiming(deltas, timing) {
  * Playing NoteSequences
  ****************/
 function playMelody() {
-  // Hear it.
+  if (player.isPlaying()) {
+    stopMelody();
+    return;
+  }
   mm.Player.tone.Transport.stop();
   player.stop();
+  btnPlay.textContent = 'stop';
+  sequenceVisualizer.noteSequence.tempos = [{qpm:80, time:0}];
   player.start(sequenceVisualizer.noteSequence);
 }
 
 function stopMelody() {
   player.stop();
+  btnPlay.textContent = 'play';
 }
 
 function loadAllSamples() {
@@ -122,6 +129,8 @@ function loadAllSamples() {
  * Coconet
  ****************/
 async function harmonize(event) {
+  stopMelody()
+
   const statusEl = document.querySelector('.tooltip .status');
   statusEl.hidden = false;
   event.target.disabled = true;
