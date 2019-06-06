@@ -201,9 +201,11 @@ function hideTooltip() {
 }
 
 function closeTooltip() {
+  stopMelody();
   document.getElementById('tooltip').classList.remove('expanded');
   tooltipIsExpanded = false;
   hideTooltip();
+  handleMouseOutForEl();
 }
 /*********************
  * Mouse events
@@ -217,14 +219,25 @@ function handleClick(d) {
     return;
   }
   tooltipIsExpanded = true;
-  restoreOpacities();
+
   // Expand the tooltip.
   document.getElementById('tooltip').classList.add('expanded');
   const ns = getNoteSequenceFromData(d);
   player.loadSamples(ns);
   visualizeNoteSequence(ns, 'visualizer');
 
-  window.location.hash = d.elementIndex; // not the empty string so that it doesn't cause a page refresh
+  // Position it in the center of the svg.
+  const parentRekt = svg.getBoundingClientRect();
+  const tooltipRekt = tooltip.getBoundingClientRect();
+  const y = parentRekt.top + (parentRekt.height - tooltipRekt.height) / 2;
+  const x = parentRekt.left + (parentRekt.width - tooltipRekt.width) / 2;
+  d3.select(tooltip)
+    .style('top', y + document.scrollingElement.scrollTop + 'px')
+    .style('left', x + document.scrollingElement.scrollLeft + 'px');
+  tooltip.scrollIntoView();
+
+  // So that we can hardlink.
+  window.location.hash = d.elementIndex;
 }
 
 function handleMouseOver(d) {
@@ -234,7 +247,7 @@ function handleMouseOver(d) {
   handleMouseOverForEl(d, d3.select(this));
 }
 
-function handleMouseOut(d) {
+function handleMouseOut() {
   if (tooltipIsExpanded) {
     return;
   }
@@ -266,9 +279,9 @@ function handleMouseOverForEl(d, el) {
 
 }
 
-function handleMouseOutForEl(el) {
+function handleMouseOutForEl() {
   hideTooltip();
-  unzoomPie(el);
+  unzoomPie();
   restoreOpacities();
 }
 
@@ -286,6 +299,6 @@ function handleForceSelect(i, data) {
   if (!d) {
     return;
   }
-  showTooltip(d, el);
+  handleMouseOverForEl(d, el);
   handleClick(d, el);
 }

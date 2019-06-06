@@ -153,6 +153,10 @@ rect, path { cursor: pointer; }
   padding: 16px;
 }
 
+.tooltip.expanded {
+  border: 4px solid black;
+}
+
 .tooltip {
   position: absolute;
 }
