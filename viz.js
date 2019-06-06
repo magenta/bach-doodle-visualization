@@ -53,7 +53,6 @@ function drawSunburst(data, radius) {
     .innerRadius(d => d.y0)
     .outerRadius(d => d.y1 - 3)
 
-
   const paths = svg.selectAll('path')
       .data(root.descendants().filter(d => d.depth))
       .enter()
@@ -137,6 +136,7 @@ function unzoomPie() {
 
 function fill(d) {
   if (!d.depth) return '#ccc';
+  if (d.data.unseen) return '#FFD138';
   return color(parseInt(d.data.name));
 }
 

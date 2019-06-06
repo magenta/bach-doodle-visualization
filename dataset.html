@@ -175,7 +175,6 @@
     let allData;
     let sessionIndex = 0;
     let harmIndex = 0;
-    let minPitch, maxPitch;
 
     fetch(DATAPOINTS_URL).then(response => response.json()).then((data) => {
       allData = data;
@@ -211,8 +210,8 @@
       // have the same note ranges.
       const outputSequence = data[harmIndex]['output_sequence'];
       const pitches = outputSequence.notes.map(n => n.pitch);
-      minPitch = Math.min(...pitches) - 2;
-      maxPitch = Math.max(...pitches) + 2;
+      minPitch = Math.min(...pitches);
+      maxPitch = Math.max(...pitches);
 
       if (btnViewInput.classList.contains('active')) {
         viewInput();
