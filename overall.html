@@ -76,6 +76,10 @@
         <span id="unseenHelp" hidden>The <span class="accent secondary">yellow</span> cells represent
         melodies that were not in the top in any other country.</span>
       </p>
+      <p id="mobileScreen" class="small" hidden>Your screen size is quite small, so we've
+        hidden the labels for some of the most recognizable melodies. You can re-enable
+        them if you really want to with this checkbox (but warning: they're not
+        super usable on mobile, unfortunately) <input type="checkbox" id="forceLabels"></p>
      </section>
 
     <div class="center">
@@ -126,6 +130,7 @@
     if (('ontouchstart' in window) === false) {
       window.addEventListener('resize', showData);
     }
+    forceLabels.addEventListener('change', showData);
 
     d3.json(isCountryView ?
         TOP_PER_COUNTRY_PREFIX + country + '.json' :
@@ -154,13 +159,18 @@
         countryTrivia.hidden = true;
         overallTrivia.hidden = false;
         unseenHelp.hidden = true;
-        if (!allLabels) {
-          d3.json(LABELS_URL).then((labels) => {
-            allLabels = labels;
-            drawLabels(labels);
-          });
+
+        if (window.innerWidth > SMALL_SCREEN_SIZE || forceLabels.checked) {
+          if (!allLabels) {
+            d3.json(LABELS_URL).then((labels) => {
+              allLabels = labels;
+              drawLabels(labels);
+            });
+          } else {
+            drawLabels(allLabels);
+          }
         } else {
-          drawLabels(allLabels);
+          mobileScreen.hidden = false;
         }
       } else {
         melodyTweet.innerHTML = `<a id="melodyTweetLink" target="_blank">Share</a> \

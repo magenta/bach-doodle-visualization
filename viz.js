@@ -229,7 +229,7 @@ function handleClick(d) {
   visualizeNoteSequence(ns, 'visualizer');
 
   // Position it in the center of the svg if it's a big enough screen.
-  if (window.innerWidth > 500) {
+  if (window.innerWidth > SMALL_SCREEN_SIZE) {
     const parentRekt = svg.getBoundingClientRect();
     const tooltipRekt = tooltip.getBoundingClientRect();
     const y = parentRekt.top + (parentRekt.height - tooltipRekt.height) / 2;

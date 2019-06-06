@@ -6,6 +6,7 @@ const TRIVIA_PER_COUNTRY_URL = 'data/trivia_per_country.json';
 
 const DATAPOINTS_URL = 'https://cdn.glitch.com/b078d442-623b-41f0-a809-48f5f1ec1cbf%2Fdataset_samples.json?1559248203882';
 
+const SMALL_SCREEN_SIZE = 500;
 // Map delta interval -> color. This is how I generated it, but I'm saving it
 // as an array so that I don't have to load d3 to have colours.
 // const warms = d3.scaleOrdinal(d3.quantize(d3.interpolateRdPu, 12+10));
