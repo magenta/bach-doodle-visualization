@@ -60,6 +60,7 @@ a.accent {
   background:white;
   font-weight: bold;
   margin: 0;
+  padding: 0;
 }
 
 h1 {
@@ -207,13 +208,13 @@ rect, path { cursor: pointer; }
 
 #visualizer text {
   font-weight: bold;
-  font-size: 9px;
+  font-size: 10px;
   fill: white;
 }
 #visualizer rect.active {
   stroke: black;
   stroke-width: 2px;
-  fill: #04BFA5 !important;
+  fill: var(--secondary) !important;
 }
 
 .annotation-callout {
@@ -272,7 +273,7 @@ button {
 
 @media screen and (max-width: 700px) {
   h1 {
-    font-size: 1.5em;
+    font-size: 2em;
     text-align: left;
   }
   section {
@@ -284,8 +285,8 @@ button {
 }
 
 .trivia {
-  padding-bottom: 24px;
-  margin-bottom: 24px;
+  padding-bottom: 36px;
+  margin-bottom: 36px;
   border-bottom: 8px solid rgba(0, 0, 0, 0.1);
 }
 

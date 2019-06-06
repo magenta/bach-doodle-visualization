@@ -7,8 +7,6 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="description" content="Exploring the Bach Doodle dataset">
-    <!-- for the data assets-->
-    <link rel="preconnect" href="https://https://cdn.glitch.com">
     <link rel="preconnect" href="https://storage.googleapis.com">
     <link href="style.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:400,500&display=swap" rel="stylesheet">
@@ -78,7 +76,7 @@
         <span id="unseenHelp" hidden>The <span class="accent secondary">yellow</span> cells represent
         melodies that were not in the top in any other country.</span>
       </p>
-    </section>
+     </section>
 
     <div class="center">
       <svg id="svg"></svg>
@@ -122,7 +120,10 @@
         '';
     document.title = (isCountryView ? country.toUpperCase() : 'Overall') + ' repeated melodies';
 
-    window.addEventListener('resize', showData)
+    // Don't redraw on resize on mobile since that's probably a zoom event.
+    if (('ontouchstart' in window) === false) {
+      window.addEventListener('resize', showData);
+    }
 
     d3.json(isCountryView ?
         TOP_PER_COUNTRY_PREFIX + country + '.json' :

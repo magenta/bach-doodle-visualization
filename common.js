@@ -62,8 +62,8 @@ function visualizeNoteSequence(ns, el) {
     previousPitch = n.pitch;
 
     const textEl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    textEl.setAttribute('x', parseInt(rects[i].getAttribute('x')) + 4);
-    textEl.setAttribute('y', parseInt(rects[i].getAttribute('y')) + 12);
+    textEl.setAttribute('x', parseInt(rects[i].getAttribute('x')) + 6);
+    textEl.setAttribute('y', parseInt(rects[i].getAttribute('y')) + 10);
     textEl.setAttribute('fill', 'white');
     textEl.textContent = text;
     viz.appendChild(textEl);
