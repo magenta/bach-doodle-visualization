@@ -167,7 +167,7 @@ rect, path { cursor: pointer; }
 .tooltip {
   position: absolute;
   font-size: 16px;
-  max-width: 95%;
+  max-width: 550px;
 }
 
 .tooltip.expanded {
@@ -289,7 +289,6 @@ button {
   }
 }
 
-
 @media screen and (max-width: 700px) {
   h1 {
     font-size: 2em;
@@ -300,6 +299,12 @@ button {
   }
   h2 {
     padding-top: 0;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .tooltip {
+  max-width: 95%;
   }
 }
 

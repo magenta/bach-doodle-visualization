@@ -172,8 +172,6 @@ function showTooltip(d, el) {
   document.getElementById('sessionsText').textContent = totalSessions;
 
   unseenSession.hidden = !d.data.unseen;
-
-  const tooltip = document.getElementById('tooltip');
   tooltip.removeAttribute('hidden');
 
   // Position and show the tooltip. If it's already expanded, then someone
@@ -221,7 +219,8 @@ function handleClick(d) {
   tooltipIsExpanded = true;
 
   // Expand the tooltip.
-  document.getElementById('tooltip').classList.add('expanded');
+  tooltip.classList.add('expanded');
+  tooltip.removeAttribute('hidden');
   btnHarmonize.disabled = false;
 
   const ns = getNoteSequenceFromData(d);
