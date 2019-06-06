@@ -43,13 +43,20 @@
       table td {
         min-width: 160px;
         word-break: break-all;
-        padding: 8px 0;
       }
       table td:nth-of-type(2) {
         font-weight: bold
       }
       .box {
         overflow: auto;
+      }
+      .circle {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+        font-weight: bold;
+        border-radius: 50%;
+        box-shadow: var(--small-shadow);
       }
     </style>
   </head>
@@ -105,14 +112,14 @@
 
     <section>
       <div class="horizontal left">
-        <button class="accent secondary" onclick="prevSession()" aria-label="view previous session">&lt;</button>
+        <button class="accent secondary circle" onclick="prevSession()" aria-label="view previous session">&lt;</button>
         <h2>Session: <b id="activeSession"></b>/100</h2>
-        <button class="accent secondary" onclick="nextSession()" aria-label="view next session">&gt;</button>
+        <button class="accent secondary circle" onclick="nextSession()" aria-label="view next session">&gt;</button>
       </div>
       <div class="horizontal left">
-        <button class="accent secondary" onclick="prevHarmonization()" aria-label="view previous harmonization">&lt;</button>
+        <button class="accent secondary circle" onclick="prevHarmonization()" aria-label="view previous harmonization">&lt;</button>
         <h2>Harmonization: <b id="activeHarmonization"></b>/<b id="harms"></b></h2>
-        <button class="accent secondary" onclick="nextHarmonization()" aria-label="view next harmonization">&gt;</button>
+        <button class="accent secondary circle" onclick="nextHarmonization()" aria-label="view next harmonization">&gt;</button>
       </div>
       <br><br>
       <div class="horizontal">
@@ -190,6 +197,16 @@
       feedback.textContent = data[harmIndex]['feedback'];
       keysig.textContent = data[harmIndex]['key_sig'];
 
+      // TODO: check if we need this hack after fixing the dataset.json to jsonl
+      data[harmIndex]['output_sequence'].notes.forEach(n => {
+        n.quantizedStartStep = parseInt(n.quantizedStartStep || 0)
+        n.quantizedEndStep = parseInt(n.quantizedEndStep);
+      });
+      data[harmIndex]['input_sequence'].notes.forEach(n => {
+        n.quantizedStartStep = parseInt(n.quantizedStartStep || 0)
+        n.quantizedEndStep = parseInt(n.quantizedEndStep);
+      });
+
       // Ensure the two visualizers are the same height by making them
       // have the same note ranges.
       const outputSequence = data[harmIndex]['output_sequence'];
@@ -225,6 +242,8 @@
 
     function viewInput() {
       const ns = allData[sessionIndex][harmIndex]['input_sequence'];
+      ns.totalQuantizedSteps = parseInt(ns.totalQuantizedSteps);
+
       player.loadSamples(ns);
       visualizeNoteSequence(ns, 'visualizer', minPitch, maxPitch);
       btnViewInput.classList.add('active');
@@ -233,6 +252,7 @@
 
     function viewOutput() {
       const ns = allData[sessionIndex][harmIndex]['output_sequence'];
+      ns.totalQuantizedSteps = parseInt(ns.totalQuantizedSteps);
       player.loadSamples(ns);
       visualizeNoteSequence(ns, 'visualizer', minPitch, maxPitch);
       btnViewInput.classList.remove('active');
@@ -246,7 +266,6 @@
       } else {
         const key = btnViewInput.classList.contains('active') ? 'input_sequence' : 'output_sequence';
         const ns = allData[sessionIndex][harmIndex][key];
-
         ns.totalQuantizedSteps = parseInt(ns.totalQuantizedSteps);
         ns.tempos[0].time = 0;
         player.start(ns).then(() => btnPlay.textContent = 'play');

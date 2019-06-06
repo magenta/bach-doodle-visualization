@@ -15,6 +15,7 @@ body {
   --primary: var(--blue);
   --secondary: #FFD138;
   --shadow: 8px 8px rgba(0, 0, 0, 0.1);
+  --small-shadow: 4px 4px rgba(0, 0, 0, 0.1);
 }
 
 a:link, a:visited {
