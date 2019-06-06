@@ -125,7 +125,9 @@
 
     window.addEventListener('resize', showData)
 
-    d3.json(isCountryView ? TOP_PER_COUNTRY_URL : TOP_OVERALL_URL).then((data) => {
+    d3.json(isCountryView ?
+        TOP_PER_COUNTRY_PREFIX + country + '.json' :
+        TOP_OVERALL_URL).then((data) => {
       allData = data;
 
       loadAllSamples();
@@ -141,7 +143,7 @@
     function showData() {
       document.querySelector('#svg').innerHTML = '';
       const size = Math.min(window.innerWidth, window.innerHeight);
-      drawSunburst(isCountryView ? allData[country] : allData, size);
+      drawSunburst(allData, size);
 
       if (!isCountryView) {
         countryTrivia.hidden = true;
