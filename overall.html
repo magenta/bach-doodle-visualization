@@ -75,8 +75,8 @@
         <span class="accent secondary outline">Hover</span> over any of the cells to see a quick preview
         of the melody. <span class="accent secondary outline">Click</span> on a cell to see
         more details about it, listen to it, or see what the harmonization could have been.
-        The <span class="accent secondary">yellow</span> cells represent
-        melodies that were not in the top in any other country.
+        <span id="unseenHelp" hidden>The <span class="accent secondary">yellow</span> cells represent
+        melodies that were not in the top in any other country.</span>
       </p>
     </section>
 
@@ -146,6 +146,7 @@
       if (!isCountryView) {
         countryTrivia.hidden = true;
         overallTrivia.hidden = false;
+        unseenHelp.hidden = true;
         if (!allLabels) {
           d3.json(LABELS_URL).then((labels) => {
             allLabels = labels;
@@ -157,6 +158,7 @@
       } else {
         countryTrivia.hidden = false;
         overallTrivia.hidden = true;
+        unseenHelp.hidden = false;
         triviaTotal.textContent = d3.format(".2s")(totalPerCountry[country]);
         triviaCountry.textContent =  availableCountriesNames[country];
 
