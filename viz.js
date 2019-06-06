@@ -171,6 +171,13 @@ function showTooltip(d, el) {
   d.descendants().forEach(x => totalSessions += (x.data.sessions || 0));
   document.getElementById('sessionsText').textContent = totalSessions;
 
+  let isUnseen = false;
+  unseenSession.hidden = false;
+  d.descendants().forEach(x => {
+    if (x.data.unseen) isUnseen = true;
+  });
+  document.getElementById('unseenSession').hidden = !isUnseen;
+
   const tooltip = document.getElementById('tooltip');
   tooltip.removeAttribute('hidden');
 

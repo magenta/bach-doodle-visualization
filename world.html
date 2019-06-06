@@ -105,8 +105,9 @@
           and Spain ranking in the top 5. Countries that had a small number of
           sequences were all grouped together in a separate category, to minimize
           the possibility of identifying users. Below you can explore how the top
-          2000 most repeated melodies changed around the world -- the size of each
-          circle represents the size of the total numbre of sequences entered
+          2000 most repeated melodies changed around the world (80 countries, to
+          be more exact)-- the size of each
+          circle represents the size of the total number of sequences entered
           in that country.
         </p>
       <p><span class="accent secondary outline">Click</span> on a circle to explore that country.
@@ -181,10 +182,11 @@
           const t = trivia[country];
 
           a.title = d3.format(".2s")(totalPerCountry[country]) +
-              ' sequences were entered in total in '  + availableCountriesNames[country] + '.' +
+              ' sequences were entered in total in '  + availableCountriesNames[country] + '.\n' +
               `${(t.major/2000 * 100).toFixed(1)}% were in a major scale, ` +
               `${(t.minor/2000 * 100).toFixed(1)}% in a minor, ` +
-              `${(t.neither/2000 * 100).toFixed(1)}% were neither.`
+              `${(t.neither/2000 * 100).toFixed(1)}% were neither. \n` +
+              t.unseen + ' sequences were not found in any other country.'
           ;
 
           overlay.textContent = country.toUpperCase();
