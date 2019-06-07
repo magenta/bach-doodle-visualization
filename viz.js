@@ -236,7 +236,13 @@ function showTooltip(d, el) {
   d.descendants().forEach(x => totalSessions += (x.data.sessions || 0));
   document.getElementById('sessionsText').textContent = totalSessions;
 
-  unseenSession.hidden = !d.data.unseen;
+  if (d.data.country) {
+    unseenCountry.textContent = availableCountriesNames[d.data.country];
+  }
+
+  if (document.getElementById('unseenSession')){
+    unseenSession.hidden = !d.data.unseen;
+  }
   tooltip.removeAttribute('hidden');
 
   // Position and show the tooltip. If it's already expanded, then someone

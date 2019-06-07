@@ -1,21 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <title>Most unique repeated melodies</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="description" content="Exploring the Bach Doodle dataset">
-    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://storage.googleapis.com">
+    <link href="style.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:400,700&display=swap" rel="stylesheet">
-
-    <title>Bach Doodle Dataset</title>
-
-    <style>
-      body {
-        text-align: left;
-      }
-    </style>
   </head>
   <body>
     <header>
@@ -57,43 +51,87 @@
     </header>
 
     <section>
-      <h1>Exploring the <span class="accent primary">Bach Doodle</span></h1>
-      <p>
-        Over 8 million players have contributed around 24 millions harmonizations after playing with the Bach Google Doodle.
-        These harmonizations are a unique data set that can help developers train new neural networks,
-        help researchers see patterns in how people around the world compose melodies, and help
-        musicians create things we haven’t begun to think of. That’s why we’re open-sourcing the dataset.
+      <h1>What did the most unique melodies sound like?</h1>
+
+      <p class="trivia">
+        Each country has its own top 2000 repeated melodies, but some of each countries
+        melodies were not seen in any other country's top. Are they childhood songs?
+        Regional pop songs? Just an interesting melody tat only a couple friends
+        in that country wanted to harmonize? Below you can see these most unique
+        melodies, listen to them, and see where they were composed.
       </p>
-    </section>
-    <section>
-      <h2>The dataset</h2>
+
       <p>
-        Of the more than 50 million requests to the doodle itself, the user contributed dataset contains
-        over 21.6 million miniature compositions totaling 78.8 years spent composing.
-        The compositions are split across 8.5 million sessions -- each session represents
-        an anonymous user's interaction with the web app and may contain multiple data points.
+        <span class="accent secondary outline">Hover</span> over any of the cells to see a quick preview
+        of the melody. <span class="accent secondary outline">Click</span> on a cell to see
+        more details about it, listen to it, or see what the harmonization could have been.
+        The <span class="accent secondary">yellow</span> cells represent the
+        exact melodies that were not seen in the top 2000 melodies in any other country.</span>
+        <span id="unseenHelp" hidden>
       </p>
-      <a class="accent secondary" href="dataset.html">Explore the dataset</a>
     </section>
 
-    <section>
-      <h2>Repeated compositions</h2>
-      <p>
-        Not every melody entered was unique! A lot of you entered your favourite pop songs,
-        or other Bach pieces you wanted to see how the model would harmonize with. These
-        repeated sequences surfaced through the top, and you can visualize them here.
-        We've also split them across which country they came from, to see
-        how compositions changed around the world!
-      </p>
-      <p class="small">(Note: these two visualizations
-          are pretty big, and work the best on a desktop, where you have more pixels
-          for clicking)</p>
-      <a class="accent secondary" href="overall.html">Explore the top overall melodies</a>
+    <div class="center">
+      <svg id="svg"></svg>
+    </div>
+    <div class="tooltip" id="tooltip" hidden>
+      <div>
+        Composed in <b id="unseenCountry"></b>, in <b id="sessionsText"></b> sessions and harmonized a total of <b id="valueText"></b> times.
+      </div>
+      <div class="viz">
+        <svg id="visualizer"></svg>
+      </div>
+      <div class="small status" hidden>Harmonizing takes a couple of seconds...please wait.</div>
+      <div class="actions horizontal">
+        <div>
+          <button class="accent secondary" onclick="playMelody()" id="btnPlay">play</button>
+          <button class="accent secondary" onclick="harmonize(event)" id="btnHarmonize">harmonize</button>
+        </div>
+        <button class="accent secondary" onclick="closeTooltip()">close</button>
+      </div>
       <br>
-      <a class="accent secondary" href="world.html">Explore melodies around the world</a>
-      <br>
-      <a class="accent secondary" href="unique.html">Explore the most unique compositions</a>
-    </section>
-
+      <div class="small hint">Click to expand and listen. Shift click to zoom in to the melodies starting on this note.
+        <span id="whiteCircleHint" hidden>Click on the white circle in the middle to go back.</span>
+      </div>
+      <div id="melodyTweet"></div>
+    </div>
   </body>
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.3.2/d3-annotation.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@magenta/music@1.8.0"></script>
+  <script src="common.js"></script>
+  <script src="viz.js"></script>
+  <script>
+    let allData = []
+
+    // Don't redraw on resize on mobile since that's probably a zoom event.
+    if (('ontouchstart' in window) === false) {
+      window.addEventListener('resize', showData);
+    }
+
+    d3.json('./data/unique_per_country.json').then((data) => {
+      allData = data;
+
+      loadAllSamples();
+      showData();
+
+      // If there's a hash, we should try to select that melody.
+      const pathIndex = window.location.hash.slice(1);
+      if (pathIndex !== '') {
+        handleForceSelect(pathIndex);
+      }
+    });
+
+    function showData() {
+      document.querySelector('#svg').innerHTML = '';
+      const size = Math.min(window.innerWidth, window.innerHeight);
+
+      drawSunburst(allData, size);
+
+      melodyTweet.innerHTML = `<a id="melodyTweetLink" target="_blank">Share</a> this melody!`;
+      melodyTweet.innerHTML += ` Or, open this melody in our \
+    <a id="coucouLink" target="_blank">companion app</a> to explore more harmonizations.`
+
+    }
+  </script>
 </html>
