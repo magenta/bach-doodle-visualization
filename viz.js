@@ -35,7 +35,11 @@ function drawSunburst(data, radius) {
 
   // Add an ID to every element so that we can find it later.
   let i = 0;
-  root.each((d) => {d.current = d; d.elementIndex = i; i++});
+  root.each((d) => {
+    d.elementIndex = i;
+    i++;
+    d.current = d;
+  });
 
   const degree = 2 * Math.PI / 360 / 5;
   let arc, svg;
@@ -69,8 +73,8 @@ function drawSunburst(data, radius) {
       .attr('fill', fill)
       .attr('fill-opacity', 1)
       .style('cursor', 'pointer')
-      .attr('id', (d) => `p${d.elementIndex}`)
-      .attr('d', arc)
+      .attr('id', d => `p${d.elementIndex}`)
+      .attr('d', d => arc(d.current))
 
     paths
       .on('click', function (d,i) {
@@ -246,7 +250,7 @@ function showTooltip(d, el) {
 
   // Center them above the path.
   let newY = rekt.y - tooltipRekt.height - 10;
-  let newX = rekt.x - rekt.width/2 - tooltipRekt.width/2;
+  let newX = Math.max(20, rekt.x - rekt.width/2 - tooltipRekt.width/2);
   d3.select(tooltip)
     .style('top', newY + document.scrollingElement.scrollTop + 'px')
     .style('left', newX + document.scrollingElement.scrollLeft + 'px');
