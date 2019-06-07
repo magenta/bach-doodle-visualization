@@ -248,6 +248,9 @@ function handleClick(d) {
   melodyTweetLink.href = 'https://twitter.com/intent/tweet?hashtags=madewithmagenta&text=' +
   encodeURIComponent(`Listen to this melody from the Bach Doodle dataset! \
 https://meowni.ca/doodle-data-explorer/overall.html\#${d.elementIndex}`);
+
+  melodyTweet.innerHTML += ` Or, open this melody in our \
+  <a href="${getCoucouLink()}" target="_blank">companion app</a> to explore more harmonizations.`
 }
 
 function handleMouseOver(d) {

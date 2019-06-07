@@ -148,3 +148,15 @@ async function harmonize(event) {
 
   });
 }
+
+function getCoucouLink() {
+  let s = '';
+  const ns = sequenceVisualizer.noteSequence;
+  for (let i = 0; i < ns.notes.length; i++) {
+    const note = ns.notes[i];
+    for (let t = note.quantizedStartStep; t < note.quantizedEndStep; t++) {
+      s += `${note.pitch}:${t}:${note.instrument},`
+    }
+  }
+  return 'http://coconet.glitch.me/#' + s.substring(0, s.length - 1);
+}

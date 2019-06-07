@@ -97,9 +97,8 @@
       <div class="small status" hidden>Harmonizing...please wait.</div>
       <div class="actions horizontal">
         <div>
-            <button class="accent secondary" onclick="playMelody()" id="btnPlay">play</button>
-            <button class="accent secondary" onclick="harmonize(event)" id="btnHarmonize">harmonize</button>
-            <button class="accent secondary" onclick="debug()">debug</button>
+          <button class="accent secondary" onclick="playMelody()" id="btnPlay">play</button>
+          <button class="accent secondary" onclick="harmonize(event)" id="btnHarmonize">harmonize</button>
         </div>
         <button class="accent secondary" onclick="closeTooltip()">close</button>
       </div>
@@ -191,17 +190,6 @@
           triviaUnseen.textContent = t.unseen;
         });
       }
-    }
-
-    function debug() {
-      let s = '';
-      const ns = sequenceVisualizer.noteSequence;
-      for (let i = 0; i < ns.notes.length; i++) {
-        const note = ns.notes[i]
-        s += `${note.pitch}:${note.quantizedStartStep}:${note.instrument},`;
-      }
-      window.open('http://coconet.glitch.me/#' + s.substring(0, s.length - 1),
-                  '_blank');
     }
   </script>
 </html>
