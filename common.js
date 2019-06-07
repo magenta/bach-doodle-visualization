@@ -138,7 +138,7 @@ async function harmonize(event) {
   await mm.tf.nextFrame();
 
   const original = sequenceVisualizer.noteSequence;
-  coconet.infill(original, {temperature:0.99}).then((output) => {
+  coconet.infill(original, {temperature:0.5}).then((output) => {
     stopMelody();
     const fixedOutput =
       mm.sequences.replaceInstruments(
