@@ -73,7 +73,7 @@
     </section>
 
     <div class="center">
-      <svg id="svg" viewBox="-450 -350 900 900"></svg>
+      <svg id="svg"></svg>
     </div>
     <div class="tooltip" id="tooltip" hidden>
       <div>
@@ -121,20 +121,19 @@
 
     function showData() {
       document.querySelector('#svg').innerHTML = '';
-      const size = Math.min(700, Math.min(window.innerWidth, window.innerHeight));
-
-      drawCircles(allData, size);
+      const size = window.innerWidth > 700 ? 700: window.innerWidth;
+      drawCircles(allData,size, size);
 
       melodyTweet.innerHTML = `<a id='melodyTweetLink' target='_blank'>Share</a> this melody!`;
       melodyTweet.innerHTML += ` Or, open this melody in our \
     <a id='coucouLink' target='_blank'>companion app</a> to explore more harmonizations.`
     }
 
-    function drawCircles(data, size) {
+    function drawCircles(data, width, height) {
       // https://observablehq.com/@d3/zoomable-circle-packing with changes
-      const countryColors = d3.scaleOrdinal(d3.quantize(d3.interpolateWarm, data.children.length + 1));
+      const countryColors = d3.scaleOrdinal(d3.quantize(d3.interpolateWarm, data.children.length));
       const pack = data => d3.pack()
-          .size([size, size])
+          .size([width, height])
           .padding(3)
         (d3.hierarchy(data)
           .sum(d => d.value)
@@ -153,6 +152,9 @@
       let isZoomedIn = false;
 
       const svg = d3.select('#svg')
+          .attr('width', width)
+          .attr('height', height)
+          .attr('viewBox', `-${width / 2} -${height / 2} ${width} ${height}`)
           .on('click', () => zoom(root));
 
       const node = svg.append('g')
@@ -206,7 +208,7 @@
       svg.node();
 
     function zoomTo(v) {
-      const k = size / v[2];
+      const k = width / v[2];
       view = v;
       label.attr('transform', d => `translate(${(d.x - v[0]) * k},${(d.y + 15 - v[1]) * k})`);
       node.attr('transform', d => `translate(${(d.x - v[0]) * k},${(d.y - v[1]) * k})`);
