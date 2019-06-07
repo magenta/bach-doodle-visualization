@@ -245,10 +245,9 @@ function handleClick(d) {
 
   // So that we can hardlink.
   window.location.hash = d.elementIndex;
-  melodyTweetLink.href = 'https://twitter.com/intent/tweet?hashtags=madewithmagenta&text=' +
-  encodeURIComponent(`Listen to this melody from the Bach Doodle dataset! \
-https://meowni.ca/doodle-data-explorer/overall.html\#${d.elementIndex}`);
 
+  melodyTweetLink.href = 'https://twitter.com/intent/tweet?hashtags=madewithmagenta&text=' +
+  encodeURIComponent('Listen to this melody from the Bach Doodle dataset! ' + window.location.href);
   coucouLink.href = getCoucouLink();
 }
 
