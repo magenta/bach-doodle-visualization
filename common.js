@@ -138,6 +138,9 @@ async function harmonize(event) {
   await mm.tf.nextFrame();
 
   const original = sequenceVisualizer.noteSequence;
+  // If there are any notes above 82, clamp them down.
+  original.notes.forEach(n => n.pitch = Math.min(81, n.pitch));
+
   coconet.infill(original, {temperature:0.5}).then((output) => {
     stopMelody();
     const fixedOutput =
