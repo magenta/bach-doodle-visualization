@@ -94,6 +94,21 @@ function getNoteSequenceFromDeltasAndTiming(deltas, timing) {
   ns.totalQuantizedSteps = ns.notes[ns.notes.length-1].quantizedEndStep;
   return ns;
 }
+
+function getNoteSequenceFromDeltaTimingPair(deltas) {
+  // Make a NoteSequence out of these timings and deltas.
+  const ns = {notes: [], quantizationInfo: {stepsPerQuarter: 4}};
+  for (let i = 0; i < deltas.length; i++) {
+    ns.notes.push({pitch: deltas[i][0],
+      velocity: 80,
+      instrument: 0,
+      quantizedStartStep: deltas[i][1],
+      quantizedEndStep: deltas[i][2]
+    });
+  }
+  ns.totalQuantizedSteps = ns.notes[ns.notes.length-1].quantizedEndStep;
+  return ns;
+}
 /****************
  * Playing NoteSequences
  ****************/

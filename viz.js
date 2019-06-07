@@ -287,6 +287,7 @@ function handleClick(d) {
     window.location.hash = 'all'; // not the empty string so that it doesn't cause a page refresh
     return;
   }
+
   tooltipIsExpanded = true;
 
   // Expand the tooltip.
@@ -294,7 +295,13 @@ function handleClick(d) {
   tooltip.removeAttribute('hidden');
   btnHarmonize.disabled = false;
 
-  const ns = getNoteSequenceFromData(d);
+  let ns;
+  if (d.data.deltas[0].length === 3) {
+    ns = getNoteSequenceFromDeltaTimingPair(d.data.deltas)
+  } else {
+    ns = getNoteSequenceFromData(d);
+  }
+
   player.loadSamples(ns);
   visualizeNoteSequence(ns, 'visualizer');
 
@@ -312,7 +319,7 @@ function handleClick(d) {
       .style('top', document.scrollingElement.scrollTop + 50 + 'px')
       .style('left', '10px');
   }
-  tooltip.scrollIntoView();
+  //tooltip.scrollIntoView();
 
   // So that we can hardlink.
   window.location.hash = d.elementIndex;
