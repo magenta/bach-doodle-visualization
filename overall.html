@@ -174,7 +174,7 @@
         }
       } else {
         melodyTweet.innerHTML = `<a id="melodyTweetLink" target="_blank">Share</a> \
-        this melody.`;
+        this melody!`;
 
         countryTrivia.hidden = false;
         overallTrivia.hidden = true;
@@ -190,6 +190,10 @@
           triviaUnseen.textContent = t.unseen;
         });
       }
+
+      melodyTweet.innerHTML += ` Or, open this melody in our \
+    <a id="coucouLink" target="_blank">companion app</a> to explore more harmonizations.`
+
     }
   </script>
 </html>
