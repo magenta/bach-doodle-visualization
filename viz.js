@@ -35,7 +35,7 @@ function drawSunburst(data, radius) {
 
   // Add an ID to every element so that we can find it later.
   let i = 0;
-  root.each((d) => {d.current = d; d.elementIndex = i++});
+  root.each((d) => {d.current = d; d.elementIndex = i; i++});
 
   const degree = 2 * Math.PI / 360 / 5;
   let arc, svg;
@@ -51,6 +51,7 @@ function drawSunburst(data, radius) {
     .attr('r', radius)
     .attr('fill', 'white')
     .attr('pointer-events', 'all')
+    .on('mouseover', hideTooltip)
     .on('click', zoom);
 
   arc = d3.arc()
@@ -97,13 +98,16 @@ function drawSunburst(data, radius) {
     // CLicking on the white circle.
     if (p.depth === 0) {
       requestAnimationFrame(showLabels);
+      whiteCircleHint.hidden = true;
+    } else {
+      whiteCircleHint.hidden = false;
     }
 
     root.each(d => d.target = {
       x0: Math.max(0, Math.min(1, (d.x0 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
       x1: Math.max(0, Math.min(1, (d.x1 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
-      y0: Math.max(0, d.y0 - p.depth),
-      y1: Math.max(0, d.y1 - p.depth)
+      y0: Math.max(20, d.y0 - p.depth),
+      y1: Math.max(10, d.y1 - p.depth)
     });
 
     const t = svg.transition().duration(0);
