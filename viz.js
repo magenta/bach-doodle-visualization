@@ -35,7 +35,7 @@ function drawSunburst(data, radius) {
 
   // Add an ID to every element so that we can find it later.
   let i = 0;
-  root.each((d) => d.elementIndex = i++);
+  root.each((d) => {d.current = d; d.elementIndex = i++});
 
   const degree = 2 * Math.PI / 360 / 5;
   let arc, svg;
@@ -44,6 +44,14 @@ function drawSunburst(data, radius) {
     .style('width', radius) // to fit right side labels a bit better
     .style('height', radius)
     .append('g');
+
+  // Add the white circle in the middle.
+  svg.append('circle')
+    .datum(root)
+    .attr('r', radius)
+    .attr('fill', 'white')
+    .attr('pointer-events', 'all')
+    .on('click', zoom);
 
   arc = d3.arc()
     .startAngle(d => d.x0 - degree)
@@ -54,7 +62,7 @@ function drawSunburst(data, radius) {
     .outerRadius(d => d.y1 - 3)
 
   const paths = svg.selectAll('path')
-      .data(root.descendants().filter(d => d.depth))
+      .data(root.descendants().slice(1))
       .enter()
       .append('path')
       .attr('fill', fill)
@@ -64,14 +72,53 @@ function drawSunburst(data, radius) {
       .attr('d', arc)
 
     paths
-      .on('click', handleClick)
+      .on('click', function (d,i) {
+        if (d3.event.shiftKey) {
+          if (d.descendants().length > 1) {
+            zoom(d,i);
+          }
+        } else {
+          handleClick(d,i);
+        }
+      })
       .on('mouseover', handleMouseOver)
       .on('mouseout', handleMouseOut)
+
   svg.node();
 
   const el = document.getElementById('svg');
   const box = el.getBBox();
   el.setAttribute('viewBox', `${box.x} ${box.y} ${box.width} ${box.height}`);
+
+  function zoom(p) {
+    hideLabels();
+    unzoomPie();
+
+    // CLicking on the white circle.
+    if (p.depth === 0) {
+      requestAnimationFrame(showLabels);
+    }
+
+    root.each(d => d.target = {
+      x0: Math.max(0, Math.min(1, (d.x0 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
+      x1: Math.max(0, Math.min(1, (d.x1 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
+      y0: Math.max(0, d.y0 - p.depth),
+      y1: Math.max(0, d.y1 - p.depth)
+    });
+
+    const t = svg.transition().duration(0);
+
+    // Transition the data on all arcs, even the ones that aren’t visible,
+    // so that if this transition is interrupted, entering arcs will start
+    // the next transition from the desired position.
+    paths.transition(t)
+      .tween('data', d => {
+        const i = d3.interpolate(d.current, d.target);
+        return t => d.current = i(t);
+      })
+      .attr('fill-opacity', 1)
+      .attrTween('d', d => () => arc(d.current));
+  }
 }
 
 let annotations, makeAnnotations;
@@ -108,18 +155,27 @@ function drawLabels(labels) {
     .call(makeAnnotations);
 }
 
+function hideLabels() {
+  d3.select('.annotations').style('display', 'none');
+}
+function showLabels() {
+  d3.select('.annotations').style('display', 'block');
+}
+
 function zoomPie(el) {
-  const radius = (window.innerWidth - 100) / 2;
+  const zoomSize = 10;
+
   const arc = d3.arc()
-    .startAngle(d => d.x0 - 10/360)
-    .endAngle(d => d.x1 + 10/360)
+    .startAngle(d => d.x0 - zoomSize/360)
+    .endAngle(d => d.x1 + zoomSize/360)
     .padAngle(d => Math.min((d.x1 - d.x0), 0.005))
-    .padRadius(radius / 2)
-    .innerRadius(d => d.y0 - 10)
-    .outerRadius(d => d.y1 + 10)
+    .padRadius(0)
+    .innerRadius(d => d.y0 - zoomSize)
+    .outerRadius(d => d.y1 + zoomSize)
+
   el
   .attr('d_', el.attr('d'))
-  .attr('d', arc)
+  .attr('d', d => arc(d.current))
   .attr('fill-opacity', 1)
   .classed('zoom', true);
 }
@@ -128,6 +184,7 @@ function unzoomPie() {
   d3.selectAll('.zoom').each(function (d,i) { // don't use fat arrow to keep the weird this.
     const el = d3.select(this);
     el.attr('d', el.attr('d_'))
+      .attr('d_', null)
       .attr('fill-opacity', 1)
       .classed('zoom', false);
   });
