@@ -161,12 +161,12 @@
         .selectAll('circle')
         .data(root.descendants().slice(1))
         .join('circle')
-          .attr('fill', d => {
-            return d.children ?
-                countryColors(availableCountries.indexOf(d.data.name))
+          .attr('fill', (d, i) => {
+            return !d.children ?
+                countryColors(availableCountries.indexOf(d.parent.data.name))
                 : 'white';
           })
-          .attr('fill-opacity', d => d.children ? 1 : 0.5)
+          .attr('fill-opacity', 0.5)
           .attr('stroke-width', '4px')
           .on('mouseover', function(d) {
             d3.select(this).attr('stroke', 'black');
