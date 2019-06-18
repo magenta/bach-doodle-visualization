@@ -171,6 +171,9 @@ function showLabels() {
 }
 
 function zoomPie(el) {
+  if (!el.attr('d')) {
+    return;
+  }
   const zoomSize = 10;
 
   const arc = d3.arc()

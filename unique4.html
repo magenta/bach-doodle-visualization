@@ -142,6 +142,13 @@
         .count())
       const root = treemap(data);
 
+       // Add an ID to every element so that we can find it later.
+      let i = 0;
+      root.each((d) => {
+        d.elementIndex = i;
+        i++;
+      });
+
       const svg = d3.select('#svg')
         .attr('width', width)
         .attr('height', height)
@@ -155,6 +162,7 @@
           .attr('y', (d) => d.y0)
           .attr('width', (d) => Math.max(4, d.x1 - d.x0))
           .attr('height', (d) =>  Math.max(4, d.y1 - d.y0))
+          .attr('id', d => `p${d.elementIndex}`)
           .attr('fill', (d, i) => {
             return !d.children ?
                 countryColors(availableCountries.indexOf(d.parent.data.name))
