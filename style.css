@@ -28,7 +28,12 @@ a:link, a:visited {
 }
 
 a:hover, button.accent:hover {
-  box-shadow: none;
+  transform: translateX(-2px) translateY(-2px);
+  box-shadow: 6px 6px rgba(0, 0, 0, 0.1);
+}
+a:active, button.accent:active {
+  transform: none;
+  box-shadow:none;
   top: 4px;
 }
 
