@@ -179,6 +179,7 @@
           })
           .attr('fill-opacity', 0.5)
           .attr('stroke-width', '4px')
+          .attr('id', d => `p${d.elementIndex}`)
           .on('mouseover', function(d) {
             d3.select(this).attr('stroke', 'black');
             if (!d.children) {
