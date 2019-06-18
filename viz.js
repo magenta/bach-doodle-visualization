@@ -243,6 +243,9 @@ function showTooltip(d, el) {
   if (document.getElementById('unseenSession')){
     unseenSession.hidden = !d.data.unseen;
   }
+  if (document.getElementById('countriesText')) {
+    countriesText.textContent = availableCountriesNames[d.parent.data.name];
+  }
   tooltip.removeAttribute('hidden');
 
   // Position and show the tooltip. If it's already expanded, then someone
