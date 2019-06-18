@@ -64,12 +64,16 @@
       </p>
 
       <p>
+        <b>Warning:</b> If you have Trypophobia, this visualization might not
+        be pleasant for you. We recommend viewing this data as <a class="accent secondary" href="unique.html">rectangles</a>
+        instead.
+        <br><br><br>
+
         <span class="accent secondary outline">Hover</span> over any of the smaller
-        rectangles to see a quick preview
-        of the melody or <span class="accent secondary outline">Click</span>
-        on it to see more details about the melody, listen to it, or see what
-        the harmonization could have been. Even though not all countries are labelled, you
-        can still see their melodies by hovering over the small rectangles.
+        circles to see a quick preview
+        of the melody. <span class="accent secondary outline">Click</span> on a country
+        to zoom in to all the melodies in that country, or  <span class="accent secondary outline">Click</span>
+        on a smaller circle to see more details about the melody, listen to it, or see what the harmonization could have been.
       </p>
     </section>
 
@@ -78,7 +82,7 @@
     </div>
     <div class="tooltip" id="tooltip" hidden>
       <div>
-        Composed in <b id="countriesText"></b> across <b id="sessionsText"></b> sessions and harmonized a total of <b id="valueText"></b> times.
+        Composed in <b id="sessionsText"></b> sessions and harmonized a total of <b id="valueText"></b> times.
       </div>
       <div class="viz">
         <svg id="visualizer"></svg>
@@ -123,46 +127,46 @@
     function showData() {
       document.querySelector('#svg').innerHTML = '';
       const size = window.innerWidth > 700 ? 700: window.innerWidth;
-      drawTreemap(allData, size, window.innerHeight - 100);
+      drawCircles(allData,size, size);
 
       melodyTweet.innerHTML = `<a id='melodyTweetLink' target='_blank'>Share</a> this melody!`;
       melodyTweet.innerHTML += ` Or, open this melody in our \
     <a id='coucouLink' target='_blank'>companion app</a> to explore more harmonizations.`
     }
 
-    function drawTreemap(data, width, height) {
+    function drawCircles(data, width, height) {
+      // https://observablehq.com/@d3/zoomable-circle-packing with changes
       const countryColors = d3.scaleOrdinal(d3.quantize(d3.interpolateWarm, data.children.length));
-
-      const treemap = data => d3.treemap()
-        .tile(d3['treemapSquarify'])
-        .size([width, height])
-        .paddingInner(1)
-        .paddingOuter(8)
+      const pack = data => d3.pack()
+          .size([width, height])
+          .padding(3)
         (d3.hierarchy(data)
-        .count())
-      const root = treemap(data);
+          .sum(d => d.value)
+          .sort((a, b) => b.value - a.value))
 
-       // Add an ID to every element so that we can find it later.
+      const root = pack(data);
+
+      // Add an ID to every element so that we can find it later.
       let i = 0;
       root.each((d) => {
         d.elementIndex = i;
         i++;
       });
 
-      const svg = d3.select('#svg')
-        .attr('width', width)
-        .attr('height', height)
+      let focus = root;
+      let view;
+      let isZoomedIn = false;
 
-      svg
-        .selectAll('rect')
+      const svg = d3.select('#svg')
+          .attr('width', width)
+          .attr('height', height)
+          .attr('viewBox', `-${width / 2} -${height / 2} ${width} ${height}`)
+          .on('click', () => zoom(root));
+
+      const node = svg.append('g')
+        .selectAll('circle')
         .data(root.descendants().slice(1))
-        .enter()
-        .append('rect')
-          .attr('x', (d) => d.x0)
-          .attr('y', (d) => d.y0)
-          .attr('width', (d) => Math.max(4, d.x1 - d.x0))
-          .attr('height', (d) =>  Math.max(4, d.y1 - d.y0))
-          .attr('id', d => `p${d.elementIndex}`)
+        .join('circle')
           .attr('fill', (d, i) => {
             return !d.children ?
                 countryColors(availableCountries.indexOf(d.parent.data.name))
@@ -170,46 +174,72 @@
           })
           .attr('fill-opacity', 0.5)
           .attr('stroke-width', '4px')
-        .on('mouseover', function(d) {
-          d3.select(this).attr('stroke', 'black');
-          if (!d.children) {
-            showTooltip(d, d3.select(this));
-          }
-        })
-        .on('mouseout', function(d) {
-          d3.select(this).attr('stroke', null);
-          hideTooltip();
-        })
-        .on('click', d => {
-          if (focus !== d) {
-            if (d.children) {
-              d3.event.stopPropagation()
-            } else if (!d.children){
-              handleClick(d, this);
-              d3.event.stopPropagation()
+          .on('mouseover', function(d) {
+            d3.select(this).attr('stroke', 'black');
+            if (!d.children) {
+              showTooltip(d, d3.select(this));
             }
-          }
-        });
+          })
+          .on('mouseout', function(d) {
+            d3.select(this).attr('stroke', null);
+            hideTooltip();
+          })
+          .on('click', d => {
+            if (focus !== d) {
+              if (d.children) {
+                zoom(d);
+                d3.event.stopPropagation()
+              } else if (!d.children){
+                handleClick(d, this);
+                d3.event.stopPropagation()
+              }
+            }
+          });
 
-    svg
-      .selectAll('text')
-      .data(root.descendants().filter((d) => d.depth === 1))
-      .enter()
-      .append('text')
-        .attr('x', d => d.x0 + (d.x1 - d.x0) / 2)
-        .attr('y', d => d.y0 + (d.y1 - d.y0) / 2)
-        .text(d => {
-          if (Math.min(d.x1 - d.x0, d.y1 - d.y0) > 30)
-            return d.data.name.toUpperCase()
-          else
-            return ''
-        })
-        .attr('font-size', d => '20px')
-        .attr('fill', 'black')
-        .style('font-weight', 'bold')
-        .style('font-family', 'inherit')
-        .attr('pointer-events', 'none')
-        .attr('text-anchor', 'middle')
+      // Country name.
+      const label = svg.append('g')
+          .style('font-weight', 'bold')
+          .style('font-family', 'inherit')
+          .attr('pointer-events', 'none')
+          .attr('text-anchor', 'middle')
+        .selectAll('text')
+        .data(root.descendants())
+        .join('text')
+          .style('font-size', d => d.r)
+          .style('fill-opacity', d => d.parent === root ? 1 : 0)
+          .style('display', d => d.parent === root ? 'inline' : 'none')
+          .text(d => d.data.name ? d.data.name.toUpperCase() : '');
+
+      zoomTo([root.x, root.y, root.r * 2]);
+      svg.node();
+
+    function zoomTo(v) {
+      const k = width / v[2];
+      view = v;
+      label.attr('transform', d => `translate(${(d.x - v[0]) * k},${(d.y + 15 - v[1]) * k})`);
+      node.attr('transform', d => `translate(${(d.x - v[0]) * k},${(d.y - v[1]) * k})`);
+      node.attr('r', d => d.r * k);
+    }
+
+    function zoom(d) {
+      const focus0 = focus;
+      focus = d;
+
+      const transition = svg.transition()
+          .duration(100)
+          .tween('zoom', d => {
+            const i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2]);
+            return t => zoomTo(i(t));
+          });
+
+      label
+        .filter(function(d) { return d.parent === focus || this.style.display === 'inline'; })
+        .transition(transition)
+          .style('fill-opacity', d => d.parent === focus ? 1 : 0)
+          .on('start', function(d) { if (d.parent === focus) this.style.display = 'inline'; })
+          .on('end', function(d) { if (d.parent !== focus) this.style.display = 'none'; });
+    }
+
     }
   </script>
 </html>
