@@ -29,14 +29,13 @@ a:link, a:visited {
 
 a:hover, button.accent:hover {
   transform: translateX(-2px) translateY(-2px);
-  box-shadow: 6px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 10px 10px rgba(0, 0, 0, 0.1);
 }
 a:active, button.accent:active {
   transform: none;
   box-shadow:none;
   top: 4px;
 }
-
 section {
   padding: 24px;
   margin: 0 auto;
@@ -53,10 +52,10 @@ section {
   color: white;
 }
 a.accent {
-  padding: 8px 16px;
   margin: 8px 0;
   margin-right: 16px;
 }
+
 .accent.primary {background: var(--primary)}
 .accent.secondary {background: var(--secondary); color: black}
 .accent.outline.secondary {
@@ -191,6 +190,10 @@ rect, path { cursor: pointer; }
   font-size: 16px;
   padding: 8px 16px;
   box-shadow: var(--small-shadow);
+}
+.tooltip button:hover {
+  transform: translateX(-2px) translateY(-2px);
+  box-shadow: 6px 6px rgba(0, 0, 0, 0.1);
 }
 
 .tooltip #btnPlay {
