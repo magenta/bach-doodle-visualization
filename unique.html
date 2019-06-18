@@ -144,12 +144,12 @@
       const countryColors = d3.scaleOrdinal(d3.quantize(d3.interpolateWarm, data.children.length));
 
       const treemap = data => d3.treemap()
-        .tile(d3['treemapSquarify'])
+        .tile(d3['treemapBinary'])
         .size([width, height])
         .paddingInner(1)
         .paddingOuter(8)
         (d3.hierarchy(data)
-        .count())
+        .sum(d => d.value))
       const root = treemap(data);
 
       // Add an ID to every element so that we can find it later.
