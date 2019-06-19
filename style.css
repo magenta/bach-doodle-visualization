@@ -14,8 +14,7 @@ body {
   --blue: #234EA0;
   --primary: var(--blue);
   --secondary: #FFD138;
-  --shadow: 8px 8px rgba(0, 0, 0, 0.1);
-  --small-shadow: 4px 4px rgba(0, 0, 0, 0.1);
+  --shadow: 4px 4px rgba(0, 0, 0, 0.1);
 }
 
 a:link, a:visited {
@@ -29,7 +28,7 @@ a:link, a:visited {
 
 a.accent:hover, button.accent:hover {
   transform: translateX(-2px) translateY(-2px);
-  box-shadow: 10px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 6px 6px rgba(0, 0, 0, 0.1);
 }
 
 a.accent:active, button.accent:active {
@@ -190,7 +189,7 @@ rect, path { cursor: pointer; }
 .tooltip button {
   font-size: 16px;
   padding: 8px 16px;
-  box-shadow: var(--small-shadow);
+  box-shadow: var(--shadow);
 }
 .tooltip button:hover {
   transform: translateX(-2px) translateY(-2px);
