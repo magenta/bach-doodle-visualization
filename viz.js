@@ -303,6 +303,9 @@ function closeTooltip() {
   stopMelody();
   document.getElementById('tooltip').classList.remove('expanded');
   tooltipIsExpanded = false;
+  if (melodyTweet) {
+    melodyTweet.hidden = true;
+  }
   hideTooltip();
   handleMouseOutForEl();
 }
@@ -349,6 +352,9 @@ function handleClick(d) {
   // So that we can hardlink.
   window.location.hash = d.elementIndex;
 
+  if (melodyTweet) {
+    melodyTweet.hidden = false;
+  }
   melodyTweetLink.href = 'https://twitter.com/intent/tweet?hashtags=madewithmagenta&text=' +
   encodeURIComponent('Listen to this melody from the Bach Doodle dataset! ' + window.location.href);
   coucouLink.href = getCoucouLink();
