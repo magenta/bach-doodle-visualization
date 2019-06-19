@@ -181,12 +181,18 @@
           .attr('stroke-width', '4px')
           .attr('id', d => `p${d.elementIndex}`)
           .on('mouseover', function(d) {
+            if (tooltipIsExpanded) {
+              return;
+            }
             d3.select(this).attr('stroke', 'black');
             if (!d.children) {
               showTooltip(d, d3.select(this));
             }
           })
           .on('mouseout', function(d) {
+            if (tooltipIsExpanded) {
+              return;
+            }
             d3.select(this).attr('stroke', null);
             hideTooltip();
           })

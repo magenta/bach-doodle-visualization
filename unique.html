@@ -159,6 +159,8 @@
         i++;
       });
 
+      let isZoomedIn = false;
+
       const svg = d3.select('#svg')
         .attr('width', width)
         .attr('height', height)
@@ -181,12 +183,18 @@
           .attr('fill-opacity', 0.5)
           .attr('stroke-width', '4px')
         .on('mouseover', function(d) {
+          if (tooltipIsExpanded) {
+            return;
+          }
           d3.select(this).attr('stroke', 'black');
           if (!d.children) {
             showTooltip(d, d3.select(this));
           }
         })
         .on('mouseout', function(d) {
+          if (tooltipIsExpanded) {
+            return;
+          }
           d3.select(this).attr('stroke', null);
           hideTooltip();
         })
