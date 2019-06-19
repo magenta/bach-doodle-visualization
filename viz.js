@@ -302,7 +302,7 @@ function handleClick(d) {
   btnHarmonize.disabled = false;
 
   let ns;
-  if (d.data.deltas[0].length === 3) {
+  if (d.data.deltas && d.data.deltas[0].length === 3) {
     ns = getNoteSequenceFromDeltaTimingPair(d.data.deltas)
   } else {
     ns = getNoteSequenceFromData(d);
