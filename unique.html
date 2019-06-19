@@ -160,7 +160,8 @@
         .paddingInner(1)
         .paddingOuter(8)
         (d3.hierarchy(data)
-        .sum(d => d.value))
+        .sum(d => d.value)
+        .sort((a, b) => b.value - a.value))
       const root = treemap(data);
 
       // Add an ID to every element so that we can find it later.
