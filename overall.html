@@ -73,7 +73,8 @@
         were not in the top 2000 compositions any other country!
       </p>
       <p>
-        <span class="accent secondary outline">Move</span> any of the labels out of the way.
+        <span id="overallHelp" hidden>
+        <span class="accent secondary outline">Move</span> any of the labels out of the way.</span>
         <span class="accent secondary outline">Hover</span> over any of the cells to see a quick preview
         of the melody. <span class="accent secondary outline">Click</span> on a cell to see
         more details about it, listen to it, or see what the harmonization could have been.
@@ -131,6 +132,7 @@
         `in <span class="accent primary">${availableCountriesNames[country]}</span> `:
         '';
     document.title = (isCountryView ? country.toUpperCase() : 'Overall') + ' repeated melodies';
+    overallHelp.hidden = isCountryView;
 
     // Don't redraw on resize on mobile since that's probably a zoom event.
     if (('ontouchstart' in window) === false) {
