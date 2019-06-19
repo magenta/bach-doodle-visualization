@@ -23,6 +23,28 @@ function getNoteSequenceFromData(d) {
   return getNoteSequenceFromDeltasAndTiming(deltas, timing);
 }
 
+function updateMelodyName(d) {
+  let ns;
+  if (tooltipIsExpanded) {
+    ns = sequenceVisualizer.noteSequence;
+  } else if (d) {
+    ns = getNoteSequenceFromData(d);
+  }
+  if (!ns) {
+    return;
+  }
+  // Is there a label for this pitch sequence?
+  let str = '';
+  ns.notes.forEach(n => str += n.pitch + ' ');
+  const name = allLabels[str.trim()];
+
+  if (name) {
+    melodyText.hidden = false;
+    melodyNameText.textContent = name;
+  } else {
+    melodyText.hidden = true;
+  }
+}
 /*********************
  * D3 viz drawing
  *********************/
