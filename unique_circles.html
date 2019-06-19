@@ -61,7 +61,11 @@
         Each country has its own top 2000 repeated melodies, but some of these
         melodies were not seen in any <i>other</i> country's top. Are they childhood songs?
         Regional pop songs? Just an interesting melody that only a couple friends
-        in that country wanted to harmonize? Below you can see these most unique
+        in that country wanted to harmonize? For example, here is a <a class="accent secondary" href="unique_circles.html#2306" target="_blank">Romanian childhood melody</a>
+        and the <a class="accent secondary" href="unique_circles.html#2302" target="_blank">Romanian Rhapsody</a>
+        composed by George Enescu.
+        <br>
+        Below you can see these most unique
         melodies, clustered by countries, listen to them, and see where they were composed.
         The size of the circles indicates the number of total harmonizations for
         a melody -- bigger circles identify more popular melodies.
@@ -190,9 +194,6 @@
             }
           })
           .on('mouseout', function(d) {
-            if (tooltipIsExpanded) {
-              return;
-            }
             d3.select(this).attr('stroke', null);
             hideTooltip();
           })

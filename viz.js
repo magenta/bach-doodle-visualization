@@ -396,4 +396,5 @@ function handleForceSelect(i, data) {
   }
   handleMouseOverForEl(d, el);
   handleClick(d, el);
+  btnPlay.focus();
 }
