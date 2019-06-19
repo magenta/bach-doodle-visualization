@@ -11,7 +11,9 @@ function getMostLikelyTiming(d) {
 
 function getNoteSequenceFromData(d) {
   let deltas, timing;
-  if (d.deltas) {
+  if (d.data.deltas && d.data.deltas[0].length === 3) {
+    return getNoteSequenceFromDeltaTimingPair(d.data.deltas)
+  } else if (d.deltas) {
     deltas = d.deltas;
     timing = d.timing;
   } else {
@@ -301,12 +303,7 @@ function handleClick(d) {
   tooltip.removeAttribute('hidden');
   btnHarmonize.disabled = false;
 
-  let ns;
-  if (d.data.deltas && d.data.deltas[0].length === 3) {
-    ns = getNoteSequenceFromDeltaTimingPair(d.data.deltas)
-  } else {
-    ns = getNoteSequenceFromData(d);
-  }
+  let ns = getNoteSequenceFromData(d);
 
   player.loadSamples(ns);
   visualizeNoteSequence(ns, 'visualizer');

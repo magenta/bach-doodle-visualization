@@ -1,5 +1,5 @@
 // Where to load the data from.
-const LABELS_URL = 'data/melodyLabels.json';
+const LABELS_URL = 'data/overallLabels.json';
 const TOP_OVERALL_URL = 'data/top_overall.json';
 const TOP_PER_COUNTRY_PREFIX = 'data/country/';
 const TRIVIA_PER_COUNTRY_URL = 'data/trivia_per_country.json';

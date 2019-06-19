@@ -91,6 +91,7 @@
     </div>
     <div class="tooltip" id="tooltip" hidden>
       <div>
+        <span id="melodyText" hidden>This is <b id="melodyNameText"></b>.</span>
         Composed in <b id="sessionsText"></b> sessions and harmonized a total of <b id="valueText"></b> times.
       </div>
       <div class="viz">
@@ -106,7 +107,9 @@
       </div>
       <br>
       <div class="small hint">Click to expand and listen.</div>
-      <div id="melodyTweet"></div>
+      <div id="melodyTweet" hidden>Do you think you know what this melody is? <a id='melodyTweetLink' target='_blank'>Tweet at us</a>
+        and we'll try to label it. Or, open this melody in our
+        <a id='coucouLink' target='_blank'>companion app</a> to explore more harmonizations.</div>
     </div>
   </body>
   <script src="https://d3js.org/d3.v5.min.js"></script>
@@ -126,10 +129,17 @@
       allData.children = data;
       showData();
 
+      // Load the labels.
+      d3.json('data/countryLabels.json').then((labels) => {
+        allLabels = labels;
+        updateMelodyName();
+      });
+
       // If there's a hash, we should try to select that melody.
       const pathIndex = window.location.hash.slice(1);
       if (pathIndex !== '') {
         handleForceSelect(pathIndex);
+        updateMelodyName();
       }
     });
 
@@ -137,10 +147,6 @@
       document.querySelector('#svg').innerHTML = '';
       const size = window.innerWidth > 700 ? 700: window.innerWidth;
       drawCircles(allData,size, size);
-
-      melodyTweet.innerHTML = `<a id='melodyTweetLink' target='_blank'>Share</a> this melody!`;
-      melodyTweet.innerHTML += ` Or, open this melody in our \
-    <a id='coucouLink' target='_blank'>companion app</a> to explore more harmonizations.`
     }
 
     function drawCircles(data, width, height) {
@@ -191,11 +197,16 @@
             d3.select(this).attr('stroke', 'black');
             if (!d.children) {
               showTooltip(d, d3.select(this));
+              updateMelodyName(d);
             }
           })
           .on('mouseout', function(d) {
             d3.select(this).attr('stroke', null);
             hideTooltip();
+            if (!tooltipIsExpanded) {
+              melodyText.hidden = true;
+              melodyNameText.textContent = '';
+            }
           })
           .on('click', d => {
             if (focus !== d) {
@@ -204,6 +215,7 @@
                 d3.event.stopPropagation()
               } else if (!d.children){
                 handleClick(d, this);
+                updateMelodyName(d);
                 d3.event.stopPropagation()
               }
             }
@@ -253,6 +265,26 @@
           .on('end', function(d) { if (d.parent !== focus) this.style.display = 'none'; });
     }
 
+    }
+
+    function updateMelodyName(d) {
+      let ns;
+      if (tooltipIsExpanded) {
+        ns = sequenceVisualizer.noteSequence;
+      } else if (d) {
+        ns = getNoteSequenceFromData(d);
+      }
+      // Is there a label for this pitch sequence?
+      let str = '';
+      ns.notes.forEach(n => str += n.pitch + ' ');
+      const name = allLabels[str.trim()];
+
+      if (name) {
+        melodyText.hidden = false;
+        melodyNameText.textContent = name;
+      } else {
+        melodyText.hidden = true;
+      }
     }
   </script>
 </html>
