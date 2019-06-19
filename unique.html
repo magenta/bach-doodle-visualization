@@ -246,7 +246,7 @@
         .attr('text-anchor', 'middle');
 
       function zoom(d) {
-        const svg = document.getElementById('svg');
+        const svgEl = document.getElementById('svg');
         if (d) {
           isZoomedIn = true;
           const el = document.getElementById(`p${d.elementIndex}`);
@@ -254,10 +254,12 @@
             return;
           }
           const bbox = el.getBBox();
-          svg.setAttribute('viewBox', `${bbox.x} ${bbox.y} ${bbox.width} ${bbox.height}`);
+          svgEl.setAttribute('viewBox', `${bbox.x} ${bbox.y} ${bbox.width} ${bbox.height}`);
+          svg.selectAll('rect').attr('stroke-width', '1px');
         } else {
           isZoomedIn = false;
-          svg.removeAttribute('viewBox');
+          svgEl.removeAttribute('viewBox');
+          svg.selectAll('rect').attr('stroke-width', '3px');
         }
       }
     }
