@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="description" content="Exploring the Bach Doodle dataset">
+    <link rel="preconnect" href="https://storage.googleapis.com">
+    <link href="style.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Work+Sans:400,700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <div class="horizontal">
+        <button class="menu-btn" aria-label="nav drawer button" onclick="document.body.classList.toggle('drawer-opened')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+        </button>
+        <a href="index.html">Bach Doodle Dataset</a>
+      </div>
+
+      <div class="menu">
+        <div class="hide-from-toolbar">
+          <a href="dataset.html">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12zM6 10h2v2H6zm0 4h8v2H6zm10 0h2v2h-2zm-6-4h8v2h-8z"/></svg>       Explore the dataset
+          </a>
+          <a href="overall.html">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M12 7.13l.97 2.29.47 1.11 1.2.1 2.47.21-1.88 1.63-.91.79.27 1.18.56 2.41-2.12-1.28-1.03-.64-1.03.62-2.12 1.28.56-2.41.27-1.18-.91-.79-1.88-1.63 2.47-.21 1.2-.1.47-1.11.97-2.27M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
+            Explore the top overall melodies
+          </a>
+          <a href="world.html">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2 0 .68.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm2.95-8H5.08c.96-1.66 2.49-2.93 4.33-3.56C8.81 5.55 8.35 6.75 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2 0-.68.07-1.35.16-2h4.68c.09.65.16 1.32.16 2 0 .68-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2 0-.68-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"/></svg>
+            Explore melodies around the world
+          </a>
+          <a href="unique.html">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M22 11h-4.17l3.24-3.24-1.41-1.42L15 11h-2V9l4.66-4.66-1.42-1.41L13 6.17V2h-2v4.17L7.76 2.93 6.34 4.34 11 9v2H9L4.34 6.34 2.93 7.76 6.17 11H2v2h4.17l-3.24 3.24 1.41 1.42L9 13h2v2l-4.66 4.66 1.42 1.41L11 17.83V22h2v-4.17l3.24 3.24 1.42-1.41L13 15v-2h2l4.66 4.66 1.41-1.42L17.83 13H22z"/><path fill="none" d="M0 0h24v24H0z"/></svg>
+            Explore the most unique compositions
+          </a>
+        </div>
+          <a href="https://magenta.tensorflow.org/datasets" target="_blank">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+            Get the data
+          </a>
+          <a href="https://www.google.com/doodles/celebrating-johann-sebastian-bach" target="_blank">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15 6H3v2h12V6zm0 4H3v2h12v-2zM3 16h8v-2H3v2zM17 6v8.18c-.31-.11-.65-.18-1-.18-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3V8h3V6h-5z"/></svg>
+            Play the game
+          </a>
+          <a target="_blank" href="https://twitter.com/intent/tweet?hashtags=madewithmagenta&text=What%20do%2024%20million%20melodies%20composed%20with%20the%20Bach%20Doodle%20look%20like%3F%20https%3A%2F%2Fmagenta.tensorflow.org%2Fdatasets">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+            Share
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <section>
+      <h1>What did the doodlers <span id="textCountry"></span>compose?</h1>
+
+      <p id="countryTrivia" class="trivia" hidden>
+        There were <b id="triviaTotal"></b> total melodies composed in <b id="triviaCountry"></b>.
+        Out of the 2000 most repeated sequences, <b id="triviaMajor"></b> were composed in a
+        major key,  <b id="triviaMinor"></b> in a minor key, and  <b id="triviaNeither"></b>
+        in neither a major nor minor key. <b id="triviaUnseen"></b> of these melodies
+        were not in the top 2000 compositions any other country!
+      </p>
+     </section>
+
+    <div class="center">
+      <svg id="svg"></svg>
+    </div>
+    <section>
+      <p>
+        <span class="accent secondary outline">Hover</span> over any of the cells to see a quick preview
+        of the melody. <span class="accent secondary outline">Click</span> on a cell to see
+        more details about it, listen to it, or see what the harmonization could have been.
+        <span id="unseenHelp" hidden>The <span class="accent secondary">yellow</span> cells represent
+        melodies that were not in the top in any other country.</span>
+      </p>
+    </section>
+    <div class="tooltip" id="tooltip" hidden>
+      <div>
+        Composed in <b id="sessionsText"></b> sessions and harmonized a total of <b id="valueText"></b> times.
+        <p id="unseenSession" hidden>⭐️ This melody is quite unique!
+          It isn't among the top 2000 most used melodies in any other country.</p>
+      </div>
+      <div class="viz">
+        <svg id="visualizer"></svg>
+      </div>
+      <div class="small status" hidden>Harmonizing takes a couple of seconds...please wait.</div>
+      <div class="actions horizontal">
+        <div>
+          <button class="accent secondary" onclick="playMelody()" id="btnPlay">play</button>
+          <button class="accent secondary" onclick="harmonize(event)" id="btnHarmonize">harmonize</button>
+        </div>
+        <button class="accent secondary" onclick="closeTooltip()">close</button>
+      </div>
+      <br>
+      <div class="small hint">Click to expand and listen. Shift click to zoom in to the melodies starting on this note.
+        <span id="whiteCircleHint" hidden>Click on the white circle in the middle to go back.</span>
+      </div>
+      <div id="melodyTweet"></div>
+    </div>
+  </body>
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.3.2/d3-annotation.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@magenta/music@1.8.0"></script>
+  <script src="common.js"></script>
+  <script src="viz.js"></script>
+  <script>
+    const search = window.location.search.split('=');
+    const country = search.length > 1 ? search[1].toLowerCase() : '';
+    const countryIndex = availableCountries.indexOf(country);
+    let allData, allLabels;
+
+    // Update the UI to match what we're looking at.
+    textCountry.innerHTML = `in <span class="accent primary">${availableCountriesNames[country]}</span> `;
+    document.title = country.toUpperCase() + ' repeated melodies';
+
+    // Don't redraw on resize on mobile since that's probably a zoom event.
+    if (('ontouchstart' in window) === false) {
+      window.addEventListener('resize', showData);
+    }
+
+    d3.json(TOP_PER_COUNTRY_PREFIX + country + '.json').then((data) => {
+      allData = data;
+
+      loadAllSamples();
+      showData();
+
+      // If there's a hash, we should try to select that melody.
+      const pathIndex = window.location.hash.slice(1);
+      if (pathIndex !== '') {
+        handleForceSelect(pathIndex);
+      }
+    });
+
+    function showData() {
+      document.querySelector('#svg').innerHTML = '';
+      const size = Math.min(window.innerWidth, window.innerHeight);
+
+      drawSunburst(allData, size);
+
+      melodyTweet.innerHTML = `<a id="melodyTweetLink" target="_blank">Share</a> \
+      this melody!`;
+
+      countryTrivia.hidden = false;
+      unseenHelp.hidden = false;
+      triviaTotal.textContent = d3.format(".2s")(totalPerCountry[country]);
+      triviaCountry.textContent =  availableCountriesNames[country];
+
+      d3.json(TRIVIA_PER_COUNTRY_URL).then((trivia) => {
+        const t = trivia[country];
+        triviaMajor.textContent = (t.major/2000 * 100).toFixed(1) + '%';
+        triviaMinor.textContent = (t.minor/2000 * 100).toFixed(1)  + '%';
+        triviaNeither.textContent = (t.neither/2000 * 100).toFixed(1) + '%';
+        triviaUnseen.textContent = t.unseen;
+      });
+
+      melodyTweet.innerHTML += ` Or, open this melody in our \
+    <a id="coucouLink" target="_blank">companion app</a> to explore more harmonizations.`
+
+    }
+  </script>
+</html>
