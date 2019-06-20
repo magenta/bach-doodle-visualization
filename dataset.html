@@ -120,7 +120,7 @@
     <section>
       <div class="horizontal left">
         <button class="accent secondary circle" onclick="prevSession()" aria-label="view previous session">&lt;</button>
-        <h3>Session: <b id="activeSession"></b>/100</h3>
+        <h3>Session: <b id="activeSession"></b>/20</h3>
         <button class="accent secondary circle" onclick="nextSession()" aria-label="view next session">&gt;</button>
       </div>
       <div class="horizontal left">
@@ -193,30 +193,31 @@
       activeSession.textContent = sessionIndex + 1;
       activeHarmonization.textContent = harmIndex + 1;
 
-      harms.textContent = data.length;
-      const b = data[harmIndex]['backend']
+      harms.textContent = data['backend'].length;
+
+      const b = data['backend'][harmIndex];
       backend.textContent = b + ` (${b == 'r'?'TPU': 'tf.js'})`;
-      loops.textContent = data[harmIndex]['loops_listened'];
-      sid.textContent = data[harmIndex]['session_id'];
-      country.textContent = data[harmIndex]['country'];
-      comp.textContent = data[harmIndex]['composition_time'] + ' (ms)';
-      const f = data[harmIndex]['feedback'];
+      loops.textContent = data['loops_listened'][harmIndex];
+      sid.textContent = data['session_id'][harmIndex];
+      country.textContent = data['country'][harmIndex];
+      comp.textContent = data['composition_time'][harmIndex] + ' (ms)';
+      const f = data['feedback'][harmIndex];
       feedback.textContent = f + ` (${f===0?'poor':(f==1?'neutral':(f==2?'good':'no rating'))})`;
-      keysig.textContent = data[harmIndex]['key_sig'];
+      keysig.textContent = data['key_sig'][harmIndex];
 
       // TODO: check if we need this hack after fixing the dataset.json to jsonl
-      data[harmIndex]['output_sequence'].notes.forEach(n => {
+      data['output_sequence'][harmIndex].notes.forEach(n => {
         n.quantizedStartStep = parseInt(n.quantizedStartStep || 0)
         n.quantizedEndStep = parseInt(n.quantizedEndStep);
       });
-      data[harmIndex]['input_sequence'].notes.forEach(n => {
+      data['input_sequence'][harmIndex].notes.forEach(n => {
         n.quantizedStartStep = parseInt(n.quantizedStartStep || 0)
         n.quantizedEndStep = parseInt(n.quantizedEndStep);
       });
 
       // Ensure the two visualizers are the same height by making them
       // have the same note ranges.
-      const outputSequence = data[harmIndex]['output_sequence'];
+      const outputSequence = data['output_sequence'][harmIndex];
       const pitches = outputSequence.notes.map(n => n.pitch);
       minPitch = Math.min(...pitches);
       maxPitch = Math.max(...pitches);
@@ -239,7 +240,7 @@
       updateView();
     }
     function nextHarmonization() {
-      harmIndex = Math.min(harmIndex + 1, allData[sessionIndex].length - 1);
+      harmIndex = Math.min(harmIndex + 1, allData[sessionIndex]['backend'].length - 1);
       updateView();
     }
     function prevHarmonization() {
@@ -248,7 +249,7 @@
     }
 
     function viewInput() {
-      const ns = allData[sessionIndex][harmIndex]['input_sequence'];
+      const ns = allData[sessionIndex]['input_sequence'][harmIndex];
       ns.totalQuantizedSteps = parseInt(ns.totalQuantizedSteps);
 
       player.loadSamples(ns);
@@ -258,7 +259,7 @@
     }
 
     function viewOutput() {
-      const ns = allData[sessionIndex][harmIndex]['output_sequence'];
+      const ns = allData[sessionIndex]['output_sequence'][harmIndex];
       ns.totalQuantizedSteps = parseInt(ns.totalQuantizedSteps);
       player.loadSamples(ns);
       visualizeNoteSequence(ns, 'visualizer', minPitch, maxPitch);
@@ -272,7 +273,7 @@
         btnPlay.textContent = 'play';
       } else {
         const key = btnViewInput.classList.contains('active') ? 'input_sequence' : 'output_sequence';
-        const ns = allData[sessionIndex][harmIndex][key];
+        const ns = allData[sessionIndex][key][harmIndex];
         ns.totalQuantizedSteps = parseInt(ns.totalQuantizedSteps);
         ns.tempos[0].time = 0;
         player.start(ns).then(() => btnPlay.textContent = 'play');

@@ -4,7 +4,7 @@ const TOP_OVERALL_URL = 'data/top_overall.json';
 const TOP_PER_COUNTRY_PREFIX = 'data/country/';
 const TRIVIA_PER_COUNTRY_URL = 'data/trivia_per_country.json';
 
-const DATAPOINTS_URL = 'https://cdn.glitch.com/b078d442-623b-41f0-a809-48f5f1ec1cbf%2Fdataset_samples.json?1559248203882';
+const DATAPOINTS_URL = 'data/dataset.json';
 const SMALL_SCREEN_SIZE = 500;
 const FIRST_MELODY_NOTE = 72;
 
