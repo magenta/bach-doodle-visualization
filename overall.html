@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title></title>
+    <title>Overall repeated melodies</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1">
     <meta name="mobile-web-app-capable" content="yes">
@@ -55,22 +55,13 @@
     </header>
 
     <section>
-      <h1>What did the doodlers <span id="textCountry"></span>compose?</h1>
-
-      <p id="overallTrivia" class="trivia" hidden>
+      <h1>What did the doodlers compose?</h1>
+      <p class="trivia">
         There were over <b>24 million</b> total sequences entered in the dataset,
         and we heard a lot of popular favourites! The doodle's presets
         ("Twinkle Twinkle Little Star", "Mary Had a Little Lamb" and
         Bach's "Tocatta and Fugue in D minor") were by far the most repeated
         sequences, but we found some surprising runner ups. Explore them below!
-      </p>
-
-      <p id="countryTrivia" class="trivia" hidden>
-        There were <b id="triviaTotal"></b> total melodies composed in <b id="triviaCountry"></b>.
-        Out of the 2000 most repeated sequences, <b id="triviaMajor"></b> were composed in a
-        major key,  <b id="triviaMinor"></b> in a minor key, and  <b id="triviaNeither"></b>
-        in neither a major nor minor key. <b id="triviaUnseen"></b> of these melodies
-        were not in the top 2000 compositions any other country!
       </p>
      </section>
 
@@ -96,8 +87,6 @@
     <div class="tooltip" id="tooltip" hidden>
       <div>
         Composed in <b id="sessionsText"></b> sessions and harmonized a total of <b id="valueText"></b> times.
-        <p id="unseenSession" hidden>⭐️ This melody is quite unique!
-          It isn't among the top 2000 most used melodies in any other country.</p>
       </div>
       <div class="viz">
         <svg id="visualizer"></svg>
@@ -123,19 +112,7 @@
   <script src="common.js"></script>
   <script src="viz.js"></script>
   <script>
-    // Is this the overall view or a per-country view?
-    const search = window.location.search.split('=');
-    const country = search.length > 1 ? search[1].toLowerCase() : '';
-    const countryIndex = availableCountries.indexOf(country);
-    const isCountryView = country !== '' && countryIndex !== -1;
     let allData, allLabels;
-
-    // Update the UI to match what we're looking at.
-    textCountry.innerHTML = isCountryView ?
-        `in <span class="accent primary">${availableCountriesNames[country]}</span> `:
-        '';
-    document.title = (isCountryView ? country.toUpperCase() : 'Overall') + ' repeated melodies';
-    overallHelp.hidden = isCountryView;
 
     // Don't redraw on resize on mobile since that's probably a zoom event.
     if (('ontouchstart' in window) === false) {
@@ -143,9 +120,7 @@
     }
     forceLabels.addEventListener('change', showData);
 
-    d3.json(isCountryView ?
-        TOP_PER_COUNTRY_PREFIX + country + '.json' :
-        TOP_OVERALL_URL).then((data) => {
+    d3.json(TOP_OVERALL_URL).then((data) => {
       allData = data;
 
       loadAllSamples();
@@ -163,60 +138,26 @@
       const size = Math.min(window.innerWidth, window.innerHeight);
       drawSunburst(allData, size);
 
-      if (!isCountryView) {
-        melodyTweet.innerHTML = `Do you think you know what this melody is? \
-        <a id="melodyTweetLink" target="_blank">Tweet at us</a> and we'll \
-        try to label it!`;
-        countryTrivia.hidden = true;
-        overallTrivia.hidden = false;
-        unseenHelp.hidden = true;
+      melodyTweet.innerHTML = `Do you think you know what this melody is? \
+      <a id="melodyTweetLink" target="_blank">Tweet at us</a> and we'll \
+      try to label it!`;
 
-
-
-        if (window.innerWidth > SMALL_SCREEN_SIZE || forceLabels.checked) {
-          if (!allLabels) {
-            d3.json(LABELS_URL).then((labels) => {
-              allLabels = labels;
-              drawLabels(labels);
-            });
-          } else {
-            drawLabels(allLabels);
-          }
+      if (window.innerWidth > SMALL_SCREEN_SIZE || forceLabels.checked) {
+        if (!allLabels) {
+          d3.json(LABELS_URL).then((labels) => {
+            allLabels = labels;
+            drawLabels(labels);
+          });
         } else {
-          mobileScreen.hidden = false;
+          drawLabels(allLabels);
         }
       } else {
-        melodyTweet.innerHTML = `<a id="melodyTweetLink" target="_blank">Share</a> \
-        this melody!`;
-
-        countryTrivia.hidden = false;
-        overallTrivia.hidden = true;
-        unseenHelp.hidden = false;
-        triviaTotal.textContent = d3.format(".2s")(totalPerCountry[country]);
-        triviaCountry.textContent =  availableCountriesNames[country];
-
-        d3.json(TRIVIA_PER_COUNTRY_URL).then((trivia) => {
-          const t = trivia[country];
-          triviaMajor.textContent = (t.major/2000 * 100).toFixed(1) + '%';
-          triviaMinor.textContent = (t.minor/2000 * 100).toFixed(1)  + '%';
-          triviaNeither.textContent = (t.neither/2000 * 100).toFixed(1) + '%';
-          triviaUnseen.textContent = t.unseen;
-        });
+        mobileScreen.hidden = false;
       }
 
       melodyTweet.innerHTML += ` Or, open this melody in our \
     <a id="coucouLink" target="_blank">companion app</a> to explore more harmonizations.`
 
-    }
-
-    function flatten(tree, prevStr){
-      let str = prevStr + (tree.name == 'root' ? '0' : ' ' + tree.name)
-
-      if (tree.value) data.push({str, count: tree.value})
-
-      if (tree.children){
-        tree.children.forEach(d => flatten(d, str))
-      }
     }
   </script>
 </html>
