@@ -72,6 +72,12 @@
         in neither a major nor minor key. <b id="triviaUnseen"></b> of these melodies
         were not in the top 2000 compositions any other country!
       </p>
+     </section>
+
+    <div class="center">
+      <svg id="svg"></svg>
+    </div>
+    <section>
       <p>
         <span id="overallHelp" hidden>
         <span class="accent secondary outline">Move</span> any of the labels out of the way.</span>
@@ -84,12 +90,9 @@
       <p id="mobileScreen" class="small" hidden>Your screen size is quite small, so we've
         hidden the labels for the most recognizable melodies. You can re-enable
         them with this checkbox, but at your own risk: they're not
-        super usable on mobile, unfortunately. <input type="checkbox" id="forceLabels"></p>
-     </section>
-
-    <div class="center">
-      <svg id="svg"></svg>
-    </div>
+        super usable on mobile, unfortunately. <input type="checkbox" id="forceLabels">
+      </p>
+    </section>
     <div class="tooltip" id="tooltip" hidden>
       <div>
         Composed in <b id="sessionsText"></b> sessions and harmonized a total of <b id="valueText"></b> times.
@@ -168,6 +171,8 @@
         overallTrivia.hidden = false;
         unseenHelp.hidden = true;
 
+
+
         if (window.innerWidth > SMALL_SCREEN_SIZE || forceLabels.checked) {
           if (!allLabels) {
             d3.json(LABELS_URL).then((labels) => {
@@ -202,6 +207,16 @@
       melodyTweet.innerHTML += ` Or, open this melody in our \
     <a id="coucouLink" target="_blank">companion app</a> to explore more harmonizations.`
 
+    }
+
+    function flatten(tree, prevStr){
+      let str = prevStr + (tree.name == 'root' ? '0' : ' ' + tree.name)
+
+      if (tree.value) data.push({str, count: tree.value})
+
+      if (tree.children){
+        tree.children.forEach(d => flatten(d, str))
+      }
     }
   </script>
 </html>

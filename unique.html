@@ -69,28 +69,29 @@
         melodies, clustered by countries. The size of the rectangles indicates the number of total harmonizations for
         a melody -- bigger rectangles identify more popular melodies.
       </p>
-
-      <p>
-        <span class="accent secondary outline">Hover</span> over any of the smaller
-        rectangles to see a quick preview
-        of the melody. <span class="accent secondary outline">Click</span> on a country
-        to zoom in to all the melodies in that country, or
-        <span class="accent secondary outline">Click</span>
-        on a smaller rectangle to see more details about the melody, listen to it, or see what
-        the harmonization could have been. Even though not all countries are labelled, you
-        can still see their melodies by hovering over the small rectangles.
-
-        <br><br><br>
-        You can also view the data below as <a class="accent secondary" href="unique_circles.html">circles</a>
-        Note that if you have Trypophobia, that visualization might not
-        be pleasant for you, which is why we default to showing the rectangles.
-      </p>
-
     </section>
 
     <div class="center">
       <svg id="svg"></svg>
     </div>
+
+    <section>
+      <p>
+          <span class="accent secondary outline">Hover</span> over any of the smaller
+          rectangles to see a quick preview
+          of the melody. <span class="accent secondary outline">Click</span> on a country
+          to zoom in to all the melodies in that country, or
+          <span class="accent secondary outline">Click</span>
+          on a smaller rectangle to see more details about the melody, listen to it, or see what
+          the harmonization could have been. Even though not all countries are labelled, you
+          can still see their melodies by hovering over the small rectangles.
+
+          <br><br><br>
+          You can also view this data as <a class="accent secondary" href="unique_circles.html">circles</a>
+          Note that if you have Trypophobia, that visualization might not
+          be pleasant for you, which is why we default to showing the rectangles.
+        </p>
+    </section>
     <div class="tooltip" id="tooltip" hidden>
       <div><span id="melodyText" hidden><b id="melodyNameText"></b>.</span>
         Composed in <b id="countriesText"></b> across <b id="sessionsText"></b> sessions and harmonized a total of <b id="valueText"></b> times.

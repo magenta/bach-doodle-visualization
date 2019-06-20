@@ -316,12 +316,6 @@ button {
   }
 }
 
-.trivia {
-  padding-bottom: 36px;
-  margin-bottom: 36px;
-  border-bottom: 8px solid rgba(0, 0, 0, 0.1);
-}
-
 .zoom {
   stroke-width: 4;
   stroke: black;
