@@ -360,6 +360,54 @@ function handleClick(d) {
   coucouLink.href = getCoucouLink();
 }
 
+function handleHackyClick(d) {
+  // If the tooltip is already expanded, close it (imagine someone clicked outside it).
+  // otherwise, do the open dance.
+  if (tooltipIsExpanded) {
+    closeTooltip();
+    window.location.hash = 'all'; // not the empty string so that it doesn't cause a page refresh
+    return;
+  }
+
+  tooltipIsExpanded = true;
+
+  // Expand the tooltip.
+  tooltip.classList.add('expanded');
+  tooltip.removeAttribute('hidden');
+  btnHarmonize.disabled = false;
+
+  let ns = getNoteSequenceFromDeltaTimingPair(d.data.timing);
+
+  player.loadSamples(ns);
+  visualizeNoteSequence(ns, 'visualizer');
+
+  // Position it in the center of the svg if it's a big enough screen.
+  if (window.innerWidth > SMALL_SCREEN_SIZE) {
+    const parentRekt = svg.getBoundingClientRect();
+    const tooltipRekt = tooltip.getBoundingClientRect();
+    const y = parentRekt.top + (parentRekt.height - tooltipRekt.height) / 2;
+    const x = parentRekt.left + (parentRekt.width - tooltipRekt.width) / 2;
+    d3.select(tooltip)
+      .style('top', y + document.scrollingElement.scrollTop + 'px')
+      .style('left', x + document.scrollingElement.scrollLeft + 'px');
+  } else {
+    d3.select(tooltip)
+      .style('top', document.scrollingElement.scrollTop + 50 + 'px')
+      .style('left', '10px');
+  }
+  //tooltip.scrollIntoView();
+
+  // So that we can hardlink.
+  window.location.hash = d.elementIndex;
+
+  if (melodyTweet) {
+    melodyTweet.hidden = false;
+  }
+  melodyTweetLink.href = 'https://twitter.com/intent/tweet?hashtags=madewithmagenta&text=' +
+  encodeURIComponent('Listen to this melody from the Bach Doodle dataset! ' + window.location.href);
+  coucouLink.href = getCoucouLink();
+}
+
 function handleMouseOver(d) {
   if (tooltipIsExpanded) {
     return;
@@ -378,13 +426,18 @@ function handleMouseOverForEl(d, el) {
   window.location.hash = 'all'; // not the empty string so that it doesn't cause a page refresh
 
   // Fade all the segments.
-  const ancestors = d.ancestors().reverse();
+  const ancestors =
+      (document.getElementsByClassName('.force')) ? d.ancestors() :
+      d.ancestors.reverse();
   const svg = d3.select('#svg');
 
   zoomPie(el);
 
   // Fade everything else.
   svg.selectAll('path').style('fill-opacity', 0.3);
+  svg.selectAll('.force circle').style('fill-opacity', 0.3);
+  svg.selectAll('.force circle').style('stroke-opacity', 0.3);
+  svg.selectAll('.force line').style('stroke-opacity', 0.3);
   svg.selectAll('.annotation').style('fill-opacity', 0.3);
   svg.selectAll('.annotation').style('stroke-opacity', 0.3);
 
@@ -392,6 +445,11 @@ function handleMouseOverForEl(d, el) {
   svg.selectAll('path')
     .filter((node) => ancestors.indexOf(node) >= 0)
     .style('fill-opacity', 1);
+
+  svg.selectAll('.force circle')
+    .filter((node) => ancestors.indexOf(node) >= 0)
+    .style('fill-opacity', 1)
+    .style('stroke-opacity', 1);
 
   requestAnimationFrame(() => {
     showTooltip(d, el);
@@ -410,6 +468,9 @@ function restoreOpacities() {
   svg.selectAll('path').style('fill-opacity', 1);
   svg.selectAll('.annotation').style('fill-opacity', 1);
   svg.selectAll('.annotation').style('stroke-opacity', 1);
+  svg.selectAll('.force circle').style('fill-opacity', 1);
+  svg.selectAll('.force circle').style('stroke-opacity', 1);
+  svg.selectAll('.force line').style('stroke-opacity', 1);
 }
 
 function handleForceSelect(i, data) {
