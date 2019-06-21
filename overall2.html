@@ -229,7 +229,7 @@
           .style('fill', color(parseInt(delta)))
           .style('fill-opacity', 0.6)
           .on('click', function (d,i) {
-            handleHackyClick({data:d}, 'mels');
+            handleHackyClick({data:d});
           })
           .on('mouseover', function (d,i) {
             const el = d3.select(this);
@@ -242,7 +242,6 @@
             el.attr('r', 3);
             el.attr('fill-opacity', 0.6);
             hideTooltip();
-            //handleMouseOut(d,i);
           })
      }
     }
