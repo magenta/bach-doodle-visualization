@@ -10,6 +10,19 @@
     <link rel="preconnect" href="https://storage.googleapis.com">
     <link href="style.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:400,700&display=swap" rel="stylesheet">
+    <style>
+      input[type=number] {
+        border: none;
+        font-size: inherit;
+        font-family: inherit;
+        font-weight: inherit;
+        background: transparent;
+        box-shadow: none;
+        border-bottom: 4px solid black;
+        width: 100px;
+        text-align: center;
+      }
+    </style>
   </head>
   <body>
     <header>
@@ -66,7 +79,7 @@
      </section>
 
     <div class="center">
-      <h2>All melodies that start on a delta = 0:</h2>
+      <h2>All melodies that start on a delta = <input type="number" value="0" id="deltaInput"></h2>
       <svg class="force" id="svg"></svg>
       <canvas></canvas>
     </div>
@@ -114,29 +127,38 @@
   <script src="common.js"></script>
   <script src="viz.js"></script>
   <script>
-    let allData = [], allLabels;
+    let allData, allLabels;
+    let mapDeltaToDataIndex = {};
 
     // Don't redraw on resize on mobile since that's probably a zoom event.
     if (('ontouchstart' in window) === false) {
       window.addEventListener('resize', showData);
     }
 
-    d3.json('data/top_overall_flat.json').then((data) => {
-      // Delete anything that's straight zeroes.
-      for (let i = 0; i < data.length; i++) {
-        const str = data[i].str;
-        if (str.replace(/0/g, '').trim() != '') {
-          data[i].str = data[i].str.trim();
-          allData.push(data[i]);
-        }
+    deltaInput.addEventListener('change', () => {
+      const n = mapDeltaToDataIndex[deltaInput.value];
+      if (n) {
+        console.log(allData[n].length, allData[n][0].str)
+        showData(flattenData(allData[n]));
+      } else {
+        console.log('don\'t have anything for delta', deltaInput.value);
       }
-      allData = flattenData(allData);
-      showData();
     });
 
-    function showData() {
+    d3.json('data/top_overall_flat.json').then((json) => {
+      allData = json;
+      for (let i = 0; i < allData.length; i++) {
+        const delta = allData[i][0].str.split(' ')[0];
+        mapDeltaToDataIndex[delta] = i;
+      }
+
+      showData(flattenData(allData[0]));
+    });
+
+
+    function showData(data) {
       svg.innerHTML = '';
-      drawForce(allData);
+      drawForce(data);
 
       melodyTweet.innerHTML = `Do you think you know what this melody is? \
       <a id="melodyTweetLink" target="_blank">Tweet at us</a> and we'll \
@@ -153,7 +175,7 @@
     }
 
     function drawForce(data) {
-      const size = Math.min(Math.min(window.innerWidth, window.innerHeight), 500);
+      const size = Math.min(Math.min(window.innerWidth, window.innerHeight), 700);
       const width = size;
       const height = size;
       const boundHeight = height - 20;
