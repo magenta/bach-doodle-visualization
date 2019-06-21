@@ -22,6 +22,12 @@
         width: 100px;
         text-align: center;
       }
+      #mels .line {
+        stroke-width: 1.5;
+        stroke-linejoin: round;
+        stroke-linecap: round;
+        //mix-blend-mode: multiply;
+      }
     </style>
   </head>
   <body>
@@ -79,9 +85,12 @@
      </section>
 
     <div class="center">
+      <h2>Top 2000 melodies</h2>
+      <svg id="mels"></svg>
+    </div>
+    <div class="center">
       <h2>All melodies that start on a delta = <input type="number" value="0" id="deltaInput"></h2>
       <svg class="force" id="svg"></svg>
-      <canvas></canvas>
     </div>
     <section>
       <p>
@@ -132,29 +141,111 @@
 
     // Don't redraw on resize on mobile since that's probably a zoom event.
     if (('ontouchstart' in window) === false) {
-      window.addEventListener('resize', showData);
+      window.addEventListener('resize', update);
     }
 
     deltaInput.addEventListener('change', () => {
+      update(true);
+    });
+
+    d3.json('data/top_overall_flat.json').then((json) => {
+      allData = json;
+
+      for (let i = 0; i < allData.length; i++) {
+        const delta = allData[i][0].str.split(' ')[0];
+        mapDeltaToDataIndex[delta] = i;
+      }
+      update();
+    });
+
+    function update(forceGraphOnly = false) {
       const n = mapDeltaToDataIndex[deltaInput.value];
-      if (n) {
+      if (n !== undefined) {
         console.log(allData[n].length, allData[n][0].str)
         showData(flattenData(allData[n]));
       } else {
         console.log('don\'t have anything for delta', deltaInput.value);
       }
-    });
-
-    d3.json('data/top_overall_flat.json').then((json) => {
-      allData = json;
-      for (let i = 0; i < allData.length; i++) {
-        const delta = allData[i][0].str.split(' ')[0];
-        mapDeltaToDataIndex[delta] = i;
+      if (!forceGraphOnly) {
+        showMelodies(allData);
       }
+    }
 
-      showData(flattenData(allData[0]));
-    });
+    function showMelodies(data) {
+      const width = window.innerWidth - 100;
+      const height = 300;
 
+      const median = 370;
+      const xscale = d3.scaleSymlog().constant(10).domain([150,20000]).range([20, width])
+      const yscale = d3.scaleLinear().domain([3, 32]).range([height-20, 20])
+
+      const svg = d3.select('#mels');
+      svg.attr('width', width)
+         .attr('height', height);
+      const g = svg.append('g');
+
+      // x-axis.
+      svg.append('g')
+        .attr('transform', `translate(0, ${height})`)
+        .call(d3.axisBottom(xscale));
+      svg.append('text')
+        .attr('transform', `translate(${width/2}, ${height-40})`)
+        .style('text-anchor', 'middle')
+        .text('Harmonizations');
+
+      svg.append('g')
+          .call(d3.axisRight(yscale));
+      svg.append('text')
+          .attr('transform', `translate(10,10) rotate(-90)`)
+          .attr('y', 20)
+          .attr('x', 0 - (height / 2))
+          .attr('dy', '1em')
+          .style('text-anchor', 'middle')
+          .text('Melody Length');
+
+      const line = d3.line()
+        .x((d,i) => xscale(i))
+        .y(yscale(median))// >= median ? +d.count : -d.count))
+
+      // Append the median line.
+      const medianData =new Array(315).fill({count:median});
+      g.append('path').datum(medianData)
+          .attr('class', 'line')
+          .attr('d', line)
+          .attr('stroke', 'black')
+          .attr('stroke-width', '10px')
+          .attr('fill', 'black');
+
+     for (let n = 0; n < allData.length; n++) {
+        const subset = allData[n];
+        const delta = subset[0].str.split(' ')[0];
+        g.append('g').selectAll('.dot')
+          .data(subset)
+          .enter().append('circle')
+          .attr('class', 'dot')
+          .attr('r', 3)
+          .attr('cx', (d,i) => xscale(d.count))
+          .attr('cy', (d) => yscale(d.timing.length))
+          .style('fill', color(parseInt(delta)))
+          .style('fill-opacity', 0.6)
+          .on('click', function (d,i) {
+            handleHackyClick({data:d}, 'mels');
+          })
+          .on('mouseover', function (d,i) {
+            const el = d3.select(this);
+            el.attr('r', 10);
+            el.attr('fill-opacity', 1);
+            showTooltip({data:d}, el);
+          })
+          .on('mouseout', function (d,i) {
+            const el = d3.select(this);
+            el.attr('r', 3);
+            el.attr('fill-opacity', 0.6);
+            hideTooltip();
+            //handleMouseOut(d,i);
+          })
+     }
+    }
 
     function showData(data) {
       svg.innerHTML = '';

@@ -260,7 +260,12 @@ function showTooltip(d, el) {
   document.getElementById('valueText').textContent = d.value;
 
   let totalSessions = 0;
-  d.descendants().forEach(x => totalSessions += (x.data.sessions || 0));
+  if (d.descendants) {
+    d.descendants().forEach(x => totalSessions += (x.data.sessions || 0));
+  } else {
+    totalSessions = d.data.sessions;
+  }
+
   document.getElementById('sessionsText').textContent = totalSessions;
 
   if (d.data.country) {
@@ -360,7 +365,7 @@ function handleClick(d) {
   coucouLink.href = getCoucouLink();
 }
 
-function handleHackyClick(d) {
+function handleHackyClick(d, elName='svg') {
   // If the tooltip is already expanded, close it (imagine someone clicked outside it).
   // otherwise, do the open dance.
   if (tooltipIsExpanded) {
@@ -380,6 +385,8 @@ function handleHackyClick(d) {
 
   player.loadSamples(ns);
   visualizeNoteSequence(ns, 'visualizer');
+
+  const svg = document.getElementById(elName);
 
   // Position it in the center of the svg if it's a big enough screen.
   if (window.innerWidth > SMALL_SCREEN_SIZE) {
@@ -426,9 +433,8 @@ function handleMouseOverForEl(d, el) {
   window.location.hash = 'all'; // not the empty string so that it doesn't cause a page refresh
 
   // Fade all the segments.
-  const ancestors =
-      (document.getElementsByClassName('.force')) ? d.ancestors() :
-      d.ancestors.reverse();
+  const ancestors = (document.getElementsByClassName('.force')) ? d.ancestors() :
+                                                  d.ancestors.reverse();
   const svg = d3.select('#svg');
 
   zoomPie(el);
