@@ -260,9 +260,9 @@ function showTooltip(d, el) {
   if (d.data.value) {
     document.getElementById('valueText').textContent = d.data.value;
     document.getElementById('sessionsText').textContent = d.data.sessions;
-    dataText.hidden = false;
+    if (window.dataText) dataText.hidden = false;
   } else {
-    dataText.hidden = true;
+    if (window.dataText) dataText.hidden = true;
   }
   if (d.data.country) {
     unseenCountry.textContent = availableCountriesNames[d.data.country];

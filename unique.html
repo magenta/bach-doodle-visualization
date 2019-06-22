@@ -153,9 +153,10 @@
 
     function drawTreemap(data, width, height) {
       const countryColors = d3.scaleOrdinal(d3.quantize(d3.interpolateWarm, data.children.length));
+      const opacity = d3.scaleLinear().range(["0.5", "1.0"]).domain([0, 1000]).clamp(true);
 
       const treemap = data => d3.treemap()
-        .tile(d3['treemapBinary'])
+        .tile(d3['treemapSquarify'])
         .size([width, height])
         .paddingInner(1)
         .paddingOuter(8)
@@ -193,7 +194,7 @@
                 countryColors(availableCountries.indexOf(d.parent.data.name))
                 : 'white';
           })
-          .attr('fill-opacity', 0.5)
+          .attr('fill-opacity', d => opacity(d.data.value))
           .attr('stroke-width', '3px')
         .on('mouseover', function(d) {
           if (tooltipIsExpanded) {

@@ -228,7 +228,8 @@
 
       const width = Math.min(window.innerWidth, 1000);
       const x = d3.scaleBand().rangeRound([0, width]).domain(startDeltas);
-      const opacity = d3.scaleLinear().range(["0.3", "0.9"]).domain([0, 1000]).clamp(true);
+      const opacity = d3.scaleLinear().range(["0.5", "1.0"]).domain([0, 1000]).clamp(true);
+
       const dotsPerColumn = 5;
       const r = (x(startDeltas[1])-x(startDeltas[0])) / dotsPerColumn;
 
