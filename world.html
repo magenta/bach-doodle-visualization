@@ -54,7 +54,7 @@
         max-width: 960px;
         width: 100%;
         margin: 0 auto;
-        margin-top: -50px;
+        margin-top: -150px;
       }
     </style>
   </head>
@@ -212,7 +212,7 @@
         a.style.top = rekt.top - containerRekt.top + 'px';
         a.style.width = a.style.height = rekt.width + 'px';
         const fontSize = Math.max(16, rekt.width - 40);
-        overlay.style.fontSize = Math.min(200, fontSize) + 'px';
+        overlay.style.fontSize = Math.min(180, fontSize) + 'px';
         overlay.style.lineHeight = 0;
       }
     }
@@ -220,7 +220,7 @@
     function generateCircles() {
       const sizeScale = d3.scaleSqrt()
         .domain([totalPerCountry['ph'], totalPerCountry['us']])
-        .range([14, 160]);  // Made up.
+        .range([14, 120]);  // Made up.
 
       // Make a circle of the right size, and pack it.
       return d3.packSiblings(
