@@ -68,7 +68,7 @@
     <div class="center">
       <section>
         <h2>The shortest melodies</h2>
-        <p>Each circle is a melody, coloured by its first note. The darker the circle,
+        <p>Each square is a melody, coloured by its first note. The darker the square,
           the more popular the melody. Hover over any of them to hear them.
         </p>
       </section>
@@ -77,7 +77,7 @@
     <div class="center">
       <section>
         <h2>The longest melodies</h2>
-        <p>Each circle is a melody, coloured by its first note. The darker the circle,
+        <p>Each square is a melody, coloured by its first note. The darker the square,
           the more popular the melody. Hover over any of them to hear them.
         </p>
       </section>
@@ -244,13 +244,14 @@
       svg.attr('width', width)
          .attr('height', height);
 
-      svg.append('g').selectAll('circle')
+      svg.append('g').selectAll('rect')
         .data(data)
-        .enter().append('circle')
+        .enter().append('rect')
         .attr('class', 'dot')
-        .attr('r', r/2.2)
-        .attr('cx', (d,i) => x(d.band) + d.x)
-        .attr('cy', (d) => d.y + 20)
+        .attr('width', r - 1)
+        .attr('height', r - 1)
+        .attr('x', (d,i) => x(d.band) + d.x)
+        .attr('y', (d) => d.y + 20)
         .style('fill', d => d.color)
         .style('fill-opacity', d => opacity(d.count))
         .attr('stroke', 'black')
