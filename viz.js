@@ -361,7 +361,7 @@ function handleClick(d) {
   coucouLink.href = getCoucouLink();
 }
 
-function handleHackyClick(d) {
+function handleHackyClick(d, svgName='svg') {
   // If the tooltip is already expanded, close it (imagine someone clicked outside it).
   // otherwise, do the open dance.
   if (tooltipIsExpanded) {
@@ -382,9 +382,7 @@ function handleHackyClick(d) {
   player.loadSamples(ns);
   visualizeNoteSequence(ns, 'visualizer');
 
-  let svg = document.getElementById('mels')
-  if (!svg)
-    svg = document.getElementById('svg');
+  let svg = document.querySelector(svgName);
 
   // Position it in the center of the svg if it's a big enough screen.
   if (window.innerWidth > SMALL_SCREEN_SIZE) {
