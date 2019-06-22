@@ -65,18 +65,22 @@
       </p>
      </section>
 
-    <section>
-      <h2>The shortest melodies</h2>
-      <p>Each circle is a melody, coloured by its first note. The darker the circle,
-        the more popular the melody. Hover over any of them to hear them.
-      </p>
-      <svg id="short"></svg>
-    </section>
-    <section>
-      <h2>The longest melodies</h2>
-      <p>Each circle is a melody, coloured by its first note. The darker the circle,
+    <div class="center">
+      <section>
+        <h2>The shortest melodies</h2>
+        <p>Each circle is a melody, coloured by its first note. The darker the circle,
           the more popular the melody. Hover over any of them to hear them.
         </p>
+      </section>
+      <svg id="short"></svg>
+    </section>
+    <div class="center">
+      <section>
+        <h2>The longest melodies</h2>
+        <p>Each circle is a melody, coloured by its first note. The darker the circle,
+          the more popular the melody. Hover over any of them to hear them.
+        </p>
+      </section>
       <svg id="long"></svg>
     </section>
     <!-- <section>
@@ -222,8 +226,8 @@
       startDeltas.sort((a,b) => a-b);
       const deltaCounts = new Array(startDeltas.length).fill(0);
 
-      const width = 700;
-      const x = d3.scaleBand().rangeRound([20, width-20]).domain(startDeltas);
+      const width = Math.min(window.innerWidth, 1000);
+      const x = d3.scaleBand().rangeRound([0, width]).domain(startDeltas);
       const opacity = d3.scaleLinear().range(["0.3", "0.9"]).domain([0, 1000]).clamp(true);
       const dotsPerColumn = 5;
       const r = (x(startDeltas[1])-x(startDeltas[0])) / dotsPerColumn;
