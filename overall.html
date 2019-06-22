@@ -79,6 +79,13 @@
         </p>
       <svg id="long"></svg>
     </section>
+    <!-- <section>
+      <h2>The hits</h2>
+      <p>These are melodies that we've recognized and tagged. Each circle is a melody, coloured by its first note. The darker the circle,
+          the more popular the melody. Hover over any of them to hear them.
+        </p>
+      <svg id="hits"></svg>
+    </section> -->
 
     <section>
       <h2>Explore all melodies</h2>
@@ -147,7 +154,7 @@
         for (let j = 0; j < data[i].length; j++) {
           if (data[i][j].timing.length === 4) {
             shorts.push(data[i][j]);
-          } else if (data[i][j].timing.length >= 16) {
+          } else if (data[i][j].timing.length >= 10) {
             longs.push(data[i][j]);
           }
         }
@@ -156,7 +163,6 @@
       drawPitches('#short', shorts);
       drawPitches('#long', longs);
     });
-
 
     d3.json(TOP_OVERALL_URL).then((data) => {
       allData = data;
@@ -185,6 +191,7 @@
           d3.json(LABELS_URL).then((labels) => {
             allLabels = labels;
             drawLabels(labels);
+            //drawPitches('#hits', labels);
           });
         } else {
           drawLabels(allLabels);
@@ -201,7 +208,10 @@
     function drawPitches(svgName, data) {
       const startDeltas = [];
       data.forEach(d => {
-        const delta = d.timing[1][0] - d.timing[0][0];
+        let delta;
+        if (d.timing) delta = d.timing[1][0] - d.timing[0][0];
+        else if (d.deltas) delta = parseInt(d.deltas.split(' ')[0]);
+
         let index = startDeltas.indexOf(delta);
         d.band = delta;
         d.color = color(delta);
@@ -212,19 +222,16 @@
       startDeltas.sort((a,b) => a-b);
       const deltaCounts = new Array(startDeltas.length).fill(0);
 
-      const width = 900;
-      const x = d3.scaleBand().rangeRound([0, width-20]).domain(startDeltas);
+      const width = 700;
+      const x = d3.scaleBand().rangeRound([20, width-20]).domain(startDeltas);
       const opacity = d3.scaleLinear().range(["0.3", "0.9"]).domain([0, 1000]).clamp(true);
       const dotsPerColumn = 5;
-      const r = (x(1)-x(0)) / dotsPerColumn;
+      const r = (x(startDeltas[1])-x(startDeltas[0])) / dotsPerColumn;
 
       data.forEach(d => {
-        const delta = d.timing[1][0] - d.timing[0][0];
-        let index = startDeltas.indexOf(delta);
+        let index = startDeltas.indexOf(d.band);
         d.x = deltaCounts[index] % 5 * r;
         d.y = (deltaCounts[index] / 5 >> 0) * r;
-        d.band = delta;
-        d.color = color(delta);
         deltaCounts[index]++;
       })
 
