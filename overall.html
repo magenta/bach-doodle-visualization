@@ -66,11 +66,17 @@
      </section>
 
     <section>
-      <h2>The most popular short melodies</h2>
+      <h2>The shortest melodies</h2>
+      <p>Each circle is a melody, coloured by its first note. The darker the circle,
+        the more popular the melody. Hover over any of them to hear them.
+      </p>
       <svg id="short"></svg>
     </section>
     <section>
-      <h2>The most popular long melodies</h2>
+      <h2>The longest melodies</h2>
+      <p>Each circle is a melody, coloured by its first note. The darker the circle,
+          the more popular the melody. Hover over any of them to hear them.
+        </p>
       <svg id="long"></svg>
     </section>
 
@@ -193,35 +199,49 @@
     }
 
     function drawPitches(svgName, data) {
-      const width = 900;
-      const height = 300;
+      const startDeltas = [];
+      data.forEach(d => {
+        const delta = d.timing[1][0] - d.timing[0][0];
+        let index = startDeltas.indexOf(delta);
+        d.band = delta;
+        d.color = color(delta);
+        if (startDeltas.indexOf(delta) === -1) {
+          startDeltas.push(delta);
+        }
+      });
+      startDeltas.sort((a,b) => a-b);
+      const deltaCounts = new Array(startDeltas.length).fill(0);
 
+      const width = 900;
+      const x = d3.scaleBand().rangeRound([0, width-20]).domain(startDeltas);
+      const opacity = d3.scaleLinear().range(["0.3", "0.9"]).domain([0, 1000]).clamp(true);
+      const dotsPerColumn = 5;
+      const r = (x(1)-x(0)) / dotsPerColumn;
+
+      data.forEach(d => {
+        const delta = d.timing[1][0] - d.timing[0][0];
+        let index = startDeltas.indexOf(delta);
+        d.x = deltaCounts[index] % 5 * r;
+        d.y = (deltaCounts[index] / 5 >> 0) * r;
+        d.band = delta;
+        d.color = color(delta);
+        deltaCounts[index]++;
+      })
+
+      const height = Math.max(...deltaCounts) / 5 * r + 20; // bit of padding.
       const svg = d3.select(svgName);
       svg.attr('width', width)
          .attr('height', height);
-
-
-      let minX = 99999, maxX=0, minY=99999,maxY=0;
-      data.forEach(d => {
-        minX = Math.min(minX, d.count);
-        maxX = Math.max(maxX, d.count);
-        minY = Math.min(minY, d.sessions);
-        maxY = Math.max(maxY, d.sessions);
-      })
-
-      const x = d3.scaleLinear().domain([0,data.length]).range([20, width]).clamp(true);
-      const y = d3.scaleSymlog().domain([minY, maxY]).range([height-20, 20]).clamp(true);
-      const size = d3.scaleLinear().domain([minX, maxX]).range([2,10]).clamp(true);
 
       svg.append('g').selectAll('circle')
         .data(data)
         .enter().append('circle')
         .attr('class', 'dot')
-        .attr('r', d => size(d.count))
-        .attr('cx', (d,i) => x(i))
-        .attr('cy', (d) => y(d.sessions))
-        .style('fill', d => color(d.timing[1][0] - d.timing[0][0]))
-        .style('fill-opacity', 0.6)
+        .attr('r', r/2.2)
+        .attr('cx', (d,i) => x(d.band) + d.x)
+        .attr('cy', (d) => d.y + 20)
+        .style('fill', d => d.color)
+        .style('fill-opacity', d => opacity(d.count))
         .attr('stroke', 'black')
         .attr('stroke-width', 0)
         .on('click', function (d,i) {
@@ -238,8 +258,8 @@
         })
         .on('mouseout', function (d,i) {
           const el = d3.select(this);
-          el.attr('r', d => size(d.count));
-          el.attr('fill-opacity', 0.6);
+          el.attr('r', r/2.2);
+          el.attr('fill-opacity', opacity(d.count));
           el.attr('stroke-width', 0)
           hideTooltip();
         })
