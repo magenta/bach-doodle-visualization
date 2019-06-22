@@ -257,17 +257,13 @@ function visualizeNoteSequence(ns, el, minPitch, maxPitch) {
 // el is a d3 element
 function showTooltip(d, el) {
   // Display the value.
-  document.getElementById('valueText').textContent = d.value;
-
-  let totalSessions = 0;
-  if (d.descendants) {
-    d.descendants().forEach(x => totalSessions += (x.data.sessions || 0));
+  if (d.data.value) {
+    document.getElementById('valueText').textContent = d.data.value;
+    document.getElementById('sessionsText').textContent = d.data.sessions;
+    dataText.hidden = false;
   } else {
-    totalSessions = d.data.sessions;
+    dataText.hidden = true;
   }
-
-  document.getElementById('sessionsText').textContent = totalSessions;
-
   if (d.data.country) {
     unseenCountry.textContent = availableCountriesNames[d.data.country];
   }
