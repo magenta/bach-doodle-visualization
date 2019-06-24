@@ -79,8 +79,8 @@
     <div class="center">
       <section>
         <h2>The longest melodies</h2>
-        <p>From the remaining melodies, <b>447</b> of them were at least 10
-          notes long
+        <p>From the remaining melodies, <b>418</b> of them were at least 10
+          notes long:
         </p>
       </section>
       <svg id="long"></svg>
@@ -88,9 +88,13 @@
 
     <section>
       <h2>Once more, with feeling!</h2>
-      <p>The structure of the compositions is also interesting to look at! There
-        were several variations on popular classics (like "Ode to Joy"). In the
-        chart below, we are looking at all the melodies longer than 3 notes.
+      <p>A cool thing we noticed is that people submitted several <b>variations</b>
+        of popular classics, like "Ode to Joy". They entered fewer or more notes
+        from the same recognizable melody, and even got some of the notes wrong!
+        In the chart below, we are looking at all the melodies
+        longer than 3 notes, and exploring their internal structure. You can
+        also listen to all the prefixes of each melody, even if they weren't
+        actually present in the dataset!
       </p>
     </section>
     <div class="center">
@@ -153,13 +157,12 @@
     d3.json('data/top_overall_flat.json').then((data) => {
       const shorts = [];
       const longs = [];
+
       for (let i = 0; i < data.length; i++) {
-        for (let j = 0; j < data[i].length; j++) {
-          if (data[i][j].timing.length === 4) {
-            shorts.push(data[i][j]);
-          } else if (data[i][j].timing.length >= 10) {
-            longs.push(data[i][j]);
-          }
+        if (data[i].deltas.length === 3) {
+          shorts.push(data[i]);
+        } else if (data[i].deltas.length >= 10) {
+          longs.push(data[i]);
         }
       }
 
@@ -211,10 +214,7 @@
     function drawPitches(svgName, data) {
       const startDeltas = [];
       data.forEach(d => {
-        let delta;
-        if (d.timing) delta = d.timing[1][0] - d.timing[0][0];
-        else if (d.deltas) delta = parseInt(d.deltas.split(' ')[0]);
-
+        const delta = d.deltas[0];
         let index = startDeltas.indexOf(delta);
         d.band = delta;
         d.color = color(delta);

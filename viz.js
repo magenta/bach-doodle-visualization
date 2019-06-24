@@ -11,9 +11,7 @@ function getMostLikelyTiming(d) {
 
 function getNoteSequenceFromData(d) {
   let deltas, timing;
-  if (d.data.deltas && d.data.deltas[0].length === 3) {
-    return getNoteSequenceFromDeltaTimingPair(d.data.deltas)
-  } else if (d.deltas) {
+  if (d.deltas) {
     deltas = d.deltas;
     timing = d.timing;
   } else {
@@ -377,7 +375,7 @@ function handleHackyClick(d, svgName='svg') {
   tooltip.removeAttribute('hidden');
   btnHarmonize.disabled = false;
 
-  let ns = getNoteSequenceFromDeltaTimingPair(d.data.timing);
+  let ns =  getNoteSequenceFromData(d.data);
 
   player.loadSamples(ns);
   visualizeNoteSequence(ns, 'visualizer');
