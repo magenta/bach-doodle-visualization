@@ -21,21 +21,23 @@ a:link, a:visited {
   display: inline-block;
   text-decoration: none;
   position: relative;
-  top:0;
-  box-shadow: var(--shadow);
   margin-right: 8px;
+  border-radius: 0;
 }
 
-a.accent:hover, button.accent:hover {
-  transform: translateX(-2px) translateY(-2px);
-  box-shadow: 6px 6px rgba(0, 0, 0, 0.1);
+a.accent:link, a.accent:visited {
+  color: black;
+  border-bottom: 4px dashed var(--secondary);
+  background:white;
+  font-weight: bold;
+  margin: 0;
+  padding: 0;
 }
 
-a.accent:active, button.accent:active {
-  transform: none;
-  box-shadow:none;
-  top: 4px;
+a.accent:hover {
+  border-bottom-style: solid;
 }
+
 section {
   padding: 24px;
   margin: 0 auto;
@@ -52,29 +54,9 @@ section {
   border-radius: 3px;
   color: white;
 }
-a.accent {
-  margin: 8px 0;
-  margin-right: 16px;
-}
 
 .accent.primary {background: var(--primary)}
 .accent.secondary {background: var(--secondary); color: black}
-.accent.outline.secondary {
-  color: black;
-  border-bottom: 4px dashed var(--secondary);
-  background:white;
-  font-weight: bold;
-  margin: 0;
-  padding: 0;
-}
-.accent.outline {
-  box-shadow: none;
-}
-.accent.outline:hover {
-  box-shadow: none;
-  border-bottom-style: solid;
-  transform: none;
-}
 
 h1 {
   font-size: 3rem;
@@ -86,6 +68,7 @@ p {
 .small {
   font-size: 15px;
 }
+
 header {
   height: 60px;
   background-color: var(--blue);
@@ -101,6 +84,7 @@ header {
 header a, header button {
   padding: 0 14px;
 }
+
 body.drawer-opened header {
   flex-direction: column;
   justify-content: space-between;
@@ -137,6 +121,9 @@ header .menu-btn {
   background: transparent;
   cursor: pointer;
   min-height: 60px;
+  border: none;
+  fill: white;
+  color: white;
 }
 
 header a:link, header a:visited {
@@ -195,14 +182,35 @@ rect, path { cursor: pointer; }
   font-size: 20px;
 }
 
+button {
+  position: relative;
+  appearance: none;
+  border: none;
+  font-size: inherit;
+  font-family: inherit;
+  color: inherit;
+  box-shadow: none;
+  cursor: pointer;
+}
+
 .tooltip button {
+  padding: 8px 16px;
   font-size: 16px;
   padding: 8px 16px;
   box-shadow: var(--shadow);
+  background: var(--secondary);
+  margin-bottom: 8px;
+  border-radius: 3px;
 }
 .tooltip button:hover {
   transform: translateX(-2px) translateY(-2px);
   box-shadow: 6px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tooltip button.accent:active {
+  transform: none;
+  box-shadow:none;
+  top: 4px;
 }
 
 .tooltip #btnPlay {
@@ -248,19 +256,6 @@ rect, path { cursor: pointer; }
   stroke-width: 2px;
   fill: var(--secondary) !important;
 }
-
-button {
-  position: relative;
-  appearance: none;
-  border: none;
-  font-size: inherit;
-  font-family: inherit;
-  color: inherit;
-  box-shadow: none;
-  padding: 8px 16px;
-  cursor: pointer;
-}
-
 
 @media screen and (max-width: 800px) {
   header .menu {

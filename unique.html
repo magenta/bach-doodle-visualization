@@ -77,17 +77,17 @@
 
     <section>
       <p>
-        <span class="accent secondary outline">Hover</span> over any of the smaller
+        <!-- <span class="accent secondary outline">Hover</span> over any of the smaller
         rectangles to see a quick preview
         of the melody. <span class="accent secondary outline">Click</span> on a country
         to zoom in to all the melodies in that country, or
         <span class="accent secondary outline">Click</span>
         on a smaller rectangle to see more details about the melody, listen to it, or see what
         the harmonization could have been. Even though not all countries are labelled, you
-        can still see their melodies by hovering over the small rectangles.
+        can still see their melodies by hovering over the small rectangles. -->
 
         <br><br><br>
-        You can also view this data as <a class="accent secondary" href="unique_circles.html">circles</a>
+        You can also view this data as <a class="accent" href="unique_circles.html">circles</a>
         Note that if you have Trypophobia, that visualization might not
         be pleasant for you, which is why we default to showing the rectangles.
       </p>
@@ -102,10 +102,10 @@
       <div class="small status" hidden>Harmonizing takes a couple of seconds...please wait.</div>
       <div class="actions horizontal">
         <div>
-          <button class="accent secondary" onclick="playMelody()" id="btnPlay">play</button>
-          <button class="accent secondary" onclick="harmonize(event)" id="btnHarmonize">harmonize</button>
+          <button onclick="playMelody()" id="btnPlay">play</button>
+          <button onclick="harmonize(event)" id="btnHarmonize">harmonize</button>
         </div>
-        <button class="accent secondary" onclick="closeTooltip()">close</button>
+        <button onclick="closeTooltip()">close</button>
       </div>
       <br>
       <div class="small hint">Click to expand and listen.</div>
