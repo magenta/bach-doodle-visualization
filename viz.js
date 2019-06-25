@@ -140,6 +140,9 @@ function closeTooltip() {
   if (melodyTweet) {
     melodyTweet.hidden = true;
   }
+
+  // Don't set this to the empty string since that causes a page refresh.
+  window.location.hash = 'all';
   hideTooltip();
 }
 
@@ -151,15 +154,6 @@ function closeTooltip() {
  * Mouse events
  *********************/
 function handleClick(d) {
-  // If the tooltip is already expanded, close it (imagine someone clicked outside it).
-  // otherwise, do the open dance.
-  if (tooltipIsExpanded) {
-    closeTooltip();
-    // Don't set this to the empty string since that causes a page refresh.
-    window.location.hash = 'all';
-    return;
-  }
-
   // Expand the tooltip.
   tooltipIsExpanded = true;
 
@@ -191,9 +185,6 @@ function handleClick(d) {
       .style('left', '10px');
   }
 
-  // So that we can hardlink.
-  window.location.hash = d.elementIndex;
-
   d3.select('#melodyTweet').attr('hidden', null);
   d3.select('#melodyTweetLink').attr('href',
       'https://twitter.com/intent/tweet?hashtags=madewithmagenta&text=' +
@@ -223,12 +214,18 @@ function handleMouseOut() {
   d3.select('#statMelName').text('');
 }
 
-function handleForceSelect(i) {
-  const el = d3.select(`#p${i}`).node();
-  if (!el) {
+function handleForceSelect() {
+  // If there's a hash, we should try to select that melody.
+  const pathIndex = window.location.hash.slice(1);
+  if (pathIndex == '') {
     return
   }
-  const evt = new MouseEvent('click');
-  el.dispatchEvent(evt);
+
+  const el = d3.select(`#p${pathIndex}`);
+  if (!el.node()) {
+    return
+  }
+  d3.event = {currentTarget: document.getElementById('svg')}
+  handleClick(el.data()[0]);
   btnPlay.focus();
 }

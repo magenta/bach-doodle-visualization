@@ -67,6 +67,14 @@ a.accent {
   margin: 0;
   padding: 0;
 }
+.accent.outline {
+  box-shadow: none;
+}
+.accent.outline:hover {
+  box-shadow: none;
+  border-bottom-style: solid;
+  transform: none;
+}
 
 h1 {
   font-size: 3rem;

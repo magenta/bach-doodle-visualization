@@ -117,7 +117,13 @@
       <section>
         <h2>Once more, with feeling!</h2>
         <p>A cool thing we noticed is that the dataset contains several <b>variations</b>
-          of popular classics, like "Ode to Joy". Different people entered fewer or more notes
+          of popular classics, like "Ode to Joy"
+          (like this <a class="outline secondary accent" href="#3800">full version</a>,
+          <a class="outline secondary accent" href="#3386">with a typo</a>,
+          <a class="outline secondary accent" href="#3207">a different typo</a>,
+          <a class="outline secondary accent" href="#1229">short and slow</a>
+          ).
+          Different people entered fewer or more notes
           from the same recognizable melody, or got some of the notes wrong.
           In the visualization below, we are looking at all the melodies
           longer than 4 notes, and exploring their internal structure. You can
@@ -190,6 +196,8 @@
       });
     }
 
+    window.onhashchange = handleForceSelect;
+
     // Short/long melodies.
     d3.json('data/top_overall_flat.json').then((data) => {
       flatData = data;
@@ -235,12 +243,8 @@
           allLabels = labels;
           allLabelsValues = Object.values(allLabels).sort((a,b) => a.deltas.localeCompare(b.deltas));
           drawHits();
-
           // If there's a hash, we should try to select that melody.
-          const pathIndex = window.location.hash.slice(1);
-          if (pathIndex !== '') {
-            handleForceSelect(pathIndex);
-          }
+          handleForceSelect();
         });
       }
     }

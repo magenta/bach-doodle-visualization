@@ -65,7 +65,8 @@ function drawSunburst(data, radius) {
             .duration(400)
             .attrTween('d', arcTween);
         } else {
-          handleClick(d,i);
+          // Hardlinking calls forceSelect.
+          window.location.hash = d.elementIndex;
         }
         d3.event.stopPropagation();
       })
