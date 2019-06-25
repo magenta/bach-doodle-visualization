@@ -181,10 +181,10 @@ function handleClick(d) {
     const parentRekt = d3.event.currentTarget.getBoundingClientRect();
     const tooltipRekt = tooltip.getBoundingClientRect();
     const y = parentRekt.top + (parentRekt.height - tooltipRekt.height) / 2;
-    const x = parentRekt.left + (parentRekt.width - tooltipRekt.width) / 2;
+    const x = (window.innerWidth - tooltipRekt.width) / 2;
     d3.select(tooltip)
       .style('top', y + document.scrollingElement.scrollTop + 'px')
-      .style('left', x + document.scrollingElement.scrollLeft + 'px');
+      .style('left', x + 'px');
   } else {
     d3.select(tooltip)
       .style('top', document.scrollingElement.scrollTop + 50 + 'px')
@@ -224,11 +224,11 @@ function handleMouseOut() {
 }
 
 function handleForceSelect(i) {
-  const el = d3.select(`#p${i}`);
+  const el = d3.select(`#p${i}`).node();
   if (!el) {
     return
   }
   const evt = new MouseEvent('click');
-  el.node().dispatchEvent(evt);
+  el.dispatchEvent(evt);
   btnPlay.focus();
 }
