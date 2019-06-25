@@ -63,6 +63,11 @@ function drawSunburst(data, radius) {
   // Add an ID to every element so that we can find it later.
   let i = 0;
   root.each((d) => {
+    d.x = d.x0;
+    d.dx = d.x1 - d.x0;
+    d.x_ = d.x;
+    d.dx_ = d.dx;
+
     d.elementIndex = i;
     i++;
     d.current = d;
@@ -70,7 +75,8 @@ function drawSunburst(data, radius) {
 
   const degree = 2 * Math.PI / 360 / 5;
   let arc, svg;
-  sunburstScale = d3.scaleLog(2).range([0, radius]);
+  sunburstScale = d3.scaleLog().range([0, radius]);
+  //sunburstScale = (x) => x;
 
   svg = d3.select('#svg')
     .style('width', radius)
@@ -90,7 +96,7 @@ function drawSunburst(data, radius) {
     .startAngle(d => d.x0 - degree)
     .endAngle(d => d.x1 + degree)
     .padAngle(d => Math.min((d.x1 - d.x0) / 2, 0.005))
-    .padRadius(0)
+    .padRadius(20)
     .innerRadius(d => sunburstScale(d.y0))
     .outerRadius(d => sunburstScale(d.y1 - 3))
 
@@ -105,9 +111,9 @@ function drawSunburst(data, radius) {
       .attr('d', d => arc(d.current))
       .on('click', function (d,i) {
         if (d3.event.shiftKey) {
-          if (d.descendants().length > 1) {
-            zoom(d,i);
-          }
+          const ancestors = d.ancestors();
+          magnify(ancestors[ancestors.length - 2]);
+          magnify(d);
         } else {
           handleClick(d,i);
         }
@@ -118,6 +124,60 @@ function drawSunburst(data, radius) {
   const el = document.getElementById('svg');
   const box = el.getBBox();
   el.setAttribute('viewBox', `${box.x} ${box.y} ${box.width} ${box.height}`);
+
+  function magnify(node) {
+    unzoomPie();
+
+    const parent = node.parent;
+    const k = .8;
+
+    if (parent) {
+      let x = parent.x0;
+      parent.children.forEach((sibling) => {
+        x += reposition(sibling, x,
+                        sibling === node
+                          ? parent.dx * k / node.value
+                          : parent.dx * (1 - k) / (parent.value - node.value));
+      });
+    } else {
+      reposition(node, 0, node.dx / node.value);
+    }
+
+    paths.transition()
+        .duration(400)
+        .attrTween('d', arcTween);
+  }
+
+  // Recursively reposition the node at position x with scale k.
+  function reposition(node, x, k) {
+    node.x0 = x;
+    if (node.children) {
+      for (let i = 0; i < node.children.length; i++) {
+        x += reposition(node.children[i], x, k);
+      }
+    }
+
+    node.dx = node.value * k;
+    node.x1 = node.x0 + node.dx;
+    return node.dx;
+  }
+
+  // Interpolate the arcs in data space.
+  function arcTween(a) {
+    const i = d3.interpolate({
+      x0: a.x_,
+      dx: a.dx_,
+      x1: a.x_ + a.dx_
+    }, a);
+    return function(t) {
+      const b = i(t);
+      a.x_ = b.x0;
+      a.dx_ = b.dx;
+      return arc(b);
+    };
+  }
+
+
 
   function zoom(p) {
     unzoomPie();

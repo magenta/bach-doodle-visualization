@@ -153,6 +153,7 @@
 
     function drawTreemap(data, width, height) {
       const countryColors = d3.scaleOrdinal(d3.quantize(d3.interpolateWarm, data.children.length));
+
       const opacity = d3.scaleLinear().range(["0.5", "1.0"]).domain([0, 1000]).clamp(true);
 
       const treemap = data => d3.treemap()
