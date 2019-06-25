@@ -102,15 +102,6 @@
     </div>
 
     <section>
-      <p>
-        <span id="overallHelp" hidden>
-        <span class="accent secondary outline">Move</span> any of the labels out of the way.</span>
-        <span class="accent secondary outline">Hover</span> over any of the cells to see a quick preview
-        of the melody. <span class="accent secondary outline">Click</span> on a cell to see
-        more details about it, listen to it, or see what the harmonization could have been.
-        <span id="unseenHelp" hidden>The <span class="accent secondary">yellow</span> cells represent
-        melodies that were not in the top in any other country.</span>
-      </p>
       <p id="mobileScreen" class="small" hidden>Your screen size is quite small, so we've
         hidden the labels for the most recognizable melodies. You can re-enable
         them with this checkbox, but at your own risk: they're not
@@ -119,7 +110,7 @@
     </section>
     <div class="tooltip" id="tooltip" hidden>
       <div id="dataText">
-        Composed in <b id="sessionsText"></b> sessions and harmonized a total of <b id="valueText"></b> times.
+        Composed across <b id="sessionsText"></b> sessions and harmonized <b id="valueText"></b> times.
       </div>
       <div class="viz">
         <svg id="visualizer"></svg>
@@ -132,7 +123,6 @@
         </div>
         <button class="accent secondary" onclick="closeTooltip()">close</button>
       </div>
-      <br>
       <div class="small hint">Click to expand and listen. Shift click to zoom in to the melodies starting on this note.
         <span id="whiteCircleHint" hidden>Click on the white circle in the middle to go back.</span>
       </div>
@@ -145,24 +135,44 @@
   <script src="common.js"></script>
   <script src="viz.js"></script>
   <script>
-    let allData, allLabels;
+    let allData, flatData, allLabels;
 
     // Don't redraw on resize on mobile since that's probably a zoom event.
     if (('ontouchstart' in window) === false) {
-      window.addEventListener('resize', showData);
+      window.addEventListener('resize', () => {
+        sunburst();
+        pixels();
+      });
     }
-    forceLabels.addEventListener('change', showData);
+    forceLabels.addEventListener('change', sunburst);
 
-    // Display the short/long melodies.
+    // Short/long melodies.
     d3.json('data/top_overall_flat.json').then((data) => {
+      flatData = data;
+      pixels();
+    });
+
+    // Sunburst.
+    d3.json('data/top_overall.json').then((data) => {
+      allData = data;
+      sunburst();
+
+      // If there's a hash, we should try to select that melody.
+      const pathIndex = window.location.hash.slice(1);
+      if (pathIndex !== '') {
+        handleForceSelect(pathIndex);
+      }
+    });
+
+    function pixels() {
       const shorts = [];
       const longs = [];
 
-      for (let i = 0; i < data.length; i++) {
-        if (data[i].deltas.length === 3) {
-          shorts.push(data[i]);
-        } else if (data[i].deltas.length >= 9) {
-          longs.push(data[i]);
+      for (let i = 0; i < flatData.length; i++) {
+        if (flatData[i].deltas.length === 3) {
+          shorts.push(flatData[i]);
+        } else if (flatData[i].deltas.length >= 9) {
+          longs.push(flatData[i]);
         }
       }
       // I got these deltas values by looking at the data.
@@ -174,22 +184,9 @@
           [0,    1,  2,  3,  4,  5,  6,  7,  9,  10,  12,  13, 17, 24],
           ['f', -1, -2, -3, -4, -5, -6, -7, -9, -10, -12, -13, 'ff', -24]
       );
-    });
+    }
 
-    d3.json(TOP_OVERALL_URL).then((data) => {
-      allData = data;
-
-      loadAllSamples();
-      showData();
-
-      // If there's a hash, we should try to select that melody.
-      const pathIndex = window.location.hash.slice(1);
-      if (pathIndex !== '') {
-        handleForceSelect(pathIndex);
-      }
-    });
-
-    function showData() {
+    function sunburst() {
       document.querySelector('#svg').innerHTML = '';
       const size = Math.min(window.innerWidth, window.innerHeight);
       drawSunburst(allData, size);
@@ -253,6 +250,7 @@
 
       // Set up the SVG.
       const svg = d3.select(svgName);
+      svg.node().innerHTML = '';
       svg.attr('width', width)
          .attr('height', height);
 
