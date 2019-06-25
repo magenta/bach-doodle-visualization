@@ -136,19 +136,13 @@ function closeTooltip() {
   stopMelody();
   document.getElementById('tooltip').classList.remove('expanded');
   tooltipIsExpanded = false;
-
-  if (melodyTweet) {
-    melodyTweet.hidden = true;
-  }
+  d3.select('#melodyTweet').attr('hidden', true);
+  d3.select('#coucouField').attr('hidden', true);
 
   // Don't set this to the empty string since that causes a page refresh.
   window.location.hash = 'all';
   hideTooltip();
 }
-
-
-
-
 
 /*********************
  * Mouse events
@@ -185,10 +179,17 @@ function handleClick(d) {
       .style('left', '10px');
   }
 
-  d3.select('#melodyTweet').attr('hidden', null);
-  d3.select('#melodyTweetLink').attr('href',
+  // No hash, no tweet link.
+  const pathIndex = window.location.hash.slice(1);
+  if (pathIndex !== '' && pathIndex !== 'all' ) {
+    d3.select('#melodyTweet').attr('hidden', null);
+    d3.select('#melodyTweetLink').attr('href',
       'https://twitter.com/intent/tweet?hashtags=madewithmagenta&text=' +
       encodeURIComponent('Listen to this melody from the Bach Doodle dataset! ' + window.location.href));
+  } else {
+    d3.select('#melodyTweet').attr('hidden', true);
+  }
+  d3.select('#coucouField').attr('hidden', null);
   d3.select('#coucouLink').attr('href', getCoucouLink());
 }
 
