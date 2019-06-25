@@ -199,7 +199,7 @@
 
     function sunburst() {
       document.querySelector('#svg').innerHTML = '';
-      const size = Math.min(window.innerWidth, window.innerHeight);
+      const size = Math.min(1000, window.innerWidth);
       drawSunburst(allData, size);
 
       melodyTweet.innerHTML = `Do you think you know what this melody is? \
