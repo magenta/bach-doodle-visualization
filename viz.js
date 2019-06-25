@@ -50,6 +50,7 @@ function updateMelodyName(d) {
 /*********************
  * D3 viz drawing
  *********************/
+let sunburstScale;
 function drawSunburst(data, radius) {
   // https://observablehq.com/@d3/sunburst with tons of changes
   const viewRadius = radius;
@@ -69,6 +70,7 @@ function drawSunburst(data, radius) {
 
   const degree = 2 * Math.PI / 360 / 5;
   let arc, svg;
+  sunburstScale = d3.scaleLog(2).range([0, radius]);
 
   svg = d3.select('#svg')
     .style('width', radius)
@@ -89,8 +91,8 @@ function drawSunburst(data, radius) {
     .endAngle(d => d.x1 + degree)
     .padAngle(d => Math.min((d.x1 - d.x0) / 2, 0.005))
     .padRadius(0)
-    .innerRadius(d => d.y0)
-    .outerRadius(d => d.y1 - 3)
+    .innerRadius(d => sunburstScale(d.y0))
+    .outerRadius(d => sunburstScale(d.y1 - 3))
 
   const paths = svg.selectAll('path')
       .data(root.descendants().slice(1))
@@ -203,13 +205,14 @@ function zoomPie(el) {
     .endAngle(d => d.x1 + zoomSize/360)
     .padAngle(d => Math.min((d.x1 - d.x0), 0.005))
     .padRadius(0)
-    .innerRadius(d => d.y0 - zoomSize)
-    .outerRadius(d => d.y1 + zoomSize)
+    .innerRadius(d => sunburstScale(d.y0 - zoomSize))
+    .outerRadius(d => sunburstScale(d.y1 + zoomSize))
 
   el
   .attr('d_', el.attr('d'))
   .attr('d', d => arc(d.current))
   .attr('fill-opacity', 1)
+  .attr('stroke-width', sunburstScale(5))
   .classed('zoom', true);
 }
 
