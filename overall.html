@@ -110,13 +110,6 @@
       <svg id="svg"></svg>
     </div>
 
-    <section>
-      <p id="mobileScreen" class="small" hidden>Your screen size is quite small, so we've
-        hidden the labels for the most recognizable melodies. You can re-enable
-        them with this checkbox, but at your own risk: they're not
-        super usable on mobile, unfortunately. <input type="checkbox" id="forceLabels">
-      </p>
-    </section>
     <div class="tooltip" id="tooltip" hidden>
       <div id="dataText">
         <b id="melName"></b>Composed across <b id="sessionsText"></b> sessions and harmonized <b id="valueText"></b> times.
@@ -136,7 +129,12 @@
         Shift click to zoom in to the melodies starting on this note.
         <span id="whiteCircleHint" hidden>Click on the white circle in the middle to go back.</span>
       </div>
-      <div id="melodyTweet"></div>
+      <div id="melodyTweet">Do you think you know what this melody is?
+        <a id="melodyTweetLink" target="_blank">Tweet at us</a> and we'll
+          try to label it! Or, open this melody in our
+          <a id="coucouLink" target="_blank">companion app</a>
+          to explore more harmonizations.
+      </div>
     </div>
   </body>
   <script src="https://d3js.org/d3.v5.min.js"></script>
@@ -145,7 +143,7 @@
   <script src="common.js"></script>
   <script src="viz.js"></script>
   <script>
-    let allData, flatData, allLabels;
+    let allData, flatData, allLabels, allLabelsValues;
 
     // Don't redraw on resize on mobile since that's probably a zoom event.
     if (('ontouchstart' in window) === false) {
@@ -155,7 +153,6 @@
         hits();
       });
     }
-    forceLabels.addEventListener('change', sunburst);
 
     // Short/long melodies.
     d3.json('data/top_overall_flat.json').then((data) => {
@@ -202,34 +199,19 @@
       const size = Math.min(window.innerWidth, window.innerHeight);
       drawSunburst(allData, size);
 
-      melodyTweet.innerHTML = `Do you think you know what this melody is? \
-      <a id="melodyTweetLink" target="_blank">Tweet at us</a> and we'll \
-      try to label it!`;
-
-      if (window.innerWidth > SMALL_SCREEN_SIZE || forceLabels.checked) {
-        if (!allLabels) {
-          d3.json(LABELS_URL).then((labels) => {
-            allLabels = labels;
-            drawLabels(labels);
-            hits();
-          });
-        } else {
-          drawLabels(allLabels);
-        }
-      } else {
-        mobileScreen.hidden = false;
+      if (!allLabels) {
+        d3.json(LABELS_URL).then((labels) => {
+          allLabels = labels;
+          allLabelsValues = Object.values(allLabels).sort((a,b) => a.deltas.localeCompare(b.deltas));
+          hits();
+        });
       }
-
-      melodyTweet.innerHTML += ` Or, open this melody in our \
-    <a id="coucouLink" target="_blank">companion app</a> to explore more harmonizations.`
     }
 
     function hits() {
-      allLabels.sort((a,b) => a.deltas.localeCompare(b.deltas));
-
       // Set up the drawing area.
       let width = Math.min(window.innerWidth, 1000);
-      const x = d3.scaleBand().rangeRound([0, width]).domain(d3.range(allLabels.length));
+      const x = d3.scaleBand().rangeRound([0, width]).domain(d3.range(allLabelsValues.length));
       const r =  x.bandwidth();
       const height = r + 20;
 
@@ -241,7 +223,7 @@
 
       const opacity = d3.scaleLinear().range(["0.1", "1.0"]).domain([120, 500]).clamp(true);
       svg.append('g').selectAll('rect')
-        .data(allLabels)
+        .data(allLabelsValues)
         .enter().append('rect')
         .attr('class', 'dot')
         .attr('width', r - 1)
@@ -270,11 +252,9 @@
           el.attr('r', r/2.2);
           el.attr('fill-opacity', opacity(d.count));
           el.attr('stroke-width', 0);
-          melName.textContent = d.name + '. ';
+          melName.textContent = '';
           hideTooltip();
         })
-
-
     }
 
     function drawPitches(svgName, data, posDeltas, negDeltas) {
@@ -341,6 +321,7 @@
           el.attr('fill-opacity', 1);
           d.value = d.count;
           showTooltip({data:d}, el);
+          melName.textContent = d.name ? d.name + '. ' : '';
         })
         .on('mouseout', function (d,i) {
           const el = d3.select(this);
@@ -348,6 +329,7 @@
           el.attr('fill-opacity', opacity(d.count));
           el.attr('stroke-width', 0)
           hideTooltip();
+          melName.textContent = '';
         })
 
     }

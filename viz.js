@@ -430,6 +430,11 @@ function handleMouseOverForEl(d, el) {
   window.location.hash = 'all'; // not the empty string so that it doesn't cause a page refresh
   zoomPie(el);
 
+  if (document.getElementById('melName')) {
+    const label = allLabels && allLabels[d.elementIndex];
+    melName.textContent = label ? label.name + '. ' : '';
+  }
+
   // Fade everything.
   const svg = d3.select('#svg');
   svg.selectAll('path').style('fill-opacity', 0.3);
