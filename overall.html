@@ -63,14 +63,14 @@
         Bach's "Tocatta and Fugue in D minor") were by far the most repeated
         sequences, but we found some surprising runner ups. Explore them below!
       </p>
-     </section>
+    </section>
 
     <div class="center">
       <section>
         <h2>The shortest melodies</h2>
         <p>Out of the top <b>2000 most repeated melodies</b>, <b>1347</b> of
-          them were actually just 3 notes long! Below is a chart of these
-          melodies coloured by the first note in the melody. The darker the square,
+          them were actually just 4 notes long! Below is a chart of these
+          melodies colored by  The darker the square,
           the more popular the melody. Hover over any of them to hear them.
         </p>
       </section>
@@ -79,7 +79,7 @@
     <div class="center">
       <section>
         <h2>The longest melodies</h2>
-        <p>From the remaining melodies, <b>418</b> of them were at least 10
+        <p>From the remaining melodies, <b>447</b> of them were at least 10
           notes long:
         </p>
       </section>
@@ -88,11 +88,11 @@
 
     <section>
       <h2>Once more, with feeling!</h2>
-      <p>A cool thing we noticed is that people submitted several <b>variations</b>
-        of popular classics, like "Ode to Joy". They entered fewer or more notes
-        from the same recognizable melody, and even got some of the notes wrong!
-        In the chart below, we are looking at all the melodies
-        longer than 3 notes, and exploring their internal structure. You can
+      <p>A cool thing we noticed is that the dataset contains several <b>variations</b>
+        of popular classics, like "Ode to Joy". Different people entered fewer or more notes
+        from the same recognizable melody, or got some of the notes wrong.
+        In the visualization below, we are looking at all the melodies
+        longer than 4 notes, and exploring their internal structure. You can
         also listen to all the prefixes of each melody, even if they weren't
         actually present in the dataset!
       </p>
@@ -161,13 +161,19 @@
       for (let i = 0; i < data.length; i++) {
         if (data[i].deltas.length === 3) {
           shorts.push(data[i]);
-        } else if (data[i].deltas.length >= 10) {
+        } else if (data[i].deltas.length >= 9) {
           longs.push(data[i]);
         }
       }
+      // I got these deltas values by looking at the data.
+      drawPitches('#short', shorts,
+          [0,    1,  2,  3,  4,  5,  6,  7, 'f',  9,  10,  12, 24],
+          ['f', -1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -12, -24]);
 
-      drawPitches('#short', shorts);
-      drawPitches('#long', longs);
+      drawPitches('#long', longs,
+          [0,    1,  2,  3,  4,  5,  6,  7,  9,  10,  12,  13, 17, 24],
+          ['f', -1, -2, -3, -4, -5, -6, -7, -9, -10, -12, -13, 'ff', -24]
+      );
     });
 
     d3.json(TOP_OVERALL_URL).then((data) => {
@@ -193,15 +199,15 @@
       try to label it!`;
 
       if (window.innerWidth > SMALL_SCREEN_SIZE || forceLabels.checked) {
-        if (!allLabels) {
-          d3.json(LABELS_URL).then((labels) => {
-            allLabels = labels;
-            drawLabels(labels);
-            //drawPitches('#hits', labels);
-          });
-        } else {
-          drawLabels(allLabels);
-        }
+        // if (!allLabels) {
+        //   d3.json(LABELS_URL).then((labels) => {
+        //     allLabels = labels;
+        //     drawLabels(labels);
+        //     //drawPitches('#hits', labels);
+        //   });
+        // } else {
+        //   drawLabels(allLabels);
+        // }
       } else {
         mobileScreen.hidden = false;
       }
@@ -211,47 +217,54 @@
 
     }
 
-    function drawPitches(svgName, data) {
-      const startDeltas = [];
+    function drawPitches(svgName, data, posDeltas, negDeltas) {
+      // Set up the drawing area.
+      let width = Math.min(window.innerWidth, 1000);
+      const xPos = d3.scaleBand().rangeRound([0, width]).domain(posDeltas);
+      const xNeg = d3.scaleBand().rangeRound([0, width]).domain(negDeltas);
+
+      // Figure out the dot size that fits in this width.
+      let r = xPos.bandwidth() / 5; // 5 dots per column.
+
+      // And how many of deltas, so that we can draw them in the right place.
+      const posDeltaCounts = new Array(posDeltas.length).fill(0);
+      const negDeltaCounts = new Array(negDeltas.length).fill(0);
+
       data.forEach(d => {
-        const delta = d.deltas[0];
-        let index = startDeltas.indexOf(delta);
-        d.band = delta;
-        d.color = color(delta);
-        if (startDeltas.indexOf(delta) === -1) {
-          startDeltas.push(delta);
+        let value;
+        d.band = d.deltas[0];
+        d.color = color(d.band);
+        if (d.band >= 0) {
+          const index = posDeltas.indexOf(d.band);
+          value = posDeltaCounts[index];
+          posDeltaCounts[index]++;
+        } else {
+          const index = negDeltas.indexOf(d.band);
+          value = negDeltaCounts[index];
+          negDeltaCounts[index]++;
         }
+        d.x = value % 5 * r;
+        d.y = (value / 5 >> 0) * r;
       });
-      startDeltas.sort((a,b) => a-b);
-      const deltaCounts = new Array(startDeltas.length).fill(0);
 
-      const width = Math.min(window.innerWidth, 1000);
-      const x = d3.scaleBand().rangeRound([0, width]).domain(startDeltas);
-      const opacity = d3.scaleLinear().range(["0.5", "1.0"]).domain([0, 1000]).clamp(true);
+      const posHeight = Math.max(...posDeltaCounts) / 5 * r;
+      const negHeight = Math.max(...negDeltaCounts) / 5 * r;
+      const height = posHeight + negHeight;
 
-      const dotsPerColumn = 5;
-      const r = (x(startDeltas[1])-x(startDeltas[0])) / dotsPerColumn;
-
-      data.forEach(d => {
-        let index = startDeltas.indexOf(d.band);
-        d.x = deltaCounts[index] % 5 * r;
-        d.y = (deltaCounts[index] / 5 >> 0) * r;
-        deltaCounts[index]++;
-      })
-
-      const height = Math.max(...deltaCounts) / 5 * r + 20; // bit of padding.
+      // Set up the SVG.
       const svg = d3.select(svgName);
       svg.attr('width', width)
          .attr('height', height);
 
+      const opacity = d3.scaleLinear().range(["0.1", "1.0"]).domain([120, 500]).clamp(true);
       svg.append('g').selectAll('rect')
         .data(data)
         .enter().append('rect')
         .attr('class', 'dot')
         .attr('width', r - 1)
         .attr('height', r - 1)
-        .attr('x', (d,i) => x(d.band) + d.x)
-        .attr('y', (d) => d.y + 20)
+        .attr('x', (d) => (d.band >= 0 ? xPos(d.band) : xNeg(d.band)) + d.x)
+        .attr('y', (d) => (d.band >= 0 ? height - negHeight-d.y : d.y + posHeight + r))
         .attr('fill', d => d.color)
         .attr('fill-opacity', d => opacity(d.count))
         .attr('stroke', 'black')

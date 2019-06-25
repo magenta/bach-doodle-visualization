@@ -10,6 +10,10 @@ function getMostLikelyTiming(d) {
 }
 
 function getNoteSequenceFromData(d) {
+  if (d.timing && d.timing[0].length === 3) {
+    return getNoteSequenceFromTiming(d.timing);
+  }
+
   let deltas, timing;
   if (d.deltas) {
     deltas = d.deltas;
@@ -223,7 +227,6 @@ function unzoomPie() {
   });
 }
 
-
 function fill(d) {
   if (!d.depth) return '#ccc';
   if (d.data.unseen) return '#FFD138';
@@ -236,10 +239,11 @@ function visualizeNoteSequence(ns, el, minPitch, maxPitch) {
 
   // Colour each note according to its pitch.
   const rects = viz.querySelectorAll('rect');
-  let previousPitch = ns.notes[0].pitch
+  let previousPitch = FIRST_MELODY_NOTE;
   ns.notes.forEach((n,i) => {
     const text = pitchToNote(n.pitch);
     rects[i].style.fill = color(n.pitch - previousPitch);
+
     previousPitch = n.pitch;
     d3.select(viz).append('text')
       .text(text)

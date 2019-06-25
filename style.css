@@ -312,7 +312,10 @@ button {
 
 @media screen and (max-width: 500px) {
   .tooltip {
-  max-width: 95%;
+    max-width: 95%;
+  }
+  .center {
+    text-align: left;
   }
 }
 
