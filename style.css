@@ -240,41 +240,6 @@ rect, path { cursor: pointer; }
   fill: var(--secondary) !important;
 }
 
-.annotation-callout {
-  cursor: move;
-  user-select: none;
-}
-.annotation .handle {
-  stroke:none;
-  fill: white;
-}
-.annotation text {
- font-weight: 400;
- font-size: 150%;
- fill: black;
- cursor: move;
-}
-.annotation path {
-  fill: white;
-  stroke: black;
-  stroke-width: 4;
-}
-.annotation .annotation-subject {
-  pointer-events: none !important;
-  cursor: pointer;
-}
-.annotation .annotation-subject .handle {
-  pointer-events: none !important;
-  cursor: pointer;
-}
-.annotation .connector-end {
-  pointer-events: none;
-}
-.annotation-note-bg {
-  fill: white;
-  fill-opacity: 0.8;
-}
-
 button {
   position: relative;
   appearance: none;

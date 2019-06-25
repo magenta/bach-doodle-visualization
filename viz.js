@@ -120,12 +120,10 @@ function drawSunburst(data, radius) {
   el.setAttribute('viewBox', `${box.x} ${box.y} ${box.width} ${box.height}`);
 
   function zoom(p) {
-    hideLabels();
     unzoomPie();
 
     // CLicking on the white circle.
     if (p.depth === 0) {
-      requestAnimationFrame(showLabels);
       whiteCircleHint.hidden = true;
     } else {
       whiteCircleHint.hidden = false;
@@ -151,47 +149,6 @@ function drawSunburst(data, radius) {
       .attr('fill-opacity', 1)
       .attrTween('d', d => () => arc(d.current));
   }
-}
-
-let annotations, makeAnnotations;
-function drawLabels(labels) {
-  annotations = [];
-
-  for (let i = 0; i < labels.length; i++) {
-    const obj = {};
-    obj.note = {title: labels[i].name, wrap: 200};
-    obj.connector = {end: 'dot', endScale: 4};
-
-    const el = document.getElementById('p' + labels[i].id);
-    if (!el) {
-      debugger
-    }
-    const bbox = el.getBBox();
-    obj.x = bbox.x + bbox.width/2;
-    obj.y = bbox.y + bbox.height/2;
-
-    obj.dx = (obj.x < 0) ? -50: 20;
-    obj.dy = (obj.y > 0) ? 50 : -50
-    annotations.push(obj);
-  }
-
-  makeAnnotations = d3.annotation()
-    .type(d3.annotationCallout)
-    .notePadding(15)
-    .editMode(true)
-    .annotations(annotations);
-
-  d3.select('#svg')
-    .append('g')
-    .attr('class', 'annotation')
-    .call(makeAnnotations);
-}
-
-function hideLabels() {
-  d3.select('.annotations').style('display', 'none');
-}
-function showLabels() {
-  d3.select('.annotations').style('display', 'block');
 }
 
 function zoomPie(el) {
@@ -438,8 +395,6 @@ function handleMouseOverForEl(d, el) {
   // Fade everything.
   const svg = d3.select('#svg');
   svg.selectAll('path').style('fill-opacity', 0.3);
-  svg.selectAll('.annotation').style('fill-opacity', 0.3);
-  svg.selectAll('.annotation').style('stroke-opacity', 0.3);
 
   requestAnimationFrame(() => {
     showTooltip(d, el);
@@ -464,8 +419,6 @@ function handleMouseOutForEl() {
 function restoreOpacities() {
   const svg = d3.select('#svg');
   svg.selectAll('path').style('fill-opacity', 1);
-  svg.selectAll('.annotation').style('fill-opacity', 1);
-  svg.selectAll('.annotation').style('stroke-opacity', 1);
 }
 
 function handleForceSelect(i, data) {
