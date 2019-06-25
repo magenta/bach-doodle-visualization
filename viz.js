@@ -71,7 +71,7 @@ function drawSunburst(data, radius) {
   let arc, svg;
 
   svg = d3.select('#svg')
-    .style('width', radius) // to fit right side labels a bit better
+    .style('width', radius)
     .style('height', radius)
     .append('g');
 
@@ -101,8 +101,6 @@ function drawSunburst(data, radius) {
       .style('cursor', 'pointer')
       .attr('id', d => `p${d.elementIndex}`)
       .attr('d', d => arc(d.current))
-
-    paths
       .on('click', function (d,i) {
         if (d3.event.shiftKey) {
           if (d.descendants().length > 1) {
@@ -114,8 +112,6 @@ function drawSunburst(data, radius) {
       })
       .on('mouseover', handleMouseOver)
       .on('mouseout', handleMouseOut)
-
-  svg.node();
 
   const el = document.getElementById('svg');
   const box = el.getBBox();
@@ -429,36 +425,26 @@ function handleMouseOut() {
 
 function handleMouseOverForEl(d, el) {
   window.location.hash = 'all'; // not the empty string so that it doesn't cause a page refresh
-
-  // Fade all the segments.
-  const ancestors = (document.getElementsByClassName('.force')) ? d.ancestors() :
-                                                  d.ancestors.reverse();
-  const svg = d3.select('#svg');
-
   zoomPie(el);
 
-  // Fade everything else.
+  // Fade everything.
+  const svg = d3.select('#svg');
   svg.selectAll('path').style('fill-opacity', 0.3);
-  svg.selectAll('.force circle').style('fill-opacity', 0.3);
-  svg.selectAll('.force circle').style('stroke-opacity', 0.3);
-  svg.selectAll('.force line').style('stroke-opacity', 0.3);
   svg.selectAll('.annotation').style('fill-opacity', 0.3);
   svg.selectAll('.annotation').style('stroke-opacity', 0.3);
-
-  // Highlight these ancestors.
-  svg.selectAll('path')
-    .filter((node) => ancestors.indexOf(node) >= 0)
-    .style('fill-opacity', 1);
-
-  svg.selectAll('.force circle')
-    .filter((node) => ancestors.indexOf(node) >= 0)
-    .style('fill-opacity', 1)
-    .style('stroke-opacity', 1);
 
   requestAnimationFrame(() => {
     showTooltip(d, el);
   });
 
+  // Highlight this cell's ancestors.
+  const ancestors = d.ancestors().reverse();
+  if (!ancestors) {
+    return;
+  }
+  svg.selectAll('path')
+    .filter((node) => ancestors.indexOf(node) >= 0)
+    .style('fill-opacity', 1);
 }
 
 function handleMouseOutForEl() {
@@ -472,9 +458,6 @@ function restoreOpacities() {
   svg.selectAll('path').style('fill-opacity', 1);
   svg.selectAll('.annotation').style('fill-opacity', 1);
   svg.selectAll('.annotation').style('stroke-opacity', 1);
-  svg.selectAll('.force circle').style('fill-opacity', 1);
-  svg.selectAll('.force circle').style('stroke-opacity', 1);
-  svg.selectAll('.force line').style('stroke-opacity', 1);
 }
 
 function handleForceSelect(i, data) {

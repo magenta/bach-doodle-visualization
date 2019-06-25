@@ -196,15 +196,14 @@
       try to label it!`;
 
       if (window.innerWidth > SMALL_SCREEN_SIZE || forceLabels.checked) {
-        // if (!allLabels) {
-        //   d3.json(LABELS_URL).then((labels) => {
-        //     allLabels = labels;
-        //     drawLabels(labels);
-        //     //drawPitches('#hits', labels);
-        //   });
-        // } else {
-        //   drawLabels(allLabels);
-        // }
+        if (!allLabels) {
+          d3.json(LABELS_URL).then((labels) => {
+            allLabels = labels;
+            drawLabels(labels);
+          });
+        } else {
+          drawLabels(allLabels);
+        }
       } else {
         mobileScreen.hidden = false;
       }
