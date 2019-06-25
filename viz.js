@@ -10,8 +10,8 @@ function getMostLikelyTiming(d) {
 }
 
 function getNoteSequenceFromData(d) {
-  if (d.timing && d.timing[0].length === 3) {
-    return getNoteSequenceFromTiming(d.timing);
+  if (d.data.timing && d.data.timing[0].length === 3) {
+    return getNoteSequenceFromTiming(d.data.timing);
   }
 
   let deltas, timing;
@@ -23,6 +23,12 @@ function getNoteSequenceFromData(d) {
     timing = getMostLikelyTiming(d);
   }
   return getNoteSequenceFromDeltasAndTiming(deltas, timing);
+}
+
+function displayMelodyName(d) {
+  const label = allLabels && allLabels[d.elementIndex];
+  d3.select('#melName').text(label ? label.name + '. ' : '');
+  d3.select('#statMelName').text(label ? '🎵' + label.name: '');
 }
 
 function updateMelodyName(d) {
@@ -50,199 +56,6 @@ function updateMelodyName(d) {
 /*********************
  * D3 viz drawing
  *********************/
-let sunburstScale;
-function drawSunburst(data, radius) {
-  // https://observablehq.com/@d3/sunburst with tons of changes
-  const viewRadius = radius;
-  const partition = data => d3.partition().size([2 * Math.PI, viewRadius])
-                    (d3.hierarchy(data)
-                      .sum(d => d.value)
-                      .sort((a, b) => b.value - a.value))
-  const root = partition(data);
-
-  // Add an ID to every element so that we can find it later.
-  let i = 0;
-  root.each((d) => {
-    d.x = d.x0;
-    d.dx = d.x1 - d.x0;
-    d.x_ = d.x;
-    d.dx_ = d.dx;
-
-    d.elementIndex = i;
-    i++;
-    d.current = d;
-  });
-
-  const degree = 2 * Math.PI / 360 / 5;
-  let arc, svg;
-  sunburstScale = d3.scaleLog().range([0, radius]);
-  //sunburstScale = (x) => x;
-
-  svg = d3.select('#svg')
-    .style('width', radius)
-    .style('height', radius)
-    .append('g');
-
-  // Add the white circle in the middle.
-  svg.append('circle')
-    .datum(root)
-    .attr('r', radius)
-    .attr('fill', 'white')
-    .attr('pointer-events', 'all')
-    .on('mouseover', hideTooltip)
-    .on('click', zoom);
-
-  arc = d3.arc()
-    .startAngle(d => d.x0 - degree)
-    .endAngle(d => d.x1 + degree)
-    .padAngle(d => Math.min((d.x1 - d.x0) / 2, 0.005))
-    .padRadius(20)
-    .innerRadius(d => sunburstScale(d.y0))
-    .outerRadius(d => sunburstScale(d.y1 - 3))
-
-  const paths = svg.selectAll('path')
-      .data(root.descendants().slice(1))
-      .enter()
-      .append('path')
-      .attr('fill', fill)
-      .attr('fill-opacity', 1)
-      .style('cursor', 'pointer')
-      .attr('id', d => `p${d.elementIndex}`)
-      .attr('d', d => arc(d.current))
-      .on('click', function (d,i) {
-        if (d3.event.shiftKey) {
-          const ancestors = d.ancestors();
-          magnify(ancestors[ancestors.length - 2]);
-          magnify(d);
-        } else {
-          handleClick(d,i);
-        }
-      })
-      .on('mouseover', handleMouseOver)
-      .on('mouseout', handleMouseOut)
-
-  const el = document.getElementById('svg');
-  const box = el.getBBox();
-  el.setAttribute('viewBox', `${box.x} ${box.y} ${box.width} ${box.height}`);
-
-  function magnify(node) {
-    unzoomPie();
-
-    const parent = node.parent;
-    const k = .8;
-
-    if (parent) {
-      let x = parent.x0;
-      parent.children.forEach((sibling) => {
-        x += reposition(sibling, x,
-                        sibling === node
-                          ? parent.dx * k / node.value
-                          : parent.dx * (1 - k) / (parent.value - node.value));
-      });
-    } else {
-      reposition(node, 0, node.dx / node.value);
-    }
-
-    paths.transition()
-        .duration(400)
-        .attrTween('d', arcTween);
-  }
-
-  // Recursively reposition the node at position x with scale k.
-  function reposition(node, x, k) {
-    node.x0 = x;
-    if (node.children) {
-      for (let i = 0; i < node.children.length; i++) {
-        x += reposition(node.children[i], x, k);
-      }
-    }
-
-    node.dx = node.value * k;
-    node.x1 = node.x0 + node.dx;
-    return node.dx;
-  }
-
-  // Interpolate the arcs in data space.
-  function arcTween(a) {
-    const i = d3.interpolate({
-      x0: a.x_,
-      dx: a.dx_,
-      x1: a.x_ + a.dx_
-    }, a);
-    return function(t) {
-      const b = i(t);
-      a.x_ = b.x0;
-      a.dx_ = b.dx;
-      return arc(b);
-    };
-  }
-
-
-
-  function zoom(p) {
-    unzoomPie();
-
-    // CLicking on the white circle.
-    if (p.depth === 0) {
-      whiteCircleHint.hidden = true;
-    } else {
-      whiteCircleHint.hidden = false;
-    }
-
-    root.each(d => d.target = {
-      x0: Math.max(0, Math.min(1, (d.x0 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
-      x1: Math.max(0, Math.min(1, (d.x1 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
-      y0: Math.max(20, d.y0 - p.depth),
-      y1: Math.max(10, d.y1 - p.depth)
-    });
-
-    const t = svg.transition().duration(0);
-
-    // Transition the data on all arcs, even the ones that aren’t visible,
-    // so that if this transition is interrupted, entering arcs will start
-    // the next transition from the desired position.
-    paths.transition(t)
-      .tween('data', d => {
-        const i = d3.interpolate(d.current, d.target);
-        return t => d.current = i(t);
-      })
-      .attr('fill-opacity', 1)
-      .attrTween('d', d => () => arc(d.current));
-  }
-}
-
-function zoomPie(el) {
-  if (!el.attr('d')) {
-    return;
-  }
-  const zoomSize = 10;
-
-  const arc = d3.arc()
-    .startAngle(d => d.x0 - zoomSize/360)
-    .endAngle(d => d.x1 + zoomSize/360)
-    .padAngle(d => Math.min((d.x1 - d.x0), 0.005))
-    .padRadius(0)
-    .innerRadius(d => sunburstScale(d.y0 - zoomSize))
-    .outerRadius(d => sunburstScale(d.y1 + zoomSize))
-
-  el
-  .attr('d_', el.attr('d'))
-  .attr('d', d => arc(d.current))
-  .attr('fill-opacity', 1)
-  .attr('stroke-width', sunburstScale(5))
-  .classed('zoom', true);
-}
-
-function unzoomPie() {
-  d3.selectAll('.zoom').each(function (d,i) { // don't use fat arrow to keep the weird this.
-    const el = d3.select(this);
-    el.attr('d', el.attr('d_'))
-      .attr('d_', null)
-      .attr('fill-opacity', 1)
-      .classed('zoom', false);
-  });
-}
-
 function fill(d) {
   if (!d.depth) return '#ccc';
   if (d.data.unseen) return '#FFD138';
@@ -272,25 +85,26 @@ function visualizeNoteSequence(ns, el, minPitch, maxPitch) {
 /*********************
  * Tooltip
  *********************/
-// el is a d3 element
-function showTooltip(d, el) {
+function showTooltip(d) {
   // Display the value.
   if (d.data.value) {
-    document.getElementById('valueText').textContent = d.data.value;
-    document.getElementById('sessionsText').textContent = d.data.sessions;
-    if (window.dataText) dataText.hidden = false;
+    d3.select('#valueText').text(d.data.value);
+    d3.select('#sessionsText').text(d.data.sessions);
+    d3.select('#dataText').attr('hidden', null);
+    d3.select('#noDataText').attr('hidden', true);
   } else {
-    if (window.dataText) dataText.hidden = true;
+    d3.select('#dataText').attr('hidden', true);
+    d3.select('#noDataText').attr('hidden', null);
   }
+
   if (d.data.country) {
+    d3.select('#unseenCountry').text(availableCountriesNames[d.data.country]);
     unseenCountry.textContent = availableCountriesNames[d.data.country];
   }
 
-  if (document.getElementById('unseenSession')){
-    unseenSession.hidden = !d.data.unseen;
-  }
-  if (document.getElementById('countriesText')) {
-    countriesText.textContent = availableCountriesNames[d.parent.data.name];
+  d3.select('#unseenSession').attr('hidden', !d.data.unseen);
+  if (d.parent) {
+    d3.select('#countriesText').text(availableCountriesNames[d.parent.data.name]);
   }
   tooltip.removeAttribute('hidden');
 
@@ -300,7 +114,7 @@ function showTooltip(d, el) {
   if (tooltipIsExpanded) {
     return;
   }
-  const rekt = el.node().getBoundingClientRect();
+  const rekt = this.getBoundingClientRect();
   const tooltipRekt = tooltip.getBoundingClientRect();
 
   // Center them above the path.
@@ -322,12 +136,17 @@ function closeTooltip() {
   stopMelody();
   document.getElementById('tooltip').classList.remove('expanded');
   tooltipIsExpanded = false;
+
   if (melodyTweet) {
     melodyTweet.hidden = true;
   }
   hideTooltip();
-  handleMouseOutForEl();
 }
+
+
+
+
+
 /*********************
  * Mouse events
  *********************/
@@ -336,25 +155,30 @@ function handleClick(d) {
   // otherwise, do the open dance.
   if (tooltipIsExpanded) {
     closeTooltip();
-    window.location.hash = 'all'; // not the empty string so that it doesn't cause a page refresh
+    // Don't set this to the empty string since that causes a page refresh.
+    window.location.hash = 'all';
     return;
   }
 
+  // Expand the tooltip.
   tooltipIsExpanded = true;
 
-  // Expand the tooltip.
+  // If it's hidden, show it first.
+  if (tooltip.hasAttribute('hidden')) {
+    showTooltip(d);
+    displayMelodyName(d);
+  }
   tooltip.classList.add('expanded');
-  tooltip.removeAttribute('hidden');
   btnHarmonize.disabled = false;
 
+  // Show note sequence.
   let ns = getNoteSequenceFromData(d);
-
   player.loadSamples(ns);
   visualizeNoteSequence(ns, 'visualizer');
 
   // Position it in the center of the svg if it's a big enough screen.
   if (window.innerWidth > SMALL_SCREEN_SIZE) {
-    const parentRekt = svg.getBoundingClientRect();
+    const parentRekt = d3.event.currentTarget.getBoundingClientRect();
     const tooltipRekt = tooltip.getBoundingClientRect();
     const y = parentRekt.top + (parentRekt.height - tooltipRekt.height) / 2;
     const x = parentRekt.left + (parentRekt.width - tooltipRekt.width) / 2;
@@ -366,129 +190,45 @@ function handleClick(d) {
       .style('top', document.scrollingElement.scrollTop + 50 + 'px')
       .style('left', '10px');
   }
-  //tooltip.scrollIntoView();
 
   // So that we can hardlink.
   window.location.hash = d.elementIndex;
 
-  if (melodyTweet) {
-    melodyTweet.hidden = false;
-  }
-  melodyTweetLink.href = 'https://twitter.com/intent/tweet?hashtags=madewithmagenta&text=' +
-  encodeURIComponent('Listen to this melody from the Bach Doodle dataset! ' + window.location.href);
-  coucouLink.href = getCoucouLink();
-}
-
-function handleHackyClick(d, svgName='svg') {
-  // If the tooltip is already expanded, close it (imagine someone clicked outside it).
-  // otherwise, do the open dance.
-  if (tooltipIsExpanded) {
-    closeTooltip();
-    window.location.hash = 'all'; // not the empty string so that it doesn't cause a page refresh
-    return;
-  }
-
-  tooltipIsExpanded = true;
-
-  // Expand the tooltip.
-  tooltip.classList.add('expanded');
-  tooltip.removeAttribute('hidden');
-  btnHarmonize.disabled = false;
-
-  let ns =  getNoteSequenceFromData(d.data);
-
-  player.loadSamples(ns);
-  visualizeNoteSequence(ns, 'visualizer');
-
-  let svg = document.querySelector(svgName);
-
-  // Position it in the center of the svg if it's a big enough screen.
-  if (window.innerWidth > SMALL_SCREEN_SIZE) {
-    const parentRekt = svg.getBoundingClientRect();
-    const tooltipRekt = tooltip.getBoundingClientRect();
-    const y = parentRekt.top + (parentRekt.height - tooltipRekt.height) / 2;
-    const x = parentRekt.left + (parentRekt.width - tooltipRekt.width) / 2;
-    d3.select(tooltip)
-      .style('top', y + document.scrollingElement.scrollTop + 'px')
-      .style('left', x + document.scrollingElement.scrollLeft + 'px');
-  } else {
-    d3.select(tooltip)
-      .style('top', document.scrollingElement.scrollTop + 50 + 'px')
-      .style('left', '10px');
-  }
-  //tooltip.scrollIntoView();
-
-  // So that we can hardlink.
-  window.location.hash = d.elementIndex;
-
-  if (melodyTweet) {
-    melodyTweet.hidden = false;
-  }
-  melodyTweetLink.href = 'https://twitter.com/intent/tweet?hashtags=madewithmagenta&text=' +
-  encodeURIComponent('Listen to this melody from the Bach Doodle dataset! ' + window.location.href);
-  coucouLink.href = getCoucouLink();
+  d3.select('#melodyTweet').attr('hidden', null);
+  d3.select('#melodyTweetLink').attr('href',
+      'https://twitter.com/intent/tweet?hashtags=madewithmagenta&text=' +
+      encodeURIComponent('Listen to this melody from the Bach Doodle dataset! ' + window.location.href));
+  d3.select('#coucouLink').attr('href', getCoucouLink());
 }
 
 function handleMouseOver(d) {
+  // If we're already looking at something, leave it be.
   if (tooltipIsExpanded) {
     return;
   }
-  handleMouseOverForEl(d, d3.select(this));
+  // Don't set this to the empty string since that causes a page refresh.
+  window.location.hash = 'all';
+  displayMelodyName(d);
+  showTooltip.call(this, d);
 }
 
 function handleMouseOut() {
+  // If we're already looking at something, leave it be.
   if (tooltipIsExpanded) {
     return;
   }
-  handleMouseOutForEl(d3.select(this));
-}
-
-function handleMouseOverForEl(d, el) {
-  window.location.hash = 'all'; // not the empty string so that it doesn't cause a page refresh
-  zoomPie(el);
-
-  if (document.getElementById('melName')) {
-    const label = allLabels && allLabels[d.elementIndex];
-    melName.textContent = label ? label.name + '. ' : '';
-  }
-
-  // Fade everything.
-  const svg = d3.select('#svg');
-  svg.selectAll('path').style('fill-opacity', 0.3);
-
-  requestAnimationFrame(() => {
-    showTooltip(d, el);
-  });
-
-  // Highlight this cell's ancestors.
-  const ancestors = d.ancestors().reverse();
-  if (!ancestors) {
-    return;
-  }
-  svg.selectAll('path')
-    .filter((node) => ancestors.indexOf(node) >= 0)
-    .style('fill-opacity', 1);
-}
-
-function handleMouseOutForEl() {
   hideTooltip();
-  unzoomPie();
-  restoreOpacities();
+
+  d3.select('#melName').text('');
+  d3.select('#statMelName').text('');
 }
 
-function restoreOpacities() {
-  const svg = d3.select('#svg');
-  svg.selectAll('path').style('fill-opacity', 1);
-}
-
-function handleForceSelect(i, data) {
+function handleForceSelect(i) {
   const el = d3.select(`#p${i}`);
-  const d = data || el.data()[0];
-
-  if (!d) {
-    return;
+  if (!el) {
+    return
   }
-  handleMouseOverForEl(d, el);
-  handleClick(d, el);
+  const evt = new MouseEvent('click');
+  el.node().dispatchEvent(evt);
   btnPlay.focus();
 }

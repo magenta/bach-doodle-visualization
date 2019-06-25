@@ -10,6 +10,23 @@
     <link rel="preconnect" href="https://storage.googleapis.com">
     <link href="style.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:400,700&display=swap" rel="stylesheet">
+    <style>
+      .explanation {
+        position: absolute;
+        width: 280px;
+        left: calc(50% - 140px);
+        top: 35%;
+        text-align: center;
+        pointer-events: none;
+      }
+      #percentage {
+        font-size: 40px;
+        font-weight: bold;
+      }
+      #statMelName {
+        font-weight: bold;
+      }
+    </style>
   </head>
   <body>
     <header>
@@ -75,7 +92,8 @@
         </p>
       </section>
       <svg id="short"></svg>
-    </section>
+    </div>
+
     <div class="center">
       <section>
         <h2>The longest melodies</h2>
@@ -84,7 +102,7 @@
         </p>
       </section>
       <svg id="long"></svg>
-    </section>
+    </div>
 
     <div class="center">
       <section>
@@ -93,27 +111,47 @@
         </p>
       </section>
       <svg id="hits"></svg>
-    </section>
+    </div>
 
-    <section>
-      <h2>Once more, with feeling!</h2>
-      <p>A cool thing we noticed is that the dataset contains several <b>variations</b>
-        of popular classics, like "Ode to Joy". Different people entered fewer or more notes
-        from the same recognizable melody, or got some of the notes wrong.
-        In the visualization below, we are looking at all the melodies
-        longer than 4 notes, and exploring their internal structure. You can
-        also listen to all the prefixes of each melody, even if they weren't
-        actually present in the dataset!
-      </p>
-    </section>
     <div class="center">
-      <svg id="svg"></svg>
+      <section>
+        <h2>Once more, with feeling!</h2>
+        <p>A cool thing we noticed is that the dataset contains several <b>variations</b>
+          of popular classics, like "Ode to Joy". Different people entered fewer or more notes
+          from the same recognizable melody, or got some of the notes wrong.
+          In the visualization below, we are looking at all the melodies
+          longer than 4 notes, and exploring their internal structure. You can
+          also listen to all the prefixes of each melody, even if they weren't
+          actually present in the dataset!
+        </p>
+      </section>
+
+      <div style="position: relative">
+        <svg id="svg"></svg>
+
+        <div class="explanation">
+          <div class="instructions">
+            <br><br>
+            Each cell is a note in one of the top 2000 melodies. Hover over them.
+          </div>
+          <div class="stat" hidden>
+            <div id="statMelName"></div>
+            <div id="percentage">61.3%</div>
+            of the top melodies begin with this sequence of notes.
+          </div>
+          <br>
+          <div class="small hint" hidden>Click to expand and listen.
+            Shift click on a note to zoom in, or on the inner white circle to reset.
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="tooltip" id="tooltip" hidden>
       <div id="dataText">
         <b id="melName"></b>Composed across <b id="sessionsText"></b> sessions and harmonized <b id="valueText"></b> times.
       </div>
+      <div id="noDataText" hidden>This melody was not in the top 2000, but you can still explore it here:</div>
       <div class="viz">
         <svg id="visualizer"></svg>
       </div>
@@ -125,10 +163,7 @@
         </div>
         <button class="accent secondary" onclick="closeTooltip()">close</button>
       </div>
-      <div class="small hint">Click to expand and listen.
-        Shift click to zoom in to that melody.
-        <span id="whiteCircleHint" hidden>Click on the white circle in the middle to go back.</span>
-      </div>
+
       <div id="melodyTweet">Do you think you know what this melody is?
         <a id="melodyTweetLink" target="_blank">Tweet at us</a> and we'll
           try to label it! Or, open this melody in our
@@ -141,15 +176,17 @@
   <script src="https://cdn.jsdelivr.net/npm/@magenta/music@1.8.0"></script>
   <script src="common.js"></script>
   <script src="viz.js"></script>
+  <script src="sunburst.js"></script>
   <script>
     let allData, flatData, allLabels, allLabelsValues;
+    const opacity = d3.scaleLinear().range(["0.1", "1.0"]).domain([120, 500]).clamp(true);
 
     // Don't redraw on resize on mobile since that's probably a zoom event.
     if (('ontouchstart' in window) === false) {
       window.addEventListener('resize', () => {
         sunburst();
         pixels();
-        hits();
+        drawHits();
       });
     }
 
@@ -163,12 +200,6 @@
     d3.json('data/top_overall.json').then((data) => {
       allData = data;
       sunburst();
-
-      // If there's a hash, we should try to select that melody.
-      const pathIndex = window.location.hash.slice(1);
-      if (pathIndex !== '') {
-        handleForceSelect(pathIndex);
-      }
     });
 
     function pixels() {
@@ -176,6 +207,7 @@
       const longs = [];
 
       for (let i = 0; i < flatData.length; i++) {
+        flatData[i].value = flatData[i].count;
         if (flatData[i].deltas.length === 3) {
           shorts.push(flatData[i]);
         } else if (flatData[i].deltas.length >= 9) {
@@ -183,11 +215,11 @@
         }
       }
       // I got these deltas values by looking at the data.
-      drawPitches('#short', shorts,
+      drawMelodyGrid('#short', shorts,
           [0,    1,  2,  3,  4,  5,  6,  7, 'f',  9,  10,  12, 24],
           ['f', -1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -12, -24]);
 
-      drawPitches('#long', longs,
+      drawMelodyGrid('#long', longs,
           [0,    1,  2,  3,  4,  5,  6,  7,  9,  10,  12,  13, 17, 24],
           ['f', -1, -2, -3, -4, -5, -6, -7, -9, -10, -12, -13, 'ff', -24]
       );
@@ -202,13 +234,19 @@
         d3.json(LABELS_URL).then((labels) => {
           allLabels = labels;
           allLabelsValues = Object.values(allLabels).sort((a,b) => a.deltas.localeCompare(b.deltas));
-          hits();
+          drawHits();
+
+          // If there's a hash, we should try to select that melody.
+          const pathIndex = window.location.hash.slice(1);
+          if (pathIndex !== '') {
+            handleForceSelect(pathIndex);
+          }
         });
       }
     }
 
-    function hits() {
-      // Set up the drawing area.
+    function drawHits() {
+       // Set up the drawing area.
       let width = Math.min(window.innerWidth, 1000);
       const x = d3.scaleBand().rangeRound([0, width]).domain(d3.range(allLabelsValues.length));
       const r =  x.bandwidth();
@@ -220,7 +258,6 @@
       svg.attr('width', width)
          .attr('height', height);
 
-      const opacity = d3.scaleLinear().range(["0.1", "1.0"]).domain([120, 500]).clamp(true);
       svg.append('g').selectAll('rect')
         .data(allLabelsValues)
         .enter().append('rect')
@@ -233,37 +270,22 @@
         .attr('fill-opacity', d => opacity(d.count))
         .attr('stroke', 'black')
         .attr('stroke-width', 0)
-        .on('click', function (d,i) {
-          handleHackyClick(d3.select(`#p${d.id}`).data()[0],'#hits');
-        })
-        .on('mouseover', function (d,i) {
-          const el = d3.select(this);
-          el.attr('r', 10);
-          el.raise();
-          el.attr('stroke-width', 2)
-          el.attr('fill-opacity', 1);
-          d.value = d.count;
-          showTooltip({data:d}, el);
-          melName.textContent = d.name + '. ';
-        })
-        .on('mouseout', function (d,i) {
-          const el = d3.select(this);
-          el.attr('r', r/2.2);
-          el.attr('fill-opacity', opacity(d.count));
-          el.attr('stroke-width', 0);
-          melName.textContent = '';
-          hideTooltip();
-        })
+        .on('click', (d) => handleClick.call(d3.event.currentTarget,
+            d3.select(`#p${d.id}`).data()[0]))
+        .on('mouseover', (d) => mouseoverPixel.call(
+            d3.event.currentTarget, d3.select(`#p${d.id}`).data()[0]))
+        .on('mouseout', (d) => mouseoutPixel.call(d3.event.currentTarget,
+            {data:d}, r));
     }
 
-    function drawPitches(svgName, data, posDeltas, negDeltas) {
+    function drawMelodyGrid(svgName, data, posDeltas, negDeltas) {
       // Set up the drawing area.
       let width = Math.min(window.innerWidth, 1000);
       const xPos = d3.scaleBand().rangeRound([0, width]).domain(posDeltas);
       const xNeg = d3.scaleBand().rangeRound([0, width]).domain(negDeltas);
 
       // Figure out the dot size that fits in this width.
-      let r = xPos.bandwidth() / 5; // 5 dots per column.
+      let r = xPos.bandwidth() / 5;
 
       // And how many of deltas, so that we can draw them in the right place.
       const posDeltaCounts = new Array(posDeltas.length).fill(0);
@@ -296,41 +318,40 @@
       svg.attr('width', width)
          .attr('height', height);
 
-      const opacity = d3.scaleLinear().range(["0.1", "1.0"]).domain([120, 500]).clamp(true);
       svg.append('g').selectAll('rect')
         .data(data)
-        .enter().append('rect')
+        .enter()
+        .append('rect')
         .attr('class', 'dot')
-        .attr('width', r - 1)
-        .attr('height', r - 1)
         .attr('x', (d) => (d.band >= 0 ? xPos(d.band) : xNeg(d.band)) + d.x)
         .attr('y', (d) => (d.band >= 0 ? height - negHeight-d.y : d.y + posHeight + r))
+        .attr('width', r - 1)
+        .attr('height', r - 1)
         .attr('fill', d => d.color)
         .attr('fill-opacity', d => opacity(d.count))
         .attr('stroke', 'black')
         .attr('stroke-width', 0)
-        .on('click', function (d,i) {
-          handleHackyClick({data:d},svgName);
-        })
-        .on('mouseover', function (d,i) {
-          const el = d3.select(this);
-          el.attr('r', 10);
-          el.raise();
-          el.attr('stroke-width', 2)
-          el.attr('fill-opacity', 1);
-          d.value = d.count;
-          showTooltip({data:d}, el);
-          melName.textContent = d.name ? d.name + '. ' : '';
-        })
-        .on('mouseout', function (d,i) {
-          const el = d3.select(this);
-          el.attr('r', r/2.2);
-          el.attr('fill-opacity', opacity(d.count));
-          el.attr('stroke-width', 0)
-          hideTooltip();
-          melName.textContent = '';
-        })
-
+        .on('click', (d) => handleClick.call(d3.event.currentTarget, {data:d}))
+        .on('mouseover', (d) => mouseoverPixel.call(d3.event.currentTarget, {data:d}))
+        .on('mouseout', (d) => mouseoutPixel.call(d3.event.currentTarget, {data:d}, r));
     }
+
+    function mouseoverPixel(d) {
+      d3.select(this)
+        .attr('r', 10)
+        .raise()
+        .attr('stroke-width', 2)
+        .attr('fill-opacity', 1);
+      handleMouseOver.call(this, d);
+    }
+
+    function mouseoutPixel(d, r) {
+      d3.select(this)
+        .attr('r', r/2.2)
+        .attr('fill-opacity', opacity(d.data.count))
+        .attr('stroke-width', 0);
+      handleMouseOut.call(this);
+    }
+
   </script>
 </html>
