@@ -81,6 +81,11 @@ function drawSunburst(data, radius) {
         d3.select('.stat').attr('hidden', null);
         d3.select('.hint').attr('hidden', null);
 
+        if (d.data.value) {
+          d3.select('#statValue').html(`Harmonized <b>${d.data.value}</b> times.`);
+        } else {
+          d3.select('#statValue').text('Not in the top 2000.');
+        }
         displayMelodyName(d);
         zoomPie(d3.select(this));
         updateOpacities(d);
