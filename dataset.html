@@ -18,6 +18,7 @@
         border-left: 2px solid black;
         border-right: 2px solid black;
         background: white;
+        margin: -3px 0;
       }
       button.toggle {
         min-width: 90px;
@@ -37,15 +38,22 @@
         width: 100%;
         margin-bottom: 24px;
       }
+      table td {
+        padding: 8px;
+      }
+      table tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
       table td:first-of-type {
         width: 170px;
       }
-      table td:last-of-type {
+      table td:nth-of-type(2) {
         font-weight: bold;
-        word-break: break-all;
+        min-width: 50px;
       }
       .box {
         overflow: auto;
+        padding: 0;
       }
       .circle {
         width: 40px;
@@ -107,13 +115,13 @@
     </header>
 
     <section>
-      <h1>What does the <br><span class="accent primary">dataset</span> look like?</h1>
+      <h1>What does the <br><span class="accent primary">data</span> look like?</h1>
       <p>
         Of the more than 50 million requests to the doodle itself, the user contributed dataset contains
         over 21.6 million miniature compositions totaling 78.8 years spent composing.
         The compositions are split across 8.5 million sessions -- each session represents
         an anonymous user's interaction with the web app and may contain multiple data points.
-        Below you can explore <b>100</b> different sessions from the dataset, and each of their harmonizations
+        Below you can explore <b>20</b> different sessions from the dataset, and each of their harmonizations
       </p>
     </section>
 
@@ -128,39 +136,6 @@
         <h3>Harmonization: <b id="activeHarmonization"></b>/<b id="harms"></b></h3>
         <button class="accent secondary circle" onclick="nextHarmonization()" aria-label="view next harmonization">&gt;</button>
       </div>
-      <h3>Metadata</h3>
-      <table class="box">
-        <tbody>
-          <tr>
-            <td>Backend</td>
-            <td id="backend"></td>
-          </tr>
-          <tr>
-            <td>Loops Listened</td>
-            <td id="loops"></td>
-          </tr>
-          <tr>
-            <td>Session ID</td>
-            <td id="sid"></td>
-          </tr>
-          <tr>
-            <td>Country code</td>
-            <td id="country"></td>
-          </tr>
-          <tr>
-            <td>Composition time</td>
-            <td id="comp"></td>
-          </tr>
-          <tr>
-            <td>Feedback</td>
-            <td id="feedback"></td>
-          </tr>
-          <tr>
-            <td>Key Signature</td>
-            <td id="keysig"></td>
-          </tr>
-        </tbody>
-      </table>
 
       <div class="horizontal">
         <div>
@@ -173,6 +148,53 @@
       <div class="box">
         <svg id="visualizer"></svg>
       </div>
+
+      <h3>Metadata</h3>
+      <table class="box small">
+        <tbody>
+          <tr>
+            <td>Backend</td>
+            <td id="backend"></td>
+            <td><b>r</b> means the harmonization was sent to a cloud TPU unit,
+              <b>l</b> that it was done in the user's browser using TensorFlow.js
+            </td>
+          </tr>
+          <tr>
+            <td>Loops Listened</td>
+            <td id="loops"></td>
+            <td>How many times this session listened to the composition</td>
+          </tr>
+          <tr>
+            <td>Session ID</td>
+            <td id="sid"></td>
+            <td>Represents a user in the dataset. To avoid any personally
+              identifiable information, a user (or a session) represents a
+              new request to the doodle, not an IP -- if the same
+              physical person opened the doodle in multiple tabs, this would
+              result in multiple sessions (or users), one for each tab</td>
+          </tr>
+          <tr>
+            <td>Country code</td>
+            <td id="country"></td>
+            <td>The location the doodle was accessed from</td>
+          </tr>
+          <tr>
+            <td>Composition time</td>
+            <td id="comp"></td>
+            <td>The length of time the doodle was open in this session, in ms</td>
+          </tr>
+          <tr>
+            <td>Feedback</td>
+            <td id="feedback"></td>
+            <td>If a rating is present, 0 is poor, 1 is neutral, 2 is good</td>
+          </tr>
+          <tr>
+            <td>Key Signature</td>
+            <td id="keysig"></td>
+            <td>If the user changed the key in the advanced mode option, it would appear here</td>
+          </tr>
+        </tbody>
+      </table>
     </section>
   </body>
   <script src="https://cdn.jsdelivr.net/npm/@magenta/music@1.8.0"></script>
@@ -195,14 +217,12 @@
 
       harms.textContent = data['backend'].length;
 
-      const b = data['backend'][harmIndex];
-      backend.textContent = b + ` (${b == 'r'?'TPU': 'tf.js'})`;
+      backend.textContent = data['backend'][harmIndex];
       loops.textContent = data['loops_listened'][harmIndex];
       sid.textContent = data['session_id'][harmIndex];
       country.textContent = data['country'][harmIndex];
-      comp.textContent = data['composition_time'][harmIndex] + ' (ms)';
-      const f = data['feedback'][harmIndex];
-      feedback.textContent = f + ` (${f===0?'poor':(f==1?'neutral':(f==2?'good':'no rating'))})`;
+      comp.textContent = data['composition_time'][harmIndex];
+      feedback.textContent = data['feedback'][harmIndex];
       keysig.textContent = data['key_sig'][harmIndex];
 
       // TODO: check if we need this hack after fixing the dataset.json to jsonl

@@ -64,9 +64,10 @@
       <h1>Exploring the <span class="accent primary">Bach Doodle</span></h1>
       <p>
         Over 8 million players have contributed around 24 millions harmonizations after playing with the Bach Google Doodle.
-        These harmonizations are a unique data set that can help developers train new neural networks,
-        help researchers see patterns in how people around the world compose melodies, and help
-        musicians create things we haven’t begun to think of. That’s why we’re open-sourcing the dataset.
+        These harmonizations are a unique data set that can show insights on how
+        people around the world composed melodies, help developers train new
+        Machine Learning algorithms, or artists create musical experiences.
+        That’s why we’re open-sourcing the dataset.
       </p>
     </section>
 
@@ -79,25 +80,41 @@
         We've also split them across which country they came from, to see
         how compositions changed around the world!
       </p>
-      <p class="small">(Note: these two visualizations
-          are pretty big, and work the best on a desktop, where you have more pixels
-          for clicking)</p>
-      <a class="accent" href="overall.html">Explore the top overall melodies</a>
-      <br>
-      <a class="accent" href="world.html">Explore melodies around the world</a>
-      <br>
-      <a class="accent" href="unique.html">Explore the most unique compositions</a>
+      <p>Try exploring the <a class="accent" href="overall.html">top overall repeated melodies</a>,
+      <a class="accent" href="world.html">the top repeated melodies in each country</a>, or
+      listen to the <a class="accent" href="unique.html">regional hits </a> -- melodies
+      that only appeared in one country and not in the other ones.
+      <details>
+        <summary class="small">The technical details on how we clustered the data</summary>
+        <p>We noticed early on that although people entered the same melody (like "Ode to Joy"),
+        they sometimes did this in a different key, or with different note lengths.
+        To get around this, we aggregated the top 2000 melodies based on the "shape"
+        of each composition (the number of semitones between consecutive notes),
+        rather than the absolute pitches in it, so that all "Ode to Joy"s that
+        have the same shape were considered identical.</p>
+
+        <p>
+          As a result, you will notice that all
+          the melodies in the visualizations start on a C, even though the original
+          melodies almost certainly didn't. This is purely to simplify the visualizations,
+          and allow us to also explore the internal structure of melodies (like starting
+          notes, common melody prefixes, etc).
+        </p>
+      </details>
     </section>
 
     <section>
-      <h2>What's in the dataset?</h2>
+      <h2>What's in the actual dataset?</h2>
       <p>
         Of the more than 50 million requests to the doodle itself, the user contributed dataset contains
-        over 21.6 million miniature compositions totaling 78.8 years spent composing.
-        The compositions are split across 8.5 million sessions -- each session represents
-        an anonymous user's interaction with the web app and may contain multiple data points.
+        over 21.6 million miniature compositions adding up to about 6 hours of audio.
+        The compositions are split across 8.5 million sessions; each session represents
+        an anonymous user's interaction with the web app and may contain multiple data points,
+        one for each time the user pressed the "Harmonize" button. Explore
+        <a class="accent" href="dataset.html">20 random sessions</a> to see
+        what the actual data looks like.
       </p>
-      <a class="accent" href="dataset.html">Explore the dataset</a>
+
     </section>
   </body>
 </html>
