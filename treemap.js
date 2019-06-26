@@ -46,7 +46,13 @@ function drawTreemap(data, width, height) {
       .attr('stroke-width', '3px')
       .on('mouseover', function(d) {
         d3.select(this).attr('stroke', 'black');
-        if (!tooltipIsExpanded && !d.children) {
+        if (d.children) {
+          d3.select('#melodyInstructions').attr('hidden', true);
+          d3.select('#countryInstructions').attr('hidden', null);
+          showTooltip.call(this, d);
+        } else if (!tooltipIsExpanded && !d.children) {
+          d3.select('#melodyInstructions').attr('hidden', null);
+          d3.select('#countryInstructions').attr('hidden', true);
           handleMouseOver.call(this, d);
         }
       })
@@ -54,6 +60,8 @@ function drawTreemap(data, width, height) {
         d3.select(this).attr('stroke', null);
         if (!tooltipIsExpanded && !d.children) {
           handleMouseOut.call(this, d);
+        } else {
+          hideTooltip();
         }
       })
       .on('click', d => {

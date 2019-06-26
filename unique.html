@@ -76,26 +76,31 @@
     </div>
 
     <div class="tooltip" id="tooltip" hidden>
-      <div><span id="melodyText" hidden><b id="melodyNameText"></b>.</span>
-        Composed in <b id="countriesText"></b> across <b id="sessionsText"></b> sessions and harmonized a total of <b id="valueText"></b> times.
+      <div id="countryInstructions">
+        <div class="small hint">Click to zoom into this country's melodies.</div>
       </div>
-      <div class="viz">
-        <svg id="visualizer"></svg>
-      </div>
-      <div class="small status" hidden>Harmonizing takes a couple of seconds...please wait.</div>
-      <div class="actions horizontal">
-        <div>
-          <button onclick="playMelody()" id="btnPlay">play</button>
-          <button onclick="harmonize(event)" id="btnHarmonize">harmonize</button>
+      <div id="melodyInstructions">
+        <div><span id="melodyText" hidden><b id="melodyNameText"></b>.</span>
+          Composed in <b id="countriesText"></b> across <b id="sessionsText"></b> sessions and harmonized a total of <b id="valueText"></b> times.
         </div>
-        <button onclick="closeTooltip()">close</button>
+        <div class="viz">
+          <svg id="visualizer"></svg>
+        </div>
+        <div class="small status" hidden>Harmonizing takes a couple of seconds...please wait.</div>
+        <div class="actions horizontal">
+          <div>
+            <button onclick="playMelody()" id="btnPlay">play</button>
+            <button onclick="harmonize(event)" id="btnHarmonize">harmonize</button>
+          </div>
+          <button onclick="closeTooltip()">close</button>
+        </div>
+        <br>
+        <div class="small hint">Click to expand and listen.</div>
+        <div id="melodyTweet" hidden>Do you think you know what this melody is? <a id='melodyTweetLink' target='_blank'>Tweet at us</a>
+          and we'll try to label it. Or, open this melody in our
+          <a id='coucouLink' target='_blank'>companion app</a> to explore more harmonizations.</div>
+        </div>
       </div>
-      <br>
-      <div class="small hint">Click to expand and listen.</div>
-      <div id="melodyTweet" hidden>Do you think you know what this melody is? <a id='melodyTweetLink' target='_blank'>Tweet at us</a>
-        and we'll try to label it. Or, open this melody in our
-        <a id='coucouLink' target='_blank'>companion app</a> to explore more harmonizations.</div>
-    </div>
   </body>
   <script src="https://d3js.org/d3.v5.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@magenta/music@1.8.0"></script>
