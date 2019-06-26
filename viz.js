@@ -1,4 +1,5 @@
 let tooltipIsExpanded = false;
+let allLabels;  // Set in overall.html.
 
 /*********************
  * D3 -> Note Sequence
@@ -26,6 +27,9 @@ function getNoteSequenceFromData(d) {
 }
 
 function displayMelodyName(d) {
+  if (!allLabels) {
+    return;
+  }
   const label = allLabels && allLabels[d.elementIndex];
   d3.select('#melName').text(label ? label.name + '. ' : '');
   d3.select('#statMelName').text(label ? '🎵' + label.name: '');
@@ -101,8 +105,7 @@ function showTooltip(d) {
     d3.select('#unseenCountry').text(availableCountriesNames[d.data.country]);
     unseenCountry.textContent = availableCountriesNames[d.data.country];
   }
-
-  d3.select('#unseenSession').attr('hidden', !d.data.unseen);
+  d3.select('#unseenSession').attr('hidden', d.data.unseen ? null : false);
   if (d.parent) {
     d3.select('#countriesText').text(availableCountriesNames[d.parent.data.name]);
   }

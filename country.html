@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title></title>
+    <title>Overall repeated melodies</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1">
     <meta name="mobile-web-app-capable" content="yes">
@@ -10,6 +10,23 @@
     <link rel="preconnect" href="https://storage.googleapis.com">
     <link href="style.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:400,700&display=swap" rel="stylesheet">
+    <style>
+      .explanation {
+        position: absolute;
+        width: 280px;
+        left: calc(50% - 140px);
+        top: 35%;
+        text-align: center;
+        pointer-events: none;
+      }
+      #percentage {
+        font-size: 40px;
+        font-weight: bold;
+      }
+      #statMelName {
+        font-weight: bold;
+      }
+    </style>
   </head>
   <body>
     <header>
@@ -56,61 +73,75 @@
 
     <section>
       <h1>What did the doodlers <span id="textCountry"></span>compose?</h1>
-
-      <p id="countryTrivia" class="trivia" hidden>
+      <p class="trivia" hidden>
         There were <b id="triviaTotal"></b> total melodies composed in <b id="triviaCountry"></b>.
         Out of the 2000 most repeated sequences, <b id="triviaMajor"></b> were composed in a
         major key,  <b id="triviaMinor"></b> in a minor key, and  <b id="triviaNeither"></b>
         in neither a major nor minor key. <b id="triviaUnseen"></b> of these melodies
         were not in the top 2000 compositions any other country!
       </p>
-     </section>
-
-    <div class="center">
-      <svg id="svg"></svg>
-    </div>
-    <section>
-      <p>
-        <span class="accent secondary outline">Hover</span> over any of the cells to see a quick preview
-        of the melody. <span class="accent secondary outline">Click</span> on a cell to see
-        more details about it, listen to it, or see what the harmonization could have been.
-        <span id="unseenHelp" hidden>The <span class="accent secondary">yellow</span> cells represent
-        melodies that were not in the top in any other country.</span>
-      </p>
     </section>
+
+    <div class="center" style="position: relative">
+      <svg id="svg"></svg>
+
+      <div class="explanation">
+        <div class="instructions">
+          <br><br>
+          Each cell is a note in one of the top 2000 melodies. Hover over them.
+        </div>
+        <div class="stat" hidden>
+          <div id="percentage">61.3%</div> of the top melodies begin with this sequence of notes.
+          <div id="statValue"></div>
+        </div>
+        <br>
+        <div class="small hint" hidden>Click to expand and listen.
+          Shift click on a note to zoom in, or on the inner white circle to reset.
+        </div>
+      </div>
+    </div>
+
     <div class="tooltip" id="tooltip" hidden>
-      <div>
+      <div id="dataText">
         Composed in <b id="sessionsText"></b> sessions and harmonized a total of <b id="valueText"></b> times.
         <p id="unseenSession" hidden>⭐️ This melody is quite unique!
           It isn't among the top 2000 most used melodies in any other country.</p>
       </div>
+      <div id="noDataText" hidden>This melody was not in the top 2000, but you can still explore it here:</div>
       <div class="viz">
         <svg id="visualizer"></svg>
       </div>
       <div class="small status" hidden>Harmonizing takes a couple of seconds...please wait.</div>
       <div class="actions horizontal">
         <div>
-          <button class="accent secondary" onclick="playMelody()" id="btnPlay">play</button>
-          <button class="accent secondary" onclick="harmonize(event)" id="btnHarmonize">harmonize</button>
+          <button onclick="playMelody()" id="btnPlay">play</button>
+          <button onclick="harmonize(event)" id="btnHarmonize">harmonize</button>
         </div>
-        <button class="accent secondary" onclick="closeTooltip()">close</button>
+        <button onclick="closeTooltip()">close</button>
       </div>
-      <br>
-      <div class="small hint">Click to expand and listen. Shift click to zoom in to the melodies starting on this note.
-        <span id="whiteCircleHint" hidden>Click on the white circle in the middle to go back.</span>
+
+      <div>
+        <div id="melodyTweet">
+          <a id="melodyTweetLink" target="_blank">Share</a> this melody! Or, open
+          it in our
+          <a id="coucouLink" target="_blank">companion app</a>
+          to explore more harmonizations.
+        </div>
       </div>
-      <div id="melodyTweet"></div>
     </div>
   </body>
   <script src="https://d3js.org/d3.v5.min.js"></script>
-   <script src="https://cdn.jsdelivr.net/npm/@magenta/music@1.8.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@magenta/music@1.8.0"></script>
   <script src="common.js"></script>
   <script src="viz.js"></script>
+  <script src="sunburst.js"></script>
   <script>
+    let allData;
+    const opacity = d3.scaleLinear().range(["0.1", "1.0"]).domain([120, 500]).clamp(true);
+
     const search = window.location.search.split('=');
     const country = search.length > 1 ? search[1].toLowerCase() : '';
     const countryIndex = availableCountries.indexOf(country);
-    let allData, allLabels;
 
     // Update the UI to match what we're looking at.
     textCountry.innerHTML = `in <span class="accent primary">${availableCountriesNames[country]}</span> `;
@@ -118,47 +149,24 @@
 
     // Don't redraw on resize on mobile since that's probably a zoom event.
     if (('ontouchstart' in window) === false) {
-      window.addEventListener('resize', showData);
+      window.addEventListener('resize', sunburst);
     }
+    window.onhashchange = handleForceSelect;
 
-    d3.json(TOP_PER_COUNTRY_PREFIX + country + '.json').then((data) => {
+    d3.json('data/country/' + country + '.json').then((data) => {
       allData = data;
 
       loadAllSamples();
-      showData();
-
-      // If there's a hash, we should try to select that melody.
-      const pathIndex = window.location.hash.slice(1);
-      if (pathIndex !== '') {
-        handleForceSelect(pathIndex);
-      }
+      sunburst();
     });
 
-    function showData() {
+    function sunburst() {
       document.querySelector('#svg').innerHTML = '';
       const size = Math.min(window.innerWidth, window.innerHeight);
-
       drawSunburst(allData, size);
 
-      melodyTweet.innerHTML = `<a id="melodyTweetLink" target="_blank">Share</a> \
-      this melody!`;
-
-      countryTrivia.hidden = false;
-      unseenHelp.hidden = false;
-      triviaTotal.textContent = d3.format(".2s")(totalPerCountry[country]);
-      triviaCountry.textContent =  availableCountriesNames[country];
-
-      d3.json(TRIVIA_PER_COUNTRY_URL).then((trivia) => {
-        const t = trivia[country];
-        triviaMajor.textContent = (t.major/2000 * 100).toFixed(1) + '%';
-        triviaMinor.textContent = (t.minor/2000 * 100).toFixed(1)  + '%';
-        triviaNeither.textContent = (t.neither/2000 * 100).toFixed(1) + '%';
-        triviaUnseen.textContent = t.unseen;
-      });
-
-      melodyTweet.innerHTML += ` Or, open this melody in our \
-    <a id="coucouLink" target="_blank">companion app</a> to explore more harmonizations.`
-
+      // If there's a hash, we should try to select that melody.
+      handleForceSelect();
     }
   </script>
 </html>
