@@ -22,8 +22,7 @@ function drawSunburst(data, radius, linearScale=false) {
 
   const degree = 2 * Math.PI / 360 / 5;
   let arc, svg;
-  const sunburstScale = linearScale ? d3.scaleLinear().range([0, radius]) :
-      d3.scaleLog().range([0, radius]);
+  const sunburstScale = linearScale ? (y) => y : d3.scaleLog().range([0, radius]);
 
   svg = d3.select('#svg')
     .style('width', radius)
