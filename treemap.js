@@ -57,9 +57,9 @@ function drawTreemap(data, width, height) {
           d3.select('#melodyInstructions').attr('hidden', null);
           d3.select('#countryInstructions').attr('hidden', true);
           handleMouseOver.call(this, d);
-          // On mobile, hover is a bit of a lie, so act as a click.
-          if ('ontouchstart' in window) handleClick.call(this, d);
         }
+        // On mobile, hover is a bit of a lie, so act as a click.
+        if ('ontouchstart' in window) handleClick.call(this, d);
       })
       .on('mouseout', function(d) {
         d3.select(this).attr('stroke', null);
@@ -75,6 +75,7 @@ function drawTreemap(data, width, height) {
       .on('click', d => {
         if (focus !== d) {
           if (d.children) {
+            closeTooltip();
             zoom(isZoomedIn ? null : d);
             d3.event.stopPropagation()
           } else if (!d.children) {
