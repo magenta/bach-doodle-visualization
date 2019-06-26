@@ -189,7 +189,7 @@
   <script src="viz.js"></script>
   <script src="sunburst.js"></script>
   <script>
-    let allData, flatData, allLabels, allLabelsValues;
+    let allData, flatData, allLabelsValues;
     const opacity = d3.scaleLinear().range(["0.1", "1.0"]).domain([120, 500]).clamp(true);
 
     // Don't redraw on resize on mobile since that's probably a zoom event.
