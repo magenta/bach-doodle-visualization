@@ -244,7 +244,7 @@
       drawSunburst(allData, size);
 
       if (!allLabels) {
-        d3.json(LABELS_URL).then((labels) => {
+        d3.json('data/overallLabels.json').then((labels) => {
           allLabels = labels;
           allLabelsValues = Object.values(allLabels).sort((a,b) => a.deltas.localeCompare(b.deltas));
           drawHits();
