@@ -142,7 +142,7 @@
     const countriesBySize = Object.keys(totalPerCountry);
     window.addEventListener('resize', showData);
 
-    d3.json(TRIVIA_PER_COUNTRY_URL).then((json) => {
+    d3.json('data/trivia_per_country.json').then((json) => {
       trivia = json;
       showData();
     });

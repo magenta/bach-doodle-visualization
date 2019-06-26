@@ -39,7 +39,7 @@ function displayMelodyName(d) {
  * D3 viz drawing
  *********************/
 function fill(d) {
-  if (!d.depth) return '#ccc';
+  if (!d.depth) return 'white';
   if (d.data.unseen) return '#FFD138';
   return color(parseInt(d.data.name));
 }

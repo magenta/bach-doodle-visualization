@@ -1,37 +1,6 @@
-Welcome to Glitch
-=================
+# Bach Doodle Dataset
+Over 8 million players have contributed around 24 millions harmonizations after playing with the Bach Google Doodle. These harmonizations are a unique data set that can show insights on how people around the world composed melodies, help developers train new Machine Learning algorithms, or artists create musical experiences. That’s why we’re open-sourcing the dataset.
 
-Click `Show` in the header to see your app live. Updates to your code will instantly deploy and update live.
-
-**Glitch** is the friendly community where you'll build the app of your dreams. Glitch lets you instantly create, remix, edit, and host an app, bot or site, and you can invite collaborators or helpers to simultaneously edit code with you.
-
-Find out more [about Glitch](https://glitch.com/about).
-
-
-Your Project
-------------
-
-### ← README.md
-
-That's this file, where you can tell people what your cool website does and how you built it.
-
-### ← index.html
-
-Where you'll write the content of your website. 
-
-### ← style.css
-
-CSS files add styling rules to your content.
-
-### ← script.js
-
-If you're feeling fancy you can add interactivity to your site with JavaScript.
-
-### ← assets
-
-Drag in `assets`, like images or music, to add them to your project
-
-Made by [Glitch](https://glitch.com/)
--------------------
-
-\ ゜o゜)ノ
+This project provides several visualizations to explore the data, such as
+visualizing the top overall repeated melodies, the top repeated melodies in each country, or
+the regional hits  -- melodies that only appeared in one country and not in the other ones.

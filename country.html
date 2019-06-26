@@ -156,8 +156,6 @@
 
     d3.json('data/country/' + country + '.json').then((data) => {
       allData = data;
-
-      loadAllSamples();
       sunburst();
 
       countryTrivia.hidden = false;

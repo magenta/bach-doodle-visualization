@@ -205,7 +205,7 @@
     let sessionIndex = 0;
     let harmIndex = 0;
 
-    fetch(DATAPOINTS_URL).then(response => response.json()).then((data) => {
+    fetch('data/dataset.json').then(response => response.json()).then((data) => {
       allData = data;
       updateView();
     });
