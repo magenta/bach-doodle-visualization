@@ -30,6 +30,7 @@
         svg.innerHTML = '';
         drawSunburst(allData[country], 500);
         saveAs(new File([svg.outerHTML], country + '.svg'));
+        // then run `mogrify -resize 300 -format jpg *.svg`
 
         if (index < countries.length - 1) {
           index++;

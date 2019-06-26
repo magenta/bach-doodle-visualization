@@ -35,28 +35,6 @@ function displayMelodyName(d) {
   d3.select('#statMelName').text(label ? '🎵' + label.name: '');
 }
 
-function updateMelodyName(d) {
-  let ns;
-  if (tooltipIsExpanded) {
-    ns = sequenceVisualizer.noteSequence;
-  } else if (d) {
-    ns = getNoteSequenceFromData(d);
-  }
-  if (!ns) {
-    return;
-  }
-  // Is there a label for this pitch sequence?
-  let str = '';
-  ns.notes.forEach(n => str += n.pitch + ' ');
-  const name = allLabels[str.trim()];
-
-  if (name) {
-    melodyText.hidden = false;
-    melodyNameText.textContent = name;
-  } else {
-    melodyText.hidden = true;
-  }
-}
 /*********************
  * D3 viz drawing
  *********************/
@@ -157,7 +135,6 @@ function handleClick(d) {
   // If it's hidden, show it first.
   if (tooltip.hasAttribute('hidden')) {
     showTooltip(d);
-    displayMelodyName(d);
   }
   tooltip.classList.add('expanded');
   btnHarmonize.disabled = false;
@@ -166,6 +143,7 @@ function handleClick(d) {
   let ns = getNoteSequenceFromData(d);
   player.loadSamples(ns);
   visualizeNoteSequence(ns, 'visualizer');
+  displayMelodyName(d);
 
   // Position it in the center of the svg if it's a big enough screen.
   if (window.innerWidth > SMALL_SCREEN_SIZE) {

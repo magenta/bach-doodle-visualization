@@ -75,23 +75,6 @@
       <svg id="svg"></svg>
     </div>
 
-    <section>
-      <p>
-        <!-- <span class="accent secondary outline">Hover</span> over any of the smaller
-        rectangles to see a quick preview
-        of the melody. <span class="accent secondary outline">Click</span> on a country
-        to zoom in to all the melodies in that country, or
-        <span class="accent secondary outline">Click</span>
-        on a smaller rectangle to see more details about the melody, listen to it, or see what
-        the harmonization could have been. Even though not all countries are labelled, you
-        can still see their melodies by hovering over the small rectangles. -->
-
-        <br><br><br>
-        You can also view this data as <a class="accent" href="unique_circles.html">circles</a>
-        Note that if you have Trypophobia, that visualization might not
-        be pleasant for you, which is why we default to showing the rectangles.
-      </p>
-    </section>
     <div class="tooltip" id="tooltip" hidden>
       <div><span id="melodyText" hidden><b id="melodyNameText"></b>.</span>
         Composed in <b id="countriesText"></b> across <b id="sessionsText"></b> sessions and harmonized a total of <b id="valueText"></b> times.
@@ -118,31 +101,27 @@
   <script src="https://cdn.jsdelivr.net/npm/@magenta/music@1.8.0"></script>
   <script src="common.js"></script>
   <script src="viz.js"></script>
+  <script src="treemap.js"></script>
   <script>
     let allData = {name:"root"}
-    let allLabels = {};
+    let labels = {};
+
     // Don't redraw on resize on mobile since that's probably a zoom event.
     if (('ontouchstart' in window) === false) {
       window.addEventListener('resize', showData);
     }
+    window.onhashchange = handleForceSelect;
 
     d3.json('./data/unique_melodies_per_country.json').then((data) => {
       allData.children = data;
 
       // Load the labels.
-      d3.json('data/childhoodLabels.json').then((labels) => {
-        allLabels = labels;
-        updateMelodyName();
+      d3.json('data/childhoodLabels.json').then((l) => {
+        labels = l;
+        // If there's a hash, we should try to select that melody.
+        handleForceSelect();
       });
-
       showData();
-
-      // If there's a hash, we should try to select that melody.
-      const pathIndex = window.location.hash.slice(1);
-      if (pathIndex !== '') {
-        handleForceSelect(pathIndex);
-        updateMelodyName();
-      }
     });
 
     function showData() {
@@ -150,121 +129,5 @@
       const size = window.innerWidth > 700 ? 700: window.innerWidth;
       drawTreemap(allData, size, window.innerHeight - 100);
    }
-
-    function drawTreemap(data, width, height) {
-      const countryColors = d3.scaleOrdinal(d3.quantize(d3.interpolateWarm, data.children.length));
-
-      const opacity = d3.scaleLinear().range(["0.5", "1.0"]).domain([0, 1000]).clamp(true);
-
-      const treemap = data => d3.treemap()
-        .tile(d3['treemapSquarify'])
-        .size([width, height])
-        .paddingInner(1)
-        .paddingOuter(8)
-        (d3.hierarchy(data)
-        .sum(d => d.value)
-        .sort((a, b) => b.value - a.value))
-      const root = treemap(data);
-
-      // Add an ID to every element so that we can find it later.
-      let i = 0;
-      root.each((d) => {
-        d.elementIndex = i;
-        i++;
-      });
-
-      let isZoomedIn = false;
-
-      const svg = d3.select('#svg')
-        .attr('width', width)
-        .attr('height', height)
-        .on('click', () => zoom(null));
-
-      svg
-        .selectAll('rect')
-        .data(root.descendants().slice(1))
-        .enter()
-        .append('rect')
-          .attr('x', (d) => d.x0)
-          .attr('y', (d) => d.y0)
-          .attr('width', (d) => Math.max(4, d.x1 - d.x0))
-          .attr('height', (d) =>  Math.max(4, d.y1 - d.y0))
-          .attr('id', d => `p${d.elementIndex}`)
-          .attr('fill', (d, i) => {
-            return !d.children ?
-                countryColors(availableCountries.indexOf(d.parent.data.name))
-                : 'white';
-          })
-          .attr('fill-opacity', d => opacity(d.data.value))
-          .attr('stroke-width', '3px')
-        .on('mouseover', function(d) {
-          if (tooltipIsExpanded) {
-            return;
-          }
-          d3.select(this).attr('stroke', 'black');
-          if (!d.children) {
-            showTooltip(d, d3.select(this));
-            updateMelodyName(d);
-          }
-        })
-        .on('mouseout', function(d) {
-          d3.select(this).attr('stroke', null);
-          hideTooltip();
-          if (!tooltipIsExpanded) {
-            melodyText.hidden = true;
-            melodyNameText.textContent = '';
-          }
-        })
-        .on('click', d => {
-          if (focus !== d) {
-            if (d.children) {
-              zoom(isZoomedIn ? null : d);
-              d3.event.stopPropagation()
-            } else if (!d.children){
-              handleClick(d, this);
-              d3.event.stopPropagation();
-              updateMelodyName(d);
-            }
-          }
-        });
-
-    svg
-      .selectAll('text')
-      .data(root.descendants().filter((d) => d.depth === 1))
-      .enter()
-      .append('text')
-        .attr('x', d => d.x0 + (d.x1 - d.x0) / 2)
-        .attr('y', d => d.y0 + (d.y1 - d.y0) / 2)
-        .text(d => {
-          if (Math.min(d.x1 - d.x0, d.y1 - d.y0) > 30)
-            return d.data.name.toUpperCase()
-          else
-            return ''
-        })
-        .attr('font-size', d => '20px')
-        .attr('fill', 'black')
-        .style('font-weight', 'bold')
-        .style('font-family', 'inherit')
-        .attr('pointer-events', 'none')
-        .attr('text-anchor', 'middle');
-
-      function zoom(d) {
-        const svgEl = document.getElementById('svg');
-        if (d) {
-          isZoomedIn = true;
-          const el = document.getElementById(`p${d.elementIndex}`);
-          if (!el) {
-            return;
-          }
-          const bbox = el.getBBox();
-          svgEl.setAttribute('viewBox', `${bbox.x} ${bbox.y} ${bbox.width} ${bbox.height}`);
-          svg.selectAll('rect').attr('stroke-width', '1px');
-        } else {
-          isZoomedIn = false;
-          svgEl.removeAttribute('viewBox');
-          svg.selectAll('rect').attr('stroke-width', '3px');
-        }
-      }
-    }
   </script>
 </html>
