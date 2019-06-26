@@ -1,4 +1,4 @@
-function drawSunburst(data, radius, linearScale=false) {
+function drawSunburst(data, radius, filledInnerCircle=false) {
   // Based on https://observablehq.com/@d3/sunburst with tons of changes.
   const viewRadius = radius;
   const partition = data => d3.partition().size([2 * Math.PI, viewRadius])
@@ -22,7 +22,7 @@ function drawSunburst(data, radius, linearScale=false) {
 
   const degree = 2 * Math.PI / 360 / 5;
   let arc, svg;
-  const sunburstScale = linearScale ? (y) => y : d3.scaleLog().range([0, radius]);
+  const sunburstScale = d3.scaleLog().range([0, radius]);
 
   svg = d3.select('#svg')
     .style('width', radius)
@@ -41,7 +41,7 @@ function drawSunburst(data, radius, linearScale=false) {
     .endAngle(d => d.x1 + degree)
     .padAngle(d => Math.min((d.x1 - d.x0) / 2, 0.005))
     .padRadius(20)
-    .innerRadius(d => sunburstScale(d.y0))
+    .innerRadius(d => d.depth === 1 && filledInnerCircle ? 0 : sunburstScale(d.y0))
     .outerRadius(d => sunburstScale(d.y1 - 3));
 
   const paths = svg.selectAll('path')
