@@ -57,6 +57,8 @@ function drawTreemap(data, width, height) {
           d3.select('#melodyInstructions').attr('hidden', null);
           d3.select('#countryInstructions').attr('hidden', true);
           handleMouseOver.call(this, d);
+          // On mobile, hover is a bit of a lie, so act as a click.
+          if ('ontouchstart' in window) handleClick.call(this, d);
         }
       })
       .on('mouseout', function(d) {

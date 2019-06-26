@@ -355,6 +355,8 @@
         .attr('stroke-width', 2)
         .attr('fill-opacity', 1);
       handleMouseOver.call(this, d);
+      // On mobile, hover is a bit of a lie, so act as a click.
+      if ('ontouchstart' in window) handleClick.call(this, d);
     }
 
     function mouseoutPixel(d, r) {
