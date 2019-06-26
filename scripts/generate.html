@@ -28,7 +28,7 @@
         console.log('generating', index, country);
 
         svg.innerHTML = '';
-        drawSunburst(allData[country], 500);
+        drawSunburst(allData[country], 500, true);
         saveAs(new File([svg.outerHTML], country + '.svg'));
         // then run `mogrify -resize 300 -format jpg *.svg`
 
