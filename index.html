@@ -26,7 +26,7 @@ limitations under the License.
       body {
         text-align: left;
       }
-      div.horizontal {
+      .image-wrapper {
         flex-wrap: wrap;
         margin-bottom: 24px;
         align-items: flex-end;
@@ -41,13 +41,25 @@ limitations under the License.
         margin: 14px;
         max-width: 100%;
       }
-      a.inline:hover img {
-        transform: scale(1.1);
+      a.inline span.accent {
+        color: black;
+        border-bottom: 4px dashed var(--secondary);
+        background:white;
+        font-weight: bold;
+        margin: 0;
+        padding: 0;
       }
       a.inline img {
         transition: transform 0.2s linear;
         max-width: 100%;
+        margin-bottom: 14px;
         cursor:pointer;
+      }
+      a.inline:hover img {
+        transform: scale(1.1);
+      }
+      a.inline:hover span {
+        border-bottom-style: solid;
       }
       @media screen and (max-width: 500px) {
         a.inline {
@@ -84,7 +96,7 @@ limitations under the License.
             Random dataset samples
           </a>
         </div>
-          <a href="https://magenta.tensorflow.org/datasets" target="_blank">
+          <a href="https://magenta.tensorflow.org/datasets/bach-doodle" target="_blank">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
             Get the data
           </a>
@@ -104,10 +116,10 @@ limitations under the License.
       <h1>Exploring the <span class="accent primary">Bach Doodle</span></h1>
       <p>
         Over 8 million players have contributed 21.6 millions harmonizations after playing with the Bach Google Doodle.
-        These harmonizations are a unique data set that can show insights on how
+        These harmonizations are a unique dataset that can show insights on how
         people around the world composed melodies, help developers train new
         Machine Learning algorithms, or artists create musical experiences.
-        That’s why we’re open-sourcing the dataset.
+        That’s why we’re open-sourcing the <a class="accent" href="https://magenta.tensorflow.org/datasets/bach-doodle">dataset</a>.
       </p>
     </section>
 
@@ -120,28 +132,25 @@ limitations under the License.
         We've also split them across which country they came from, to see
         how compositions changed around the world!
       </p>
-      <p>Try exploring the <a class="accent" href="overall.html">top overall repeated melodies</a>,
-      <a class="accent" href="world.html">the top repeated melodies in each country</a>, or
-      listen to the <a class="accent" href="unique.html">regional hits </a> -- melodies
-      that only appeared in one country and not in the other ones.
+      <p>Try exploring some of the interactive visualizations:</p>
 
-      <div class="horizontal">
+      <div class="horizontal image-wrapper">
         <a class="inline" href="overall.html">
           <label>
-            <img src="images/overall.png">
-            Top overall repeated melodies
+            <img src="images/overall.png" alt="a sunburst graph of all melodies, highlighting Ode to Joy, which was harmonized 1358 times.">
+            <span class="accent">Top overall repeated melodies</span>
           </label>
         </a>
-        <a class="inline" href="world.html">
+        <a class="inline" href="world.html" alt="a set of of small sunburst graphs, each representing a country, with the bigges one, US, highlighted.">
           <label>
             <img src="images/world.png">
-            Top repeated melodies per country
+            <span class="accent">Top repeated melodies per country</span>
           </label>
         </a>
-        <a class="inline" href="unique.html">
+        <a class="inline" href="unique.html" alt="a treemap chart of different squares, each bigger square being labelled with a country name.">
           <label>
             <img src="images/regional-hits.png">
-            Regional hits
+            <span class="accent">Unique regional hits</span>
           </label>
         </a>
       </div>
