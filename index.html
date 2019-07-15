@@ -26,6 +26,34 @@ limitations under the License.
       body {
         text-align: left;
       }
+      div.horizontal {
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+        align-items: flex-end;
+      }
+      a.inline {
+        display: block;
+        position: relative;
+        flex: 1;
+        font-size: 14px;
+        color: black;
+        text-align: center;
+        margin: 14px;
+        max-width: 100%;
+      }
+      a.inline:hover img {
+        transform: scale(1.1);
+      }
+      a.inline img {
+        transition: transform 0.2s linear;
+        max-width: 100%;
+        cursor:pointer;
+      }
+      @media screen and (max-width: 500px) {
+        a.inline {
+          flex: auto;
+        }
+      }
     </style>
   </head>
   <body>
@@ -96,6 +124,28 @@ limitations under the License.
       <a class="accent" href="world.html">the top repeated melodies in each country</a>, or
       listen to the <a class="accent" href="unique.html">regional hits </a> -- melodies
       that only appeared in one country and not in the other ones.
+
+      <div class="horizontal">
+        <a class="inline" href="overall.html">
+          <label>
+            <img src="images/overall.png">
+            Top overall repeated melodies
+          </label>
+        </a>
+        <a class="inline" href="world.html">
+          <label>
+            <img src="images/world.png">
+            Top repeated melodies per country
+          </label>
+        </a>
+        <a class="inline" href="unique.html">
+          <label>
+            <img src="images/regional-hits.png">
+            Regional hits
+          </label>
+        </a>
+      </div>
+
       <details>
         <summary class="small">The technical details on how we clustered the data</summary>
         <p>We noticed early on that although people entered the same melody (like "Ode to Joy"),
