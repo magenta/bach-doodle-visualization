@@ -147,11 +147,8 @@ function closeTooltip() {
 function handleClick(d) {
   // Expand the tooltip.
   tooltipIsExpanded = true;
+  showTooltip(d);
 
-  // If it's hidden, show it first.
-  if (tooltip.hasAttribute('hidden')) {
-    showTooltip(d);
-  }
   tooltip.classList.add('expanded');
   btnHarmonize.disabled = false;
 
