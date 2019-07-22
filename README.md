@@ -19,3 +19,7 @@ This project provides several interactive visualizations to explore this data, s
 ----
 
 Explore this [collection of visualizations](https://goo.gl/magenta/bach-doodle-viz) for the dataset, [download the dataset](https://magenta-staging.tensorflow.org/datasets/bach-doodle) or read more about it in the [paper](https://goo.gl/magenta/bach-doodle-paper) it was introduced!
+
+## Labelling a melody 
+We'd love to be able to label more known melodies! If you recognize one of the [top hits](https://magenta.github.io/bach-doodle-visualization/overall.html) or [regional hits](https://magenta.github.io/bach-doodle-visualization/unique.html), 
+please let us know. You can either tweet at us, or open an issue with the link to the melody you recognize, and its name. Thank you!!!
