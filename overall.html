@@ -387,5 +387,35 @@ limitations under the License.
       handleMouseOut.call(this);
     }
 
+
+    // Use this to update overallLabels.json.
+    function getDataForSelection() {
+      const pathIndex = window.location.hash.slice(1);
+      if (pathIndex == '') {
+        return
+      }
+      const el = d3.select(`#p${pathIndex}`);
+      if (!el.node()) {
+        return
+      }
+      const data = el.data()[0];
+      const timing = data.data.timing;
+      let deltas = '';
+      if (timing) {
+        let previousPitch = timing[1][0];
+        for (let i = 1; i < timing.length; i++) {
+          deltas += (timing[i][0] - previousPitch) + ' ';
+          previousPitch = timing[i][0];
+        }
+      }
+      return {
+        'id': pathIndex,
+        "name": "",
+        "deltas": deltas.trim(),
+        "sessions": data.data.sessions,
+        "count":data.value
+      }
+    }
+
   </script>
 </html>
