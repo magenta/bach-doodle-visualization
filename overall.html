@@ -387,8 +387,14 @@ limitations under the License.
       handleMouseOut.call(this);
     }
 
-
-    // Use this to update overallLabels.json.
+    // Use this to add a new entry to `overallLabels.json` for the currently
+    // selected melody. Note that unless melodies are seen in the dataset,
+    // the deltas and sessions fields won't be populated.
+    // To update `overallLabels.json`:
+    //   - with a selection made, call this function in the developer tools
+    //   - add a new key-value entry where the key is the id and the value is
+    //     the returned object from this function
+    //   - edit the "name" field with the label.
     function getDataForSelection() {
       const pathIndex = window.location.hash.slice(1);
       if (pathIndex == '') {

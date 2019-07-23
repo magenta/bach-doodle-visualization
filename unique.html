@@ -156,12 +156,14 @@ limitations under the License.
       handleForceSelect();
     }
 
-    // Use this to update childhoodLabels.json.
+    // Use this to update `childhoodLabels.json`:
+    //   - with a selection made, call this function in the developer tools
+    //   - add a new key-value entry where the key is the deltas returned
+    //     from this function, and the value is the label.
     function getPitchSequenceForSelection() {
       let str = '';
       sequenceVisualizer.noteSequence.notes.forEach(n => str += (n.pitch + ' '));
       return str.trim();
     }
-
   </script>
 </html>
