@@ -148,12 +148,22 @@ limitations under the License.
       document.querySelector('#svg').innerHTML = '';
       const size = window.innerWidth > 700 ? 700: window.innerWidth;
       drawTreemap(allData, size, window.innerHeight - 100);
-   }
+    }
 
-  function forceSelectWrapper() {
-    d3.select('#melodyInstructions').attr('hidden', null);
-    d3.select('#countryInstructions').attr('hidden', true);
-    handleForceSelect();
-   }
+    function forceSelectWrapper() {
+      d3.select('#melodyInstructions').attr('hidden', null);
+      d3.select('#countryInstructions').attr('hidden', true);
+      handleForceSelect();
+    }
+
+    // Use this to update `childhoodLabels.json`:
+    //   - with a selection made, call this function in the developer tools
+    //   - add a new key-value entry where the key is the deltas returned
+    //     from this function, and the value is the label.
+    function getPitchSequenceForSelection() {
+      let str = '';
+      sequenceVisualizer.noteSequence.notes.forEach(n => str += (n.pitch + ' '));
+      return str.trim();
+    }
   </script>
 </html>
